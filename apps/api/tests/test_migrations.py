@@ -33,6 +33,15 @@ def test_initial_migration_is_idempotent(monkeypatch: pytest.MonkeyPatch) -> Non
         database_url = postgres.get_connection_url()
         monkeypatch.setenv("DATABASE_URL", database_url)
         monkeypatch.setenv("REDIS_URL", "redis://localhost:6379/0")
+        monkeypatch.setenv("JWT_SECRET", "migration-test-secret")
+        monkeypatch.setenv("SEED_VIEWER_EMAIL", "viewer@ops-pilot.local")
+        monkeypatch.setenv("SEED_VIEWER_PASSWORD", "pass")
+        monkeypatch.setenv("SEED_OPERATOR_EMAIL", "operator@ops-pilot.local")
+        monkeypatch.setenv("SEED_OPERATOR_PASSWORD", "pass")
+        monkeypatch.setenv("SEED_APPROVER_EMAIL", "approver@ops-pilot.local")
+        monkeypatch.setenv("SEED_APPROVER_PASSWORD", "pass")
+        monkeypatch.setenv("SEED_ADMIN_EMAIL", "admin@ops-pilot.local")
+        monkeypatch.setenv("SEED_ADMIN_PASSWORD", "pass")
 
         from app.core.config import get_settings
 

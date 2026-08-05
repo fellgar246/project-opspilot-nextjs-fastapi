@@ -23,6 +23,7 @@ select = ["E", "F", "I", "UP", "B", "SIM"]
 
 [tool.ruff.lint.per-file-ignores]
 "apps/api/app/api/*.py" = ["B008"]
+"apps/api/app/audit/router.py" = ["B008"]
 
 [tool.ruff.format]
 quote-style = "double"

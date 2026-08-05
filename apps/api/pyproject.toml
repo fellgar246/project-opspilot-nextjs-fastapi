@@ -14,6 +14,10 @@ dependencies = [
     "opspilot-agent",
     "opspilot-tools",
     "opspilot-telemetry",
+    "argon2-cffi>=25.1.0",
+    "pyjwt>=2.13.0",
+    "python-multipart>=0.0.32",
+    "email-validator>=2.3.0",
 ]
 
 [project.optional-dependencies]
@@ -50,3 +54,8 @@ markers = [
 ]
 testpaths = ["tests"]
 addopts = "-m 'not integration' --cov=app --cov-report=term-missing --cov-fail-under=80"
+
+[dependency-groups]
+dev = [
+    "fakeredis>=2.37.0",
+]

@@ -37,6 +37,44 @@ class Settings(BaseSettings):
     api_port: int = 8000
     cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:3000"])
 
+    jwt_secret: SecretStr = Field(validation_alias="JWT_SECRET")
+    jwt_access_ttl_seconds: int = Field(default=900, validation_alias="JWT_ACCESS_TTL_SECONDS")
+    jwt_refresh_ttl_seconds: int = Field(
+        default=604_800,
+        validation_alias="JWT_REFRESH_TTL_SECONDS",
+    )
+    auth_cookie_secure: bool = Field(default=False, validation_alias="AUTH_COOKIE_SECURE")
+    auth_rate_limit_attempts: int = Field(default=10, validation_alias="AUTH_RATE_LIMIT_ATTEMPTS")
+    auth_rate_limit_window_seconds: int = Field(
+        default=300,
+        validation_alias="AUTH_RATE_LIMIT_WINDOW_SECONDS",
+    )
+
+    seed_viewer_email: str = Field(validation_alias="SEED_VIEWER_EMAIL")
+    seed_viewer_password: SecretStr = Field(validation_alias="SEED_VIEWER_PASSWORD")
+    seed_viewer_display_name: str = Field(
+        default="Viewer Dev",
+        validation_alias="SEED_VIEWER_DISPLAY_NAME",
+    )
+    seed_operator_email: str = Field(validation_alias="SEED_OPERATOR_EMAIL")
+    seed_operator_password: SecretStr = Field(validation_alias="SEED_OPERATOR_PASSWORD")
+    seed_operator_display_name: str = Field(
+        default="Operator Dev",
+        validation_alias="SEED_OPERATOR_DISPLAY_NAME",
+    )
+    seed_approver_email: str = Field(validation_alias="SEED_APPROVER_EMAIL")
+    seed_approver_password: SecretStr = Field(validation_alias="SEED_APPROVER_PASSWORD")
+    seed_approver_display_name: str = Field(
+        default="Approver Dev",
+        validation_alias="SEED_APPROVER_DISPLAY_NAME",
+    )
+    seed_admin_email: str = Field(validation_alias="SEED_ADMIN_EMAIL")
+    seed_admin_password: SecretStr = Field(validation_alias="SEED_ADMIN_PASSWORD")
+    seed_admin_display_name: str = Field(
+        default="Admin Dev",
+        validation_alias="SEED_ADMIN_DISPLAY_NAME",
+    )
+
 
 @lru_cache
 def get_settings() -> Settings:

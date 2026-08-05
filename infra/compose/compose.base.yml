@@ -1,0 +1,142 @@
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+x-healthcheck-defaults: &healthcheck-defaults
+  interval: 10s
+  timeout: 5s
+  retries: 5
+  start_period: 20s
+
+networks:
+  opspilot-net:
+    name: opspilot-net
+
+volumes:
+  postgres_data:
+  redis_data:
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    profiles: [minimal, ai, full]
+    environment:
+      POSTGRES_USER: ops_pilot
+      POSTGRES_PASSWORD: ops_pilot
+      POSTGRES_DB: ops_pilot
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - opspilot-net
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD-SHELL", "pg_isready -U ops_pilot -d ops_pilot"]
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1G
+    logging: *default-logging
+
+  redis:
+    image: redis:7-alpine
+    profiles: [minimal, ai, full]
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    volumes:
+      - redis_data:/data
+    networks:
+      - opspilot-net
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "redis-cli", "ping"]
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+    logging: *default-logging
+
+  api:
+    build:
+      context: ../..
+      dockerfile: apps/api/Dockerfile
+    profiles: [minimal, ai, full]
+    env_file:
+      - ../../.env
+    environment:
+      DATABASE_URL: postgresql://ops_pilot:ops_pilot@postgres:5432/ops_pilot
+      REDIS_URL: redis://redis:6379/0
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - opspilot-net
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')\""]
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+    logging: *default-logging
+
+  worker:
+    build:
+      context: ../..
+      dockerfile: apps/worker/Dockerfile
+    profiles: [minimal, ai, full]
+    env_file:
+      - ../../.env
+    environment:
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - opspilot-net
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD-SHELL", "python -c \"import redis; redis.Redis.from_url('redis://redis:6379/0').ping()\""]
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+    logging: *default-logging
+
+  web:
+    build:
+      context: ../..
+      dockerfile: apps/web/Dockerfile
+    profiles: [minimal, ai, full]
+    env_file:
+      - ../../.env
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - opspilot-net
+    healthcheck:
+      <<: *healthcheck-defaults
+      test:
+        [
+          "CMD-SHELL",
+          "node -e \"fetch('http://127.0.0.1:3000').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\"",
+        ]
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+    logging: *default-logging

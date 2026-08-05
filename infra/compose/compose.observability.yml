@@ -1,0 +1,121 @@
+services:
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    profiles: [observability, full]
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+    volumes:
+      - ../observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    networks:
+      - opspilot-net
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:9090/-/healthy"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+
+  grafana:
+    image: grafana/grafana:11.3.1
+    profiles: [observability, full]
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    networks:
+      - opspilot-net
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+
+  loki:
+    image: grafana/loki:3.2.1
+    profiles: [observability, full]
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - opspilot-net
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3100/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+
+  tempo:
+    image: grafana/tempo:2.6.1
+    profiles: [observability, full]
+    command: ["-config.file=/etc/tempo.yaml"]
+    volumes:
+      - ../observability/tempo.yaml:/etc/tempo.yaml:ro
+    networks:
+      - opspilot-net
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3200/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.114.0
+    profiles: [observability, full]
+    command: ["--config=/etc/otel-collector.yaml"]
+    volumes:
+      - ../observability/otel-collector.yaml:/etc/otel-collector.yaml:ro
+    networks:
+      - opspilot-net
+    healthcheck:
+      test: ["CMD", "/otelcol-contrib", "validate", "--config=/etc/otel-collector.yaml"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+
+  langfuse:
+    image: langfuse/langfuse:2
+    profiles: [full]
+    environment:
+      DATABASE_URL: postgresql://ops_pilot:ops_pilot@postgres:5432/ops_pilot
+      NEXTAUTH_URL: http://localhost:3001
+      NEXTAUTH_SECRET: dev-only-not-for-production
+      SALT: dev-only-not-for-production
+    ports:
+      - "3001:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - opspilot-net
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/api/public/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1G

@@ -1,0 +1,17 @@
+{
+  "name": "ops-pilot",
+  "private": true,
+  "scripts": {
+    "lint": "pnpm --filter @ops-pilot/web lint",
+    "format": "pnpm --filter @ops-pilot/web format",
+    "typecheck": "pnpm --filter @ops-pilot/web typecheck",
+    "test": "pnpm --filter @ops-pilot/web test",
+    "build": "pnpm --filter @ops-pilot/web build"
+  },
+  "devDependencies": {
+    "prettier": "^3.4.2"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild", "sharp", "unrs-resolver"]
+  }
+}

@@ -1,0 +1,4 @@
+# AI profile uses the same containers as minimal.
+# Set MODEL_PROVIDER=openai and OPENAI_API_KEY in .env (see ADR-009).
+
+services: {}

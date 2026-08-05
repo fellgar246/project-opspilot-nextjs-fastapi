@@ -1,0 +1,56 @@
+[project]
+name = "ops-pilot"
+version = "0.1.0"
+description = "OpsPilot AI — local incident response platform"
+requires-python = ">=3.12"
+
+[tool.uv.workspace]
+members = [
+    "apps/api",
+    "apps/worker",
+    "packages/agent",
+    "packages/tools",
+    "packages/schemas",
+    "packages/telemetry",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.ruff.lint.per-file-ignores]
+"apps/api/app/api/*.py" = ["B008"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+plugins = []
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.0",
+    "pytest-asyncio>=0.24.0",
+    "pytest-cov>=6.0.0",
+    "httpx>=0.28.0",
+    "testcontainers[postgres,redis]>=4.9.0",
+    "ruff>=0.8.0",
+    "mypy>=1.13.0",
+    "pydantic>=2.10.0",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+markers = [
+    "integration: tests requiring Docker/testcontainers",
+]
+testpaths = ["apps/api/tests", "apps/worker/tests"]
+addopts = "--cov=app --cov=worker --cov=opspilot --cov-report=term-missing --cov-fail-under=80"

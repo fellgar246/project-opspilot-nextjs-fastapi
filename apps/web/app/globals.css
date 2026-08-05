@@ -21,6 +21,10 @@ body {
   padding: 2rem 1rem;
 }
 
+.container.wide {
+  max-width: 960px;
+}
+
 main ul {
   padding-left: 1.25rem;
 }
@@ -64,4 +68,173 @@ main ul {
 
 a {
   color: #a5b4fc;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.button-link {
+  display: inline-block;
+  padding: 0.65rem 1rem;
+  border-radius: 0.5rem;
+  background: #6366f1;
+  color: white;
+  text-decoration: none;
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.filters input,
+.filters select,
+.incident-form input,
+.incident-form textarea,
+.incident-form select,
+.note-form textarea {
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid #334155;
+  background: #111827;
+  color: inherit;
+  box-sizing: border-box;
+}
+
+.incident-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.incident-list li + li {
+  margin-top: 0.5rem;
+}
+
+.incident-list a {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.85rem 1rem;
+  border-radius: 0.5rem;
+  background: #111827;
+  text-decoration: none;
+  color: inherit;
+}
+
+.severity {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.45rem;
+  border-radius: 0.25rem;
+  background: #334155;
+}
+
+.severity-sev1 {
+  background: #991b1b;
+}
+
+.severity-sev2 {
+  background: #b45309;
+}
+
+.meta {
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+.tab-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.tab-nav button {
+  padding: 0.5rem 0.85rem;
+  border-radius: 0.5rem;
+  border: 1px solid #334155;
+  background: #111827;
+  color: inherit;
+  cursor: pointer;
+}
+
+.tab-nav button.active {
+  background: #6366f1;
+  border-color: #6366f1;
+}
+
+.tab-panel {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background: #111827;
+}
+
+.tab-placeholder,
+.card,
+.timeline-entry {
+  padding: 0.85rem 0;
+  border-bottom: 1px solid #1f2937;
+}
+
+.incident-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.incident-form label,
+.checkbox-label {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.checkbox-label {
+  grid-template-columns: auto 1fr;
+  align-items: center;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.note-form {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.pagination {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.pagination button,
+.page-header button,
+.note-form button,
+.incident-form button {
+  padding: 0.65rem 1rem;
+  border-radius: 0.5rem;
+  border: none;
+  background: #6366f1;
+  color: white;
+  cursor: pointer;
+}
+
+.kind {
+  display: inline-block;
+  margin-right: 0.5rem;
+  font-size: 0.75rem;
+  color: #94a3b8;
 }

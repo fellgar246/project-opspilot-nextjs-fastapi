@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Suspense } from "react";
 
 import { AuthGuard } from "@/features/auth/AuthGuard";
@@ -33,6 +34,12 @@ function DashboardContent() {
           <li>Manage users: {can("manage_users") ? "yes" : "hidden"}</li>
         </ul>
       </section>
+
+      {can("read_incidents") ? (
+        <p>
+          <Link href="/incidents">View incidents</Link>
+        </p>
+      ) : null}
 
       <HealthStatus />
     </main>

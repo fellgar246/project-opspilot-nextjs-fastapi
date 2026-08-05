@@ -5,7 +5,7 @@ PROFILE ?= minimal
 UV := uv
 PNPM := $(if $(wildcard node_modules/.bin/pnpm),./node_modules/.bin/pnpm,$(shell command -v pnpm 2>/dev/null || echo npx\ --yes\ pnpm@9))
 
-.PHONY: bootstrap up down reset lint format typecheck test migrate compose-validate build security-scan smoke seed-users
+.PHONY: bootstrap up down reset lint format typecheck test migrate compose-validate build security-scan smoke seed-users seed-services seed-perf
 
 bootstrap:
 	@bash infra/scripts/bootstrap.sh
@@ -60,3 +60,9 @@ smoke:
 
 seed-users:
 	@cd apps/api && $(UV) run python -m app.cli.seed_users
+
+seed-services:
+	@cd apps/api && $(UV) run python -m app.cli.seed_services
+
+seed-perf:
+	@cd apps/api && $(UV) run python -m app.cli.seed_perf

@@ -12,7 +12,14 @@ from app.auth.policy import Capability
 from app.core.errors import AppError
 from app.db.session import get_session
 from app.incidents import repository, service
-from app.incidents.models import Incident, IncidentSeverity, IncidentStatus, Service
+from app.incidents.models import (
+    Evidence,
+    Hypothesis,
+    Incident,
+    IncidentSeverity,
+    IncidentStatus,
+    Service,
+)
 from app.incidents.schemas import (
     EvidenceListResponse,
     EvidenceRead,
@@ -65,7 +72,7 @@ def _incident_to_read(incident: Incident) -> IncidentRead:
     )
 
 
-def _evidence_to_read(evidence) -> EvidenceRead:
+def _evidence_to_read(evidence: Evidence) -> EvidenceRead:
     return EvidenceRead(
         id=str(evidence.id),
         incident_id=str(evidence.incident_id),
@@ -80,7 +87,7 @@ def _evidence_to_read(evidence) -> EvidenceRead:
     )
 
 
-def _hypothesis_to_read(hypothesis) -> HypothesisRead:
+def _hypothesis_to_read(hypothesis: Hypothesis) -> HypothesisRead:
     return HypothesisRead(
         id=str(hypothesis.id),
         incident_id=str(hypothesis.incident_id),

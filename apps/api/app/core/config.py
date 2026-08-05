@@ -79,7 +79,7 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings() -> Settings:
     try:
-        return Settings()  # type: ignore[call-arg]
+        return Settings()
     except ValidationError as exc:
         missing = [str(error["loc"][0]) for error in exc.errors() if error["type"] == "missing"]
         raise RuntimeError(f"Missing required environment variables: {', '.join(missing)}") from exc

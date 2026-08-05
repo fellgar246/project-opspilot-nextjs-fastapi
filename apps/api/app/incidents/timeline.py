@@ -44,6 +44,7 @@ async def _status_change_provider(
 ) -> list[TimelineEntry]:
     entries: list[TimelineEntry] = []
     for record in await list_status_history(session, incident_id):
+        description: str | None
         if record.from_status is None:
             title = "Incident created"
             description = record.reason or f"Status set to {record.to_status.value}"

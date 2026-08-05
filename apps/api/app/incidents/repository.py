@@ -123,7 +123,7 @@ async def list_incidents(
     if cursor is not None:
         cursor_started_at, cursor_id = decode_cursor(cursor)
         base_query = base_query.where(
-            tuple_(Incident.started_at, Incident.id) < tuple_(cursor_started_at, cursor_id)
+            tuple_(Incident.started_at, Incident.id) < (cursor_started_at, cursor_id)
         )
 
     base_query = base_query.order_by(Incident.started_at.desc(), Incident.id.desc()).limit(
@@ -189,7 +189,7 @@ async def list_evidence(
     if cursor is not None:
         cursor_observed_at, cursor_id = decode_cursor(cursor)
         query = query.where(
-            tuple_(Evidence.observed_at, Evidence.id) < tuple_(cursor_observed_at, cursor_id)
+            tuple_(Evidence.observed_at, Evidence.id) < (cursor_observed_at, cursor_id)
         )
 
     query = query.order_by(Evidence.observed_at.desc(), Evidence.id.desc()).limit(limit + 1)
@@ -221,7 +221,7 @@ async def list_hypotheses(
     if cursor is not None:
         cursor_confidence, cursor_id = decode_float_cursor(cursor)
         query = query.where(
-            tuple_(Hypothesis.confidence, Hypothesis.id) < tuple_(cursor_confidence, cursor_id)
+            tuple_(Hypothesis.confidence, Hypothesis.id) < (cursor_confidence, cursor_id)
         )
 
     query = query.order_by(Hypothesis.confidence.desc(), Hypothesis.id.desc()).limit(limit + 1)

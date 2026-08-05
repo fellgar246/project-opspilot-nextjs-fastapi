@@ -13,5 +13,9 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["src/opspilot"]
 
+[tool.hatch.build.targets.wheel.force-include]
+"src/opspilot/py.typed" = "opspilot/py.typed"
+"src/opspilot/schemas/py.typed" = "opspilot/schemas/py.typed"
+
 [tool.hatch.build.targets.sdist]
 include = ["src/opspilot"]

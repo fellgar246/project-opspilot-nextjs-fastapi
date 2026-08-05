@@ -1,5 +1,3 @@
-import type { Capability } from "@/features/auth/permissions";
-
 export type UserRole = "viewer" | "operator" | "approver" | "admin";
 
 export type Capability =

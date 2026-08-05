@@ -48,7 +48,12 @@ def upgrade() -> None:
     op.create_table(
         "refresh_tokens",
         sa.Column("id", postgresql.UUID(as_uuid=True), primary_key=True, nullable=False),
-        sa.Column("user_id", postgresql.UUID(as_uuid=True), sa.ForeignKey("users.id", ondelete="CASCADE"), nullable=False),
+        sa.Column(
+            "user_id",
+            postgresql.UUID(as_uuid=True),
+            sa.ForeignKey("users.id", ondelete="CASCADE"),
+            nullable=False,
+        ),
         sa.Column("family_id", postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column("token_hash", sa.String(length=128), nullable=False),
         sa.Column("expires_at", sa.DateTime(timezone=True), nullable=False),
@@ -77,7 +82,12 @@ def upgrade() -> None:
         sa.Column("event_type", sa.String(length=100), nullable=False),
         sa.Column("entity_type", sa.String(length=100), nullable=False),
         sa.Column("entity_id", postgresql.UUID(as_uuid=True), nullable=True),
-        sa.Column("payload", postgresql.JSONB(astext_type=sa.Text()), nullable=False, server_default=sa.text("'{}'::jsonb")),
+        sa.Column(
+            "payload",
+            postgresql.JSONB(astext_type=sa.Text()),
+            nullable=False,
+            server_default=sa.text("'{}'::jsonb"),
+        ),
         sa.Column("request_id", sa.String(length=64), nullable=True),
         sa.Column(
             "occurred_at",

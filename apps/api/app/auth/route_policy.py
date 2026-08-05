@@ -1,11 +1,9 @@
 from __future__ import annotations
 
+from app.auth.dependencies import ROUTE_POLICY_ATTR
 from fastapi import FastAPI
 from fastapi.dependencies.models import Dependant
 from fastapi.routing import APIRoute
-from starlette.responses import Response
-
-from app.auth.dependencies import ROUTE_POLICY_ATTR
 
 PUBLIC_ROUTE_PATHS: set[tuple[str, str]] = {
     ("GET", "/health"),

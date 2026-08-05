@@ -130,7 +130,12 @@ def upgrade() -> None:
             nullable=False,
         ),
         sa.Column("content", sa.Text(), nullable=False),
-        sa.Column("actor_type", sa.String(length=20), nullable=False, server_default=sa.text("'user'")),
+        sa.Column(
+            "actor_type",
+            sa.String(length=20),
+            nullable=False,
+            server_default=sa.text("'user'"),
+        ),
         sa.Column("actor_id", postgresql.UUID(as_uuid=True), nullable=True),
         sa.Column(
             "created_at",
@@ -153,7 +158,12 @@ def upgrade() -> None:
         sa.Column("from_status", sa.String(length=20), nullable=True),
         sa.Column("to_status", sa.String(length=20), nullable=False),
         sa.Column("reason", sa.Text(), nullable=True),
-        sa.Column("actor_type", sa.String(length=20), nullable=False, server_default=sa.text("'user'")),
+        sa.Column(
+            "actor_type",
+            sa.String(length=20),
+            nullable=False,
+            server_default=sa.text("'user'"),
+        ),
         sa.Column("actor_id", postgresql.UUID(as_uuid=True), nullable=True),
         sa.Column(
             "occurred_at",
@@ -234,7 +244,13 @@ def upgrade() -> None:
         sa.Column("confidence", sa.Float(), nullable=False),
         sa.Column(
             "status",
-            sa.Enum("proposed", "accepted", "rejected", name="hypothesis_status", native_enum=False),
+            sa.Enum(
+                "proposed",
+                "accepted",
+                "rejected",
+                name="hypothesis_status",
+                native_enum=False,
+            ),
             nullable=False,
             server_default=sa.text("'proposed'"),
         ),

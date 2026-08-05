@@ -108,7 +108,9 @@ def init_db(settings):
 
 
 @pytest.mark.asyncio
-async def test_list_incidents_returns_page(operator_client, monkeypatch: pytest.MonkeyPatch) -> None:
+async def test_list_incidents_returns_page(
+    operator_client, monkeypatch: pytest.MonkeyPatch
+) -> None:
     app, _ = operator_client
     incident = _incident(_user())
 
@@ -127,12 +129,20 @@ async def test_list_incidents_returns_page(operator_client, monkeypatch: pytest.
 
 
 @pytest.mark.asyncio
-async def test_create_incident_returns_201(operator_client, monkeypatch: pytest.MonkeyPatch) -> None:
+async def test_create_incident_returns_201(
+    operator_client, monkeypatch: pytest.MonkeyPatch
+) -> None:
     app, user = operator_client
     incident = _incident(user)
 
-    monkeypatch.setattr("app.incidents.router.service.create_incident", AsyncMock(return_value=incident))
-    monkeypatch.setattr("app.incidents.router.service.require_incident", AsyncMock(return_value=incident))
+    monkeypatch.setattr(
+        "app.incidents.router.service.create_incident",
+        AsyncMock(return_value=incident),
+    )
+    monkeypatch.setattr(
+        "app.incidents.router.service.require_incident",
+        AsyncMock(return_value=incident),
+    )
 
     session = AsyncMock()
     session.commit = AsyncMock()
@@ -168,7 +178,10 @@ async def test_admin_can_create_service(admin_client, monkeypatch: pytest.Monkey
         created_at=datetime.now(UTC),
         updated_at=datetime.now(UTC),
     )
-    monkeypatch.setattr("app.incidents.router.service.create_service", AsyncMock(return_value=service))
+    monkeypatch.setattr(
+        "app.incidents.router.service.create_service",
+        AsyncMock(return_value=service),
+    )
 
     session = AsyncMock()
     session.commit = AsyncMock()
@@ -205,7 +218,10 @@ async def test_operator_cannot_create_service(operator_client) -> None:
 async def test_get_incident_endpoint(operator_client, monkeypatch: pytest.MonkeyPatch) -> None:
     app, user = operator_client
     incident = _incident(user)
-    monkeypatch.setattr("app.incidents.router.service.require_incident", AsyncMock(return_value=incident))
+    monkeypatch.setattr(
+        "app.incidents.router.service.require_incident",
+        AsyncMock(return_value=incident),
+    )
 
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
@@ -218,7 +234,10 @@ async def test_get_incident_endpoint(operator_client, monkeypatch: pytest.Monkey
 async def test_get_timeline(operator_client, monkeypatch: pytest.MonkeyPatch) -> None:
     app, _ = operator_client
     incident_id = uuid.uuid4()
-    monkeypatch.setattr("app.incidents.router.service.require_incident", AsyncMock(return_value=MagicMock()))
+    monkeypatch.setattr(
+        "app.incidents.router.service.require_incident",
+        AsyncMock(return_value=MagicMock()),
+    )
     monkeypatch.setattr(
         "app.incidents.router.assemble_timeline",
         AsyncMock(

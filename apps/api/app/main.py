@@ -10,13 +10,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.routes import router as health_router
 from app.audit.router import router as audit_router
 from app.auth.router import router as auth_router
-from app.incidents.router import router as incidents_router
 from app.core.config import get_settings
 from app.core.errors import register_exception_handlers
 from app.core.logging import configure_logging
 from app.core.middleware import RequestIdLogFilter, RequestIdMiddleware
 from app.core.redis import close_redis, init_redis
 from app.db.session import init_db
+from app.incidents.router import router as incidents_router
 
 
 @asynccontextmanager

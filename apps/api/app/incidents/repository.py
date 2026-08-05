@@ -126,8 +126,8 @@ async def list_incidents(
             tuple_(Incident.started_at, Incident.id) < tuple_(cursor_started_at, cursor_id)
         )
 
-    base_query = (
-        base_query.order_by(Incident.started_at.desc(), Incident.id.desc()).limit(limit + 1)
+    base_query = base_query.order_by(Incident.started_at.desc(), Incident.id.desc()).limit(
+        limit + 1
     )
     result = await session.execute(base_query)
     incidents = list(result.scalars().unique().all())

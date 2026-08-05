@@ -6,20 +6,22 @@ import pytest
 from app.incidents.models import IncidentStatus
 from app.incidents.state_machine import ALLOWED_TRANSITIONS, can_transition
 
-
 ALL_STATUSES = list(IncidentStatus)
 
 
 @pytest.mark.parametrize(
     ("current", "target", "is_admin", "expected"),
     [
-        *((status, next_status, False, True) for status, next_status in [
-            (IncidentStatus.OPEN, IncidentStatus.INVESTIGATING),
-            (IncidentStatus.INVESTIGATING, IncidentStatus.MITIGATING),
-            (IncidentStatus.MITIGATING, IncidentStatus.MONITORING),
-            (IncidentStatus.MONITORING, IncidentStatus.RESOLVED),
-            (IncidentStatus.RESOLVED, IncidentStatus.CLOSED),
-        ]),
+        *(
+            (status, next_status, False, True)
+            for status, next_status in [
+                (IncidentStatus.OPEN, IncidentStatus.INVESTIGATING),
+                (IncidentStatus.INVESTIGATING, IncidentStatus.MITIGATING),
+                (IncidentStatus.MITIGATING, IncidentStatus.MONITORING),
+                (IncidentStatus.MONITORING, IncidentStatus.RESOLVED),
+                (IncidentStatus.RESOLVED, IncidentStatus.CLOSED),
+            ]
+        ),
         (IncidentStatus.OPEN, IncidentStatus.CLOSED, False, False),
         (IncidentStatus.OPEN, IncidentStatus.CLOSED, True, True),
         (IncidentStatus.INVESTIGATING, IncidentStatus.CLOSED, True, True),

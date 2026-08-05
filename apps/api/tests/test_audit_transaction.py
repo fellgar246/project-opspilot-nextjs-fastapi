@@ -4,12 +4,11 @@ import pytest
 from alembic import command
 from alembic.config import Config
 from app.audit.event_types import AuditEventType
-from app.audit.models import AuditEvent
 from app.audit.service import record_audit_event
 from app.auth.models import User, UserRole
 from app.auth.security import hash_password
 from app.core.config import get_settings
-from sqlalchemy import func, select, text
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 
@@ -31,7 +30,9 @@ def _set_integration_env(monkeypatch: pytest.MonkeyPatch, database_url: str) -> 
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_audit_write_failure_rolls_back_domain_mutation(monkeypatch: pytest.MonkeyPatch) -> None:
+async def test_audit_write_failure_rolls_back_domain_mutation(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     pytest.importorskip("testcontainers")
     try:
         import docker

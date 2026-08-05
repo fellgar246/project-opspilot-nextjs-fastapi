@@ -9,7 +9,6 @@ from app.incidents.models import Incident, IncidentSeverity, IncidentSource, Inc
 from app.incidents.repository import (
     decode_cursor,
     decode_float_cursor,
-    encode_cursor,
     encode_float_cursor,
     list_incidents,
     list_notes,
@@ -38,7 +37,11 @@ async def test_list_incidents_returns_cursor_page() -> None:
     incident = _incident()
 
     list_result = MagicMock()
-    list_result.scalars = MagicMock(return_value=MagicMock(unique=MagicMock(return_value=MagicMock(all=MagicMock(return_value=[incident])))))
+    list_result.scalars = MagicMock(
+        return_value=MagicMock(
+            unique=MagicMock(return_value=MagicMock(all=MagicMock(return_value=[incident])))
+        )
+    )
 
     count_result = MagicMock()
     count_result.scalar_one = MagicMock(return_value=1)
@@ -57,7 +60,9 @@ async def test_list_incidents_with_next_cursor() -> None:
 
     list_result = MagicMock()
     list_result.scalars = MagicMock(
-        return_value=MagicMock(unique=MagicMock(return_value=MagicMock(all=MagicMock(return_value=incidents))))
+        return_value=MagicMock(
+            unique=MagicMock(return_value=MagicMock(all=MagicMock(return_value=incidents)))
+        )
     )
     count_result = MagicMock()
     count_result.scalar_one = MagicMock(return_value=3)

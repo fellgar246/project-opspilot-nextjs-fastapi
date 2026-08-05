@@ -84,7 +84,10 @@ async def test_login_refresh_and_me_flow(monkeypatch: pytest.MonkeyPatch) -> Non
         app = create_app()
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url="http://test") as client:
-            bad = await client.post("/api/v1/auth/login", json={"email": email, "password": "wrong"})
+            bad = await client.post(
+                "/api/v1/auth/login",
+                json={"email": email, "password": "wrong"},
+            )
             assert bad.status_code == 401
             assert bad.json()["detail"] == "Invalid credentials"
 

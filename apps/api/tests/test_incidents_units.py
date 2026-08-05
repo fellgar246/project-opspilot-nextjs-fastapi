@@ -4,8 +4,7 @@ import uuid
 from datetime import UTC, datetime
 
 import pytest
-from app.core.errors import AppError
-from app.incidents.repository import decode_cursor, encode_cursor, encode_float_cursor
+from app.incidents.repository import decode_cursor, encode_cursor
 from app.incidents.service import compute_evidence_checksum
 
 

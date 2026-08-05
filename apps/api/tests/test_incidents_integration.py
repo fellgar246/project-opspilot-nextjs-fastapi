@@ -72,7 +72,9 @@ async def integration_client(monkeypatch: pytest.MonkeyPatch):
         app = create_app()
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url="http://test") as client:
-            async_url = database_url.replace("postgresql+psycopg2://", "postgresql+asyncpg://").replace(
+            async_url = database_url.replace(
+                "postgresql+psycopg2://", "postgresql+asyncpg://"
+            ).replace(
                 "postgresql://",
                 "postgresql+asyncpg://",
                 1,

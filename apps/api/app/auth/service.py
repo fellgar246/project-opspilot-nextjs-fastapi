@@ -20,9 +20,9 @@ from app.auth.security import (
 )
 from app.core.config import Settings
 from app.core.errors import AppError
-from starlette.responses import Response
 from sqlalchemy import func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
+from starlette.responses import Response
 
 
 @dataclass(frozen=True)

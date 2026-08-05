@@ -1,15 +1,15 @@
 from __future__ import annotations
 
 import uuid
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
+from app.audit.service import record_audit_event
 from app.auth.dependencies import require_capability, require_not_proposer
 from app.auth.models import User, UserRole
 from app.auth.rate_limit import check_auth_rate_limit
 from app.auth.security import decode_access_token, hash_password
-from app.auth.service import TokenPair, authenticate, user_to_me
-from app.audit.service import record_audit_event
+from app.auth.service import authenticate, user_to_me
 from app.core.config import Settings
 from app.core.context import request_id_var
 from app.core.errors import AppError
@@ -45,7 +45,9 @@ async def test_authenticate_rejects_invalid_password() -> None:
         is_active=True,
     )
     session = AsyncMock()
-    session.execute = AsyncMock(return_value=MagicMock(scalar_one_or_none=MagicMock(return_value=user)))
+    session.execute = AsyncMock(
+        return_value=MagicMock(scalar_one_or_none=MagicMock(return_value=user))
+    )
     result = await authenticate(session, email="viewer@ops-pilot.local", password="wrong")
     assert result is None
 
@@ -81,8 +83,12 @@ async def test_rate_limit_blocks_after_threshold() -> None:
     settings = _settings()
     settings = settings.model_copy(update={"auth_rate_limit_attempts": 2})
     redis = FakeAsyncRedis(decode_responses=True)
-    await check_auth_rate_limit(redis=redis, settings=settings, ip_address="127.0.0.1", email="a@b.com")
-    await check_auth_rate_limit(redis=redis, settings=settings, ip_address="127.0.0.1", email="a@b.com")
+    await check_auth_rate_limit(
+        redis=redis, settings=settings, ip_address="127.0.0.1", email="a@b.com"
+    )
+    await check_auth_rate_limit(
+        redis=redis, settings=settings, ip_address="127.0.0.1", email="a@b.com"
+    )
     with pytest.raises(AppError) as exc_info:
         await check_auth_rate_limit(
             redis=redis,

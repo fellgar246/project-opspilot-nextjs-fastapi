@@ -54,7 +54,12 @@ async def test_create_service_records_audit() -> None:
 @pytest.mark.asyncio
 async def test_delete_service_with_incidents_raises(monkeypatch: pytest.MonkeyPatch) -> None:
     session = AsyncMock()
-    service = Service(id=uuid.uuid4(), name="svc", environment=ServiceEnvironment.DEMO, is_active=True)
+    service = Service(
+        id=uuid.uuid4(),
+        name="svc",
+        environment=ServiceEnvironment.DEMO,
+        is_active=True,
+    )
     actor = MagicMock(id=uuid.uuid4())
 
     async def fake_count(*args, **kwargs):
@@ -142,11 +147,34 @@ def test_checksum_changes_with_content() -> None:
 @pytest.mark.asyncio
 async def test_update_service_duplicate_name() -> None:
     session = AsyncMock()
-    session.scalar = AsyncMock(return_value=Service(id=uuid.uuid4(), name="other", environment=ServiceEnvironment.DEMO, is_active=True))
-    service = Service(id=uuid.uuid4(), name="demo", environment=ServiceEnvironment.DEMO, is_active=True)
+    session.scalar = AsyncMock(
+        return_value=Service(
+            id=uuid.uuid4(),
+            name="other",
+            environment=ServiceEnvironment.DEMO,
+            is_active=True,
+        )
+    )
+    service = Service(
+        id=uuid.uuid4(),
+        name="demo",
+        environment=ServiceEnvironment.DEMO,
+        is_active=True,
+    )
     actor = MagicMock(id=uuid.uuid4())
     with pytest.raises(AppError, match="already exists"):
-        await update_service(session, service, name="other", description=None, repository=None, environment=None, owner_team=None, is_active=None, actor=actor, request_id=None)
+        await update_service(
+            session,
+            service,
+            name="other",
+            description=None,
+            repository=None,
+            environment=None,
+            owner_team=None,
+            is_active=None,
+            actor=actor,
+            request_id=None,
+        )
 
 
 @pytest.mark.asyncio
@@ -193,7 +221,9 @@ async def test_add_incident_note() -> None:
     session.flush = AsyncMock()
     actor = MagicMock(id=uuid.uuid4())
     incident = MagicMock(id=uuid.uuid4())
-    note = await add_incident_note(session, incident, content="Note body", actor=actor, request_id=None)
+    note = await add_incident_note(
+        session, incident, content="Note body", actor=actor, request_id=None
+    )
     assert note.content == "Note body"
 
 
@@ -210,9 +240,17 @@ async def test_require_incident_not_found() -> None:
 async def test_delete_service_success(monkeypatch: pytest.MonkeyPatch) -> None:
     session = AsyncMock()
     session.delete = AsyncMock()
-    service = Service(id=uuid.uuid4(), name="svc", environment=ServiceEnvironment.DEMO, is_active=True)
+    service = Service(
+        id=uuid.uuid4(),
+        name="svc",
+        environment=ServiceEnvironment.DEMO,
+        is_active=True,
+    )
     actor = MagicMock(id=uuid.uuid4())
-    monkeypatch.setattr("app.incidents.repository.count_incidents_for_service", AsyncMock(return_value=0))
+    monkeypatch.setattr(
+        "app.incidents.repository.count_incidents_for_service",
+        AsyncMock(return_value=0),
+    )
     await delete_service(session, service, actor=actor, request_id=None)
     session.delete.assert_called_once_with(service)
 
@@ -239,7 +277,14 @@ async def test_upsert_evidence_creates_new() -> None:
 @pytest.mark.asyncio
 async def test_create_service_duplicate_name() -> None:
     session = AsyncMock()
-    session.scalar = AsyncMock(return_value=Service(id=uuid.uuid4(), name="demo-service", environment=ServiceEnvironment.DEMO, is_active=True))
+    session.scalar = AsyncMock(
+        return_value=Service(
+            id=uuid.uuid4(),
+            name="demo-service",
+            environment=ServiceEnvironment.DEMO,
+            is_active=True,
+        )
+    )
     actor = MagicMock(id=uuid.uuid4())
     with pytest.raises(AppError, match="already exists"):
         await create_service(

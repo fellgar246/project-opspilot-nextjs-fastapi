@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import pytest
 from app.auth.route_policy import collect_unprotected_routes
 from app.core.config import get_settings
 from app.core.redis import init_redis

@@ -1,5 +1,4 @@
 import { describe, expect, it, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
 
 import { AuthError, SessionExpiredError } from "@/features/auth/types";
 import { fetchMe, login, logout } from "@/lib/auth-api";

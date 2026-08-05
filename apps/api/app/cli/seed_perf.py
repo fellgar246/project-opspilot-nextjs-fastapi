@@ -67,7 +67,12 @@ async def _seed(count: int = 10_000) -> None:
                 created_by=None,
             )
             session.add(incident)
-            session.add(IncidentService(incident_id=incident.id, service_id=random.choice(services).id))
+            session.add(
+                IncidentService(
+                    incident_id=incident.id,
+                    service_id=random.choice(services).id,
+                )
+            )
             created += 1
 
             if created % 500 == 0:

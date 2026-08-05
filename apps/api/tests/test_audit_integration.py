@@ -53,7 +53,9 @@ async def test_audit_events_append_only_trigger() -> None:
             assert count == 1
 
             with pytest.raises(Exception, match="append-only"):
-                await session.execute(text("UPDATE audit_events SET event_type = 'x' WHERE event_type != 'x'"))
+                await session.execute(
+                    text("UPDATE audit_events SET event_type = 'x' WHERE event_type != 'x'")
+                )
                 await session.commit()
 
         await engine.dispose()

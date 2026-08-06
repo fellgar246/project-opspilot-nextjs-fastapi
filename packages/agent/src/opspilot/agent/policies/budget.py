@@ -4,7 +4,9 @@ from opspilot.agent.config import AgentSettings, get_agent_settings
 from opspilot.agent.state.graph_state import IncidentInvestigationState
 
 
-def exceeded_budget(state: IncidentInvestigationState, settings: AgentSettings | None = None) -> bool:
+def exceeded_budget(
+    state: IncidentInvestigationState, settings: AgentSettings | None = None
+) -> bool:
     settings = settings or get_agent_settings()
     usage = state["token_usage"]
     total = usage["prompt_tokens"] + usage["completion_tokens"]

@@ -210,6 +210,41 @@ def normalize_to_evidence(
                 structured_data={"tags": ["service_catalog", str(svc.get("name", ""))]},
                 observed_at=collected_at,
             )
+    elif tool_name == "search_runbooks":
+        for hit in output_dict.get("results", []):
+            _add(
+                source_type="runbook",
+                title=f"Runbook: {hit.get('title')} ({hit.get('heading_path')})",
+                content=str(hit.get("content", "")),
+                structured_data={
+                    "runbook_id": str(hit.get("runbook_id", "")),
+                    "title": str(hit.get("title", "")),
+                    "section": str(hit.get("heading_path", "")),
+                    "relevance": float(hit.get("score", 0.0)),
+                },
+                observed_at=collected_at,
+            )
+    elif tool_name == "search_similar_incidents":
+        for hit in output_dict.get("results", []):
+            _add(
+                source_type="similar_incident",
+                title=f"Similar incident: {hit.get('title')}",
+                content=json.dumps(
+                    {
+                        "root_cause": hit.get("root_cause"),
+                        "resolution": hit.get("resolution"),
+                    },
+                    indent=2,
+                ),
+                structured_data={
+                    "incident_id": str(hit.get("incident_id", "")),
+                    "title": str(hit.get("title", "")),
+                    "root_cause": str(hit.get("root_cause", "")),
+                    "resolution": str(hit.get("resolution", "")),
+                    "similarity_score": float(hit.get("score", 0.0)),
+                },
+                observed_at=collected_at,
+            )
 
     return records, evidence_ids
 

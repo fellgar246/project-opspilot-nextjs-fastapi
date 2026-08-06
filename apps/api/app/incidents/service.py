@@ -373,6 +373,13 @@ async def create_hypothesis(
     supporting_evidence: list[uuid.UUID],
     contradicting_evidence: list[uuid.UUID] | None = None,
     status: HypothesisStatus = HypothesisStatus.PROPOSED,
+    confidence_breakdown: dict[str, Any] | None = None,
+    grounding: str | None = None,
+    critic_verdict: str | None = None,
+    assumptions: list[str] | None = None,
+    missing_evidence: list[str] | None = None,
+    rejection_reason: str | None = None,
+    hypothesis_type: str | None = None,
 ) -> Hypothesis:
     if not supporting_evidence:
         raise AppError("Hypothesis requires at least one supporting evidence", status_code=422)
@@ -399,6 +406,13 @@ async def create_hypothesis(
         status=status,
         supporting_evidence=supporting_evidence,
         contradicting_evidence=contradicting_evidence or [],
+        confidence_breakdown=confidence_breakdown or {},
+        grounding=grounding,
+        critic_verdict=critic_verdict,
+        assumptions=assumptions or [],
+        missing_evidence=missing_evidence or [],
+        rejection_reason=rejection_reason,
+        hypothesis_type=hypothesis_type,
     )
     session.add(hypothesis)
     await session.flush()

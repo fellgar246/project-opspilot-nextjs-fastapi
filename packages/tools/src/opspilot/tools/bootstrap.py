@@ -15,12 +15,20 @@ from opspilot.tools.read.deployments_code import (
     SearchLogsTool,
 )
 from opspilot.tools.read.metrics_health import GetServiceHealthTool, QueryMetricsTool
+from opspilot.tools.read.retrieval_tools import SearchRunbooksTool, SearchSimilarIncidentsTool
 from opspilot.tools.registry import ToolRegistry
+from opspilot.tools.retrieval.memory import InMemoryRetrievalStore
+from opspilot.tools.retrieval.protocol import RetrievalStore
 
 
-def build_default_registry(settings: ToolGatewaySettings | None = None) -> ToolRegistry:
+def build_default_registry(
+    settings: ToolGatewaySettings | None = None,
+    *,
+    retrieval_store: RetrievalStore | None = None,
+) -> ToolRegistry:
     settings = settings or get_tool_settings()
     registry = ToolRegistry()
+    store = retrieval_store or InMemoryRetrievalStore()
 
     simulator = SimulatorApiAdapter(
         base_url=settings.sim_url,
@@ -45,6 +53,8 @@ def build_default_registry(settings: ToolGatewaySettings | None = None) -> ToolR
         GetPullRequestTool(git),
         GetFeatureFlagsTool(simulator),
         ListServicesTool(simulator),
+        SearchRunbooksTool(store),
+        SearchSimilarIncidentsTool(store),
     ):
         registry.register(tool)
 

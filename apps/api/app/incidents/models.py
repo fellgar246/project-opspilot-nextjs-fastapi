@@ -299,6 +299,17 @@ class Hypothesis(Base):
         nullable=False,
         default=list,
     )
+    confidence_breakdown: Mapped[dict[str, Any]] = mapped_column(
+        JSONB,
+        nullable=False,
+        default=dict,
+    )
+    grounding: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    critic_verdict: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    assumptions: Mapped[list[str]] = mapped_column(ARRAY(Text), nullable=False, default=list)
+    missing_evidence: Mapped[list[str]] = mapped_column(ARRAY(Text), nullable=False, default=list)
+    rejection_reason: Mapped[str | None] = mapped_column(Text, nullable=True)
+    hypothesis_type: Mapped[str | None] = mapped_column(String(64), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=False,

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Annotated, TypedDict
+from typing import Annotated, Any, TypedDict
 
 from opspilot.agent.state.reducers import (
     merge_claims,
@@ -9,6 +9,7 @@ from opspilot.agent.state.reducers import (
     merge_evidence_refs,
     merge_explored_tools,
     merge_hypotheses,
+    merge_missing_evidence,
     merge_negative_findings,
     merge_node_metrics,
     merge_parse_errors,
@@ -57,6 +58,8 @@ class IncidentInvestigationState(TypedDict):
     completed_nodes: Annotated[list[str], merge_completed_nodes]
     explored_tools: Annotated[list[str], merge_explored_tools]
     next_collection_node: str | None
+    missing_evidence: Annotated[list[str], merge_missing_evidence]
+    suggested_collection: dict[str, Any] | None
 
     errors: Annotated[list[str], merge_errors]
     parse_errors: Annotated[list[ParseError], merge_parse_errors]
@@ -108,6 +111,8 @@ def initial_state(
         completed_nodes=[],
         explored_tools=[],
         next_collection_node=None,
+        missing_evidence=[],
+        suggested_collection=None,
         errors=[],
         parse_errors=[],
         node_metrics=[],

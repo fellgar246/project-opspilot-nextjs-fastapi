@@ -5,7 +5,7 @@ PROFILE ?= minimal
 UV := uv
 PNPM := $(if $(wildcard node_modules/.bin/pnpm),./node_modules/.bin/pnpm,$(shell command -v pnpm 2>/dev/null || echo npx\ --yes\ pnpm@9))
 
-.PHONY: bootstrap up down reset lint format typecheck test migrate compose-validate build security-scan smoke seed-users seed-services seed-perf sim-seed sim-reset sim-scenario
+.PHONY: bootstrap up down reset lint format typecheck test migrate compose-validate build security-scan smoke seed-users seed-services seed-perf sim-seed sim-reset sim-scenario ingest-runbooks
 
 bootstrap:
 	@bash infra/scripts/bootstrap.sh
@@ -84,3 +84,6 @@ sim-scenario:
 	@curl -sS -X POST "http://127.0.0.1:8080/sim/scenarios/$(ID)/activate" \
 		-H "Content-Type: application/json" \
 		-d "{\"seed\": $${SEED:-42}, \"mode\": \"$${MODE:-live}\"}" | python -m json.tool
+
+ingest-runbooks:
+	@cd apps/api && $(UV) run python -m app.cli.ingest_runbooks

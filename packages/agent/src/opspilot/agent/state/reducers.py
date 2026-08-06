@@ -52,6 +52,14 @@ def merge_timeline(
     return merged
 
 
+def merge_missing_evidence(left: list[str] | None, right: list[str] | None) -> list[str]:
+    merged = list(left or [])
+    for item in right or []:
+        if item not in merged:
+            merged.append(item)
+    return merged
+
+
 def merge_hypotheses(
     left: list[HypothesisDraft] | None,
     right: list[HypothesisDraft] | None,

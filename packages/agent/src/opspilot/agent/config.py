@@ -26,6 +26,10 @@ class AgentSettings(BaseSettings):
     )
     max_tool_calls_per_run: int = Field(default=40, validation_alias="MAX_TOOL_CALLS_PER_RUN")
     confidence_threshold: float = Field(default=0.75, validation_alias="CONFIDENCE_THRESHOLD")
+    knowledge_only_confidence_cap: float = Field(
+        default=0.6, validation_alias="KNOWLEDGE_ONLY_CONFIDENCE_CAP"
+    )
+    retrieval_min_score: float = Field(default=0.01, validation_alias="RETRIEVAL_MIN_SCORE")
 
     prompt_version: str = "v1"
 

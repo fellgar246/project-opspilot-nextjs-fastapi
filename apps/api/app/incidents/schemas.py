@@ -132,6 +132,13 @@ class HypothesisRead(BaseModel):
     status: str
     supporting_evidence: list[str]
     contradicting_evidence: list[str]
+    confidence_breakdown: dict[str, Any] = Field(default_factory=dict)
+    grounding: str | None = None
+    critic_verdict: str | None = None
+    assumptions: list[str] = Field(default_factory=list)
+    missing_evidence: list[str] = Field(default_factory=list)
+    rejection_reason: str | None = None
+    hypothesis_type: str | None = None
     created_at: datetime
     updated_at: datetime
 

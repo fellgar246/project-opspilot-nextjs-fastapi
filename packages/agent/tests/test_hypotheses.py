@@ -16,7 +16,7 @@ def test_rejects_hypothesis_without_valid_evidence() -> None:
             )
         ]
     )
-    accepted, rejected = _validate_hypotheses(output, {"real-id"})
+    accepted, rejected = _validate_hypotheses(output, {"real-id"}, {})
     assert not accepted
     assert rejected == ["bad"]
 

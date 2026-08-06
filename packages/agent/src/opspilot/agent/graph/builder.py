@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from langgraph.graph import END, START, StateGraph
-from opspilot.agent.graph.routing import route_after_hypotheses
+from opspilot.agent.graph.routing import route_after_critique
 from opspilot.agent.nodes.close import make_close_investigation_node
 from opspilot.agent.nodes.collect import (
     make_code_changes_node,
@@ -10,9 +10,11 @@ from opspilot.agent.nodes.collect import (
     make_metrics_node,
     make_service_health_node,
 )
+from opspilot.agent.nodes.critique import make_critique_hypotheses_node
 from opspilot.agent.nodes.hypotheses import make_hypotheses_node
 from opspilot.agent.nodes.plan import make_plan_node
 from opspilot.agent.nodes.request_evidence import make_request_more_evidence_node
+from opspilot.agent.nodes.retrieve_runbooks import make_retrieve_runbooks_node
 from opspilot.agent.nodes.triage import make_triage_node
 from opspilot.agent.providers.base import LLMProvider
 from opspilot.agent.state.graph_state import IncidentInvestigationState
@@ -46,7 +48,9 @@ def build_investigation_graph(
     graph.add_node("collect_logs", make_logs_node(gateway))
     graph.add_node("collect_deployments", make_deployments_node(gateway))
     graph.add_node("collect_code_changes", make_code_changes_node(gateway))
+    graph.add_node("retrieve_runbooks", make_retrieve_runbooks_node(gateway))
     graph.add_node("generate_hypotheses", make_hypotheses_node(provider))
+    graph.add_node("critique_hypotheses", make_critique_hypotheses_node(provider))
     graph.add_node("request_more_evidence", make_request_more_evidence_node())
     graph.add_node("close_investigation", make_close_investigation_node())
 
@@ -57,11 +61,13 @@ def build_investigation_graph(
     graph.add_edge("collect_metrics", "collect_logs")
     graph.add_edge("collect_logs", "collect_deployments")
     graph.add_edge("collect_deployments", "collect_code_changes")
-    graph.add_edge("collect_code_changes", "generate_hypotheses")
+    graph.add_edge("collect_code_changes", "retrieve_runbooks")
+    graph.add_edge("retrieve_runbooks", "generate_hypotheses")
+    graph.add_edge("generate_hypotheses", "critique_hypotheses")
 
     graph.add_conditional_edges(
-        "generate_hypotheses",
-        route_after_hypotheses,
+        "critique_hypotheses",
+        route_after_critique,
         {
             "request_more_evidence": "request_more_evidence",
             "close": "close_investigation",
@@ -83,6 +89,7 @@ def build_investigation_graph(
             "collect_logs": "collect_logs",
             "collect_deployments": "collect_deployments",
             "collect_code_changes": "collect_code_changes",
+            "retrieve_runbooks": "retrieve_runbooks",
             "close_investigation": "close_investigation",
         },
     )

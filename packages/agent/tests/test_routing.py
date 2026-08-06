@@ -2,7 +2,11 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
-from opspilot.agent.graph.routing import route_after_hypotheses, unexplored_tools
+from opspilot.agent.graph.routing import (
+    route_after_critique,
+    route_after_hypotheses,
+    unexplored_tools,
+)
 from opspilot.agent.state.graph_state import initial_state
 
 
@@ -25,13 +29,19 @@ def _state(**overrides):
 
 
 def test_route_closes_on_high_confidence() -> None:
-    state = _state(hypotheses=[{"statement": "x", "confidence": 0.9, "supporting_evidence": ["e"], "reasoning": "r"}])
+    state = _state(
+        hypotheses=[
+            {"statement": "x", "confidence": 0.9, "supporting_evidence": ["e"], "reasoning": "r"}
+        ]
+    )
     assert route_after_hypotheses(state) == "close"
 
 
 def test_route_requests_more_evidence_when_low_confidence_and_tools_remain() -> None:
     state = _state(
-        hypotheses=[{"statement": "x", "confidence": 0.2, "supporting_evidence": ["e"], "reasoning": "r"}],
+        hypotheses=[
+            {"statement": "x", "confidence": 0.2, "supporting_evidence": ["e"], "reasoning": "r"}
+        ],
         explored_tools=["get_service_health"],
     )
     assert route_after_hypotheses(state) == "request_more_evidence"
@@ -40,13 +50,16 @@ def test_route_requests_more_evidence_when_low_confidence_and_tools_remain() -> 
 
 def test_route_closes_when_no_unexplored_tools() -> None:
     state = _state(
-        hypotheses=[{"statement": "x", "confidence": 0.2, "supporting_evidence": ["e"], "reasoning": "r"}],
+        hypotheses=[
+            {"statement": "x", "confidence": 0.2, "supporting_evidence": ["e"], "reasoning": "r"}
+        ],
         explored_tools=[
             "get_service_health",
             "query_metrics",
             "search_logs",
             "get_recent_deployments",
             "get_recent_commits",
+            "search_runbooks",
         ],
     )
     assert route_after_hypotheses(state) == "close"
@@ -55,3 +68,19 @@ def test_route_closes_when_no_unexplored_tools() -> None:
 def test_route_closes_on_iteration_limit() -> None:
     state = _state(iteration_count=12, hypotheses=[])
     assert route_after_hypotheses(state) == "close"
+
+
+def test_route_after_critique_respects_rejected_hypotheses() -> None:
+    state = _state(
+        hypotheses=[
+            {
+                "statement": "rejected",
+                "confidence": 0.9,
+                "supporting_evidence": ["e"],
+                "reasoning": "r",
+                "status": "rejected",
+            }
+        ],
+        explored_tools=["search_runbooks"],
+    )
+    assert route_after_critique(state) == "request_more_evidence"

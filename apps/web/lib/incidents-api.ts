@@ -73,6 +73,13 @@ export type Hypothesis = {
   status: string;
   supporting_evidence: string[];
   contradicting_evidence: string[];
+  confidence_breakdown: Record<string, unknown>;
+  grounding: string | null;
+  critic_verdict: string | null;
+  assumptions: string[];
+  missing_evidence: string[];
+  rejection_reason: string | null;
+  hypothesis_type: string | null;
   created_at: string;
   updated_at: string;
 };

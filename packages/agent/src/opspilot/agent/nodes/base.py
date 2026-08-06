@@ -63,9 +63,7 @@ def valid_evidence_ids(state: IncidentInvestigationState) -> set[str]:
     return {ref["evidence_id"] for ref in state.get("evidence_refs", [])}
 
 
-def filter_hypothesis_evidence(
-    supporting: list[str], known_ids: set[str]
-) -> list[str]:
+def filter_hypothesis_evidence(supporting: list[str], known_ids: set[str]) -> list[str]:
     return [item for item in supporting if item in known_ids]
 
 

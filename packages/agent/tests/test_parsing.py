@@ -16,7 +16,9 @@ class _BrokenProvider(MockProvider):
         if response_model is TriageOutput:
             from opspilot.agent.providers.base import LLMResponse, TokenUsage
 
-            return LLMResponse(content="not-json", usage=TokenUsage(prompt_tokens=1, completion_tokens=1))
+            return LLMResponse(
+                content="not-json", usage=TokenUsage(prompt_tokens=1, completion_tokens=1)
+            )
         return await super().complete(messages, tools=tools, response_model=response_model)
 
 
@@ -31,7 +33,9 @@ class _RepairProvider(MockProvider):
             if self.attempts == 1:
                 from opspilot.agent.providers.base import LLMResponse, TokenUsage
 
-                return LLMResponse(content="not-json", usage=TokenUsage(prompt_tokens=1, completion_tokens=1))
+                return LLMResponse(
+                    content="not-json", usage=TokenUsage(prompt_tokens=1, completion_tokens=1)
+                )
         return await super().complete(messages, tools=tools, response_model=response_model)
 
 

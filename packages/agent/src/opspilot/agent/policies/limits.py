@@ -20,7 +20,9 @@ def investigation_timed_out(
     return elapsed >= settings.investigation_timeout_seconds
 
 
-def should_stop(state: IncidentInvestigationState, settings: AgentSettings | None = None) -> str | None:
+def should_stop(
+    state: IncidentInvestigationState, settings: AgentSettings | None = None
+) -> str | None:
     if state.get("paused"):
         return "paused"
     if exceeded_iterations(state, settings):

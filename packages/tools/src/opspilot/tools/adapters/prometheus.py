@@ -14,7 +14,7 @@ class PrometheusAdapter(MetricsBackend):
     METRIC_MAP = {
         "http_requests_total": 'sum(rate(http_requests_total{service="%s"}[5m]))',
         "http_request_duration_seconds": (
-            'histogram_quantile(0.95, '
+            "histogram_quantile(0.95, "
             'sum(rate(http_request_duration_seconds_bucket{service="%s"}[5m])) by (le))'
         ),
         "db_pool_connections_in_use": 'db_pool_connections_in_use{service="%s"}',

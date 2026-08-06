@@ -7,6 +7,7 @@ from typing import Any
 
 from opspilot.agent.providers.base import LLMMessage, LLMProvider, LLMResponse, TokenUsage
 from opspilot.agent.state.schema import (
+    CritiqueOutput,
     HypothesesOutput,
     InvestigationPlanOutput,
     TriageOutput,
@@ -46,10 +47,13 @@ class MockProvider(LLMProvider):
         )
 
     async def embed(self, texts: list[str]) -> list[list[float]]:
+        from opspilot.agent.retrieval.embeddings import EMBEDDING_DIM, pad_embedding
+
         vectors: list[list[float]] = []
         for text in texts:
             digest = hashlib.sha256(text.encode()).digest()
-            vectors.append([b / 255.0 for b in digest[:16]])
+            base = [b / 255.0 for b in digest[:16]]
+            vectors.append(pad_embedding(base, dim=EMBEDDING_DIM))
         return vectors
 
 
@@ -136,6 +140,24 @@ def _build_payload(
         if not adversarial and not supporting:
             hypotheses[0]["supporting_evidence"] = ["00000000-0000-4000-8000-000000000001"]
         return HypothesesOutput(hypotheses=hypotheses).model_dump(mode="json")
+
+    if response_model is CritiqueOutput:
+        critiques = []
+        for hypothesis in context.get("hypotheses") or []:
+            statement = hypothesis.get("statement", "unknown")
+            critiques.append(
+                {
+                    "statement": statement,
+                    "counter_evidence": [],
+                    "assumptions": ["Timing correlation is unverified"],
+                    "would_confirm": ["Deployment logs showing failed rollout"],
+                    "would_refute": ["Stable metrics before deploy window"],
+                    "verdict": "weak",
+                    "suggested_tool": "get_recent_deployments",
+                    "suggested_payload": {"service": primary},
+                }
+            )
+        return CritiqueOutput(critiques=critiques).model_dump(mode="json")
 
     return {"message": "mock response"}
 

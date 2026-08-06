@@ -113,9 +113,7 @@ def compute_evidence_checksum(content: str, structured_data: dict[str, Any]) -> 
 
 def summarize_output(result: ToolResult, *, max_chars: int) -> str:
     if result.data is None:
-        text = (
-            result.error.message if result.error is not None else f"status={result.status}"
-        )
+        text = result.error.message if result.error is not None else f"status={result.status}"
     else:
         text = result.data.model_dump_json()
     if len(text) > max_chars:

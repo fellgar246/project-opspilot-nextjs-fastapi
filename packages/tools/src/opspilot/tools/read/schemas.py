@@ -167,3 +167,50 @@ class ListServicesOutput(BaseModel):
 
 class EmptyInput(BaseModel):
     pass
+
+
+class SearchRunbooksInput(BaseModel):
+    query: str = Field(min_length=1)
+    service: str | None = None
+    tags: list[str] = Field(default_factory=list)
+    top_k: int = Field(default=5, ge=1, le=20)
+
+
+class RunbookHit(BaseModel):
+    score: float
+    source: str
+    runbook_id: str
+    title: str
+    heading_path: str
+    content: str
+    chunk_index: int
+    version: int
+
+
+class SearchRunbooksOutput(BaseModel):
+    query: str
+    results: list[RunbookHit]
+    total: int
+
+
+class SearchSimilarIncidentsInput(BaseModel):
+    query: str = Field(min_length=1)
+    service: str | None = None
+    time_range: TimeRangeInput | None = None
+    top_k: int = Field(default=5, ge=1, le=20)
+
+
+class SimilarIncidentHit(BaseModel):
+    score: float
+    source: str
+    incident_id: str
+    title: str
+    service: str
+    root_cause: str
+    resolution: str
+
+
+class SearchSimilarIncidentsOutput(BaseModel):
+    query: str
+    results: list[SimilarIncidentHit]
+    total: int

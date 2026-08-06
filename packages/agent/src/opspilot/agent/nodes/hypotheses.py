@@ -13,6 +13,11 @@ from opspilot.agent.nodes.base import (
 from opspilot.agent.parsing import parse_structured_output
 from opspilot.agent.prompts import load_prompt
 from opspilot.agent.providers.base import LLMMessage, LLMProvider
+from opspilot.agent.scoring.confidence import (
+    ConfidenceComponents,
+    classify_grounding,
+    compute_confidence,
+)
 from opspilot.agent.state.graph_state import IncidentInvestigationState
 from opspilot.agent.state.schema import Claim, HypothesesOutput, HypothesisDraft
 
@@ -21,6 +26,9 @@ def make_hypotheses_node(provider: LLMProvider):
     async def generate_hypotheses(state: IncidentInvestigationState) -> dict[str, Any]:
         started = time.perf_counter()
         known_ids = valid_evidence_ids(state)
+        evidence_types = {
+            ref["evidence_id"]: ref["source_type"] for ref in state.get("evidence_refs", [])
+        }
         messages = [
             LLMMessage(role="system", content=load_prompt("hypotheses")),
             build_context_message(state),
@@ -58,7 +66,7 @@ def make_hypotheses_node(provider: LLMProvider):
             return updates
 
         assert parsed is not None
-        accepted, rejected = _validate_hypotheses(parsed, known_ids)
+        accepted, rejected = _validate_hypotheses(parsed, known_ids, evidence_types)
         if rejected and not accepted:
             # One regeneration attempt
             regen_messages = messages + [
@@ -101,6 +109,7 @@ def make_hypotheses_node(provider: LLMProvider):
 def _validate_hypotheses(
     output: HypothesesOutput,
     known_ids: set[str],
+    evidence_types: dict[str, str],
 ) -> tuple[list[HypothesisDraft], list[str]]:
     accepted: list[HypothesisDraft] = []
     rejected: list[str] = []
@@ -109,12 +118,29 @@ def _validate_hypotheses(
         if not refs:
             rejected.append(item.statement)
             continue
+        grounding = classify_grounding(refs, evidence_types)
+        score, breakdown = compute_confidence(
+            ConfidenceComponents(
+                supporting_count=len(refs),
+                supporting_diversity=len(
+                    {evidence_types.get(item_id, "unknown") for item_id in refs}
+                ),
+                contradicting_count=0,
+                grounding=grounding,
+                temporal_coherence=0.5,
+                critic_verdict=None,
+            )
+        )
         accepted.append(
             HypothesisDraft(
                 statement=item.statement,
-                confidence=item.confidence,
+                confidence=min(item.confidence, score),
                 supporting_evidence=refs,
+                contradicting_evidence=[],
                 reasoning=item.reasoning,
+                grounding=grounding,
+                confidence_breakdown=breakdown,
+                status="proposed",
             )
         )
     return accepted, rejected

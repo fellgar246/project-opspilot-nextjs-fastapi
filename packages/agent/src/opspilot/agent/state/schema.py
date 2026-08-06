@@ -39,11 +39,22 @@ class InvestigationStep(TypedDict):
     service: str
 
 
-class HypothesisDraft(TypedDict):
+class HypothesisDraft(TypedDict, total=False):
     statement: str
     confidence: float
     supporting_evidence: list[str]
+    contradicting_evidence: list[str]
     reasoning: str
+    grounding: Literal["observed", "mixed", "knowledge_only"]
+    critic_verdict: Literal["supported", "weak", "refuted"]
+    assumptions: list[str]
+    missing_evidence: list[str]
+    would_confirm: list[str]
+    would_refute: list[str]
+    confidence_breakdown: dict[str, Any]
+    hypothesis_type: str
+    status: Literal["proposed", "accepted", "rejected"]
+    rejection_reason: str | None
 
 
 class Claim(TypedDict):
@@ -95,6 +106,21 @@ class HypothesesOutput(BaseModel):
     hypotheses: list[HypothesisItem]
 
 
+class CritiqueItem(BaseModel):
+    statement: str
+    counter_evidence: list[str] = Field(default_factory=list)
+    assumptions: list[str] = Field(default_factory=list)
+    would_confirm: list[str] = Field(default_factory=list)
+    would_refute: list[str] = Field(default_factory=list)
+    verdict: Literal["supported", "weak", "refuted"]
+    suggested_tool: str | None = None
+    suggested_payload: dict[str, str] = Field(default_factory=dict)
+
+
+class CritiqueOutput(BaseModel):
+    critiques: list[CritiqueItem]
+
+
 class ClaimItem(BaseModel):
     text: str
     classification: Literal["fact", "inference", "recommendation"]
@@ -121,6 +147,8 @@ COLLECTION_NODE_BY_TOOL: dict[str, str] = {
     "get_recent_commits": "collect_code_changes",
     "get_deployment_details": "collect_deployments",
     "get_pull_request": "collect_code_changes",
+    "search_runbooks": "retrieve_runbooks",
+    "search_similar_incidents": "retrieve_runbooks",
 }
 
 COLLECTION_NODES: list[str] = [
@@ -129,7 +157,20 @@ COLLECTION_NODES: list[str] = [
     "collect_logs",
     "collect_deployments",
     "collect_code_changes",
+    "retrieve_runbooks",
 ]
+
+TOOL_EVIDENCE_SOURCE_TYPE: dict[str, str] = {
+    "get_service_health": "metric",
+    "query_metrics": "metric",
+    "search_logs": "log",
+    "get_recent_deployments": "deployment",
+    "get_recent_commits": "commit",
+    "get_deployment_details": "deployment",
+    "get_pull_request": "pull_request",
+    "search_runbooks": "runbook",
+    "search_similar_incidents": "similar_incident",
+}
 
 TOOL_BY_COLLECTION_NODE: dict[str, str] = {
     "collect_service_health": "get_service_health",
@@ -137,4 +178,5 @@ TOOL_BY_COLLECTION_NODE: dict[str, str] = {
     "collect_logs": "search_logs",
     "collect_deployments": "get_recent_deployments",
     "collect_code_changes": "get_recent_commits",
+    "retrieve_runbooks": "search_runbooks",
 }

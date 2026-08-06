@@ -14,7 +14,9 @@ from opspilot.agent.state.graph_state import IncidentInvestigationState, initial
 from opspilot.tools.gateway import ToolGateway
 
 
-def create_provider(settings: AgentSettings | None = None, *, adversarial: bool = False) -> LLMProvider:
+def create_provider(
+    settings: AgentSettings | None = None, *, adversarial: bool = False
+) -> LLMProvider:
     settings = settings or get_agent_settings()
     if settings.model_provider == "openai":
         if not settings.openai_api_key:

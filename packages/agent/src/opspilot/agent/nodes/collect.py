@@ -9,6 +9,7 @@ from opspilot.agent.nodes.base import as_uuid, record_node_timing
 from opspilot.agent.state.graph_state import IncidentInvestigationState
 from opspilot.agent.state.schema import (
     TOOL_BY_COLLECTION_NODE,
+    TOOL_EVIDENCE_SOURCE_TYPE,
     EvidenceRef,
     NegativeFinding,
     TimelineEntry,
@@ -89,7 +90,7 @@ def _tool_updates(
         evidence_refs.append(
             EvidenceRef(
                 evidence_id=str(evidence_id),
-                source_type=tool_name,
+                source_type=TOOL_EVIDENCE_SOURCE_TYPE.get(tool_name, tool_name),
                 title=f"{tool_name} result",
                 summary=summary[:500],
                 tool_name=tool_name,

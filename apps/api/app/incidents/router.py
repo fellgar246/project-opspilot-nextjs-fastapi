@@ -96,6 +96,13 @@ def _hypothesis_to_read(hypothesis: Hypothesis) -> HypothesisRead:
         status=hypothesis.status.value,
         supporting_evidence=[str(eid) for eid in hypothesis.supporting_evidence],
         contradicting_evidence=[str(eid) for eid in hypothesis.contradicting_evidence],
+        confidence_breakdown=hypothesis.confidence_breakdown,
+        grounding=hypothesis.grounding,
+        critic_verdict=hypothesis.critic_verdict,
+        assumptions=hypothesis.assumptions,
+        missing_evidence=hypothesis.missing_evidence,
+        rejection_reason=hypothesis.rejection_reason,
+        hypothesis_type=hypothesis.hypothesis_type,
         created_at=hypothesis.created_at,
         updated_at=hypothesis.updated_at,
     )

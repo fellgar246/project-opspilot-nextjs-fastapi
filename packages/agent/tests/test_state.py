@@ -37,7 +37,23 @@ def test_merge_evidence_refs_is_lossless_under_concurrency() -> None:
 
 def test_merge_timeline_sorts_entries() -> None:
     merged = merge_timeline(
-        [{"occurred_at": "2026-01-02T00:00:00Z", "kind": "evidence", "title": "b", "summary": "", "evidence_id": None}],
-        [{"occurred_at": "2026-01-01T00:00:00Z", "kind": "evidence", "title": "a", "summary": "", "evidence_id": None}],
+        [
+            {
+                "occurred_at": "2026-01-02T00:00:00Z",
+                "kind": "evidence",
+                "title": "b",
+                "summary": "",
+                "evidence_id": None,
+            }
+        ],
+        [
+            {
+                "occurred_at": "2026-01-01T00:00:00Z",
+                "kind": "evidence",
+                "title": "a",
+                "summary": "",
+                "evidence_id": None,
+            }
+        ],
     )
     assert merged[0]["title"] == "a"

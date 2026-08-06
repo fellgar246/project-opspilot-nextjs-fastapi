@@ -4,9 +4,11 @@ import logging
 import uuid
 from datetime import UTC, datetime
 
+from app.incidents.models import HypothesisStatus
 from app.incidents.service import create_hypothesis
 from app.investigation.models import AgentRun, AgentRunStatus
 from app.investigation.service import finalize_agent_run, load_incident_context
+from app.retrieval.store import SqlRetrievalStore
 from app.tools.store import SqlAlchemyToolPersistence
 from opspilot.agent.graph.checkpointer import create_postgres_checkpointer
 from opspilot.agent.runner import create_provider, run_investigation
@@ -48,7 +50,8 @@ async def investigate_incident(ctx: dict[str, object], agent_run_id: str) -> dic
         await session.commit()
 
         incident = await load_incident_context(session, agent_run.incident_id)
-        registry = build_default_registry()
+        retrieval_store = SqlRetrievalStore(session)
+        registry = build_default_registry(retrieval_store=retrieval_store)
         persistence = SqlAlchemyToolPersistence(session)
         gateway = ToolGateway(registry, persistence)
         provider = create_provider()
@@ -79,12 +82,24 @@ async def investigate_incident(ctx: dict[str, object], agent_run_id: str) -> dic
             return {"status": "failed"}
 
         for hypothesis in final_state.get("hypotheses") or []:
+            status = HypothesisStatus.REJECTED if hypothesis.get("status") == "rejected" else HypothesisStatus.PROPOSED
             await create_hypothesis(
                 session,
                 incident_id=agent_run.incident_id,
                 statement=hypothesis["statement"],
                 confidence=hypothesis["confidence"],
                 supporting_evidence=[uuid.UUID(item) for item in hypothesis["supporting_evidence"]],
+                contradicting_evidence=[
+                    uuid.UUID(item) for item in hypothesis.get("contradicting_evidence", [])
+                ],
+                status=status,
+                confidence_breakdown=hypothesis.get("confidence_breakdown"),
+                grounding=hypothesis.get("grounding"),
+                critic_verdict=hypothesis.get("critic_verdict"),
+                assumptions=hypothesis.get("assumptions"),
+                missing_evidence=hypothesis.get("missing_evidence"),
+                rejection_reason=hypothesis.get("rejection_reason"),
+                hypothesis_type=hypothesis.get("hypothesis_type"),
             )
 
         await finalize_agent_run(session, agent_run, final_state=final_state)

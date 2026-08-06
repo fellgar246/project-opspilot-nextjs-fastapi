@@ -4,11 +4,6 @@ from datetime import datetime
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Response
-from fastapi.responses import PlainTextResponse
-from pydantic import BaseModel, Field
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from app.auth.dependencies import require_capability
 from app.auth.models import User
 from app.auth.policy import Capability
@@ -18,6 +13,10 @@ from app.incidents.service import require_incident
 from app.reports import service as report_service
 from app.reports.models import Postmortem
 from app.reports.render import render_markdown_export, render_pdf_bytes
+from fastapi import APIRouter, Depends, Response
+from fastapi.responses import PlainTextResponse
+from pydantic import BaseModel, Field
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(tags=["reports"])
 

@@ -3,10 +3,6 @@ from __future__ import annotations
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends
-from pydantic import BaseModel
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from app.auth.dependencies import require_capability
 from app.auth.models import User
 from app.auth.policy import Capability
@@ -14,6 +10,9 @@ from app.db.session import get_session
 from app.executions import service as execution_service
 from app.executions.models import ActionExecution
 from app.incidents.service import require_incident
+from fastapi import APIRouter, Depends
+from pydantic import BaseModel
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(tags=["executions"])
 

@@ -5,11 +5,10 @@ import uuid
 from datetime import datetime
 from typing import Any
 
+from app.db.base import Base
 from sqlalchemy import DateTime, ForeignKey, Index, String, Text, func
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column
-
-from app.db.base import Base
 
 
 class ExecutionStatus(enum.StrEnum):

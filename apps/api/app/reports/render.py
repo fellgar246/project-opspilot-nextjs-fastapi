@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import re
-
 from app.reports.service import REFERENCE_PATTERN
 
 
@@ -20,9 +18,10 @@ def render_markdown_export(content: str) -> str:
 
 def render_pdf_bytes(content: str) -> bytes | None:
     try:
+        import io
+
         from reportlab.lib.pagesizes import letter
         from reportlab.pdfgen import canvas
-        import io
 
         buffer = io.BytesIO()
         pdf = canvas.Canvas(buffer, pagesize=letter)

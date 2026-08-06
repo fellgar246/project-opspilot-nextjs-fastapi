@@ -55,7 +55,10 @@ def _build_postmortem_content(state: IncidentInvestigationState) -> str:
         "",
         "## Impact",
         f"Severity: {state.get('incident_severity', 'unknown')}",
-        f"Services: {', '.join(state.get('affected_services') or state.get('service_names') or [])}",
+        (
+            "Services: "
+            f"{', '.join(state.get('affected_services') or state.get('service_names') or [])}"
+        ),
         "",
         "## Timeline",
     ]
@@ -63,7 +66,9 @@ def _build_postmortem_content(state: IncidentInvestigationState) -> str:
     for entry in state.get("timeline") or []:
         ref_id = entry.get("id") or entry.get("entry_id")
         if ref_id:
-            lines.append(f"- {entry.get('timestamp', '')}: {entry.get('summary', '')} [[timeline:{ref_id}]]")
+            lines.append(
+                f"- {entry.get('timestamp', '')}: {entry.get('summary', '')} [[timeline:{ref_id}]]"
+            )
         else:
             lines.append(f"- {entry.get('timestamp', '')}: {entry.get('summary', '')}")
 

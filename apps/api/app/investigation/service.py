@@ -55,7 +55,11 @@ async def start_investigation(
     actor: User,
     request_id: str | None,
 ) -> AgentRun:
-    if incident.status not in {IncidentStatus.OPEN, IncidentStatus.INVESTIGATING, IncidentStatus.CLOSED}:
+    if incident.status not in {
+        IncidentStatus.OPEN,
+        IncidentStatus.INVESTIGATING,
+        IncidentStatus.CLOSED,
+    }:
         raise AppError(
             f"Cannot start investigation from status '{incident.status.value}'",
             status_code=409,

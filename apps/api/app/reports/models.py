@@ -4,11 +4,10 @@ import enum
 import uuid
 from datetime import datetime
 
+from app.db.base import Base
 from sqlalchemy import DateTime, ForeignKey, Index, Integer, String, Text, func
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column
-
-from app.db.base import Base
 
 
 class PostmortemStatus(enum.StrEnum):
@@ -19,7 +18,9 @@ class PostmortemStatus(enum.StrEnum):
 
 class Postmortem(Base):
     __tablename__ = "postmortems"
-    __table_args__ = (Index("ix_postmortems_incident_version", "incident_id", "version", unique=True),)
+    __table_args__ = (
+        Index("ix_postmortems_incident_version", "incident_id", "version", unique=True),
+    )
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     incident_id: Mapped[uuid.UUID] = mapped_column(

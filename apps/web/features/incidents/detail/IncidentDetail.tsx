@@ -58,15 +58,6 @@ type IncidentDetailProps = {
   incidentId: string;
 };
 
-function Placeholder({ spec, title }: { spec: string; title: string }) {
-  return (
-    <div className="tab-placeholder" role="status">
-      <h3>{title}</h3>
-      <p>This section will be implemented in {spec}.</p>
-    </div>
-  );
-}
-
 export function IncidentDetail({ incidentId }: IncidentDetailProps) {
   const { can } = useAuth();
   const apiBaseUrl = getDefaultApiBaseUrl();

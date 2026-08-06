@@ -6,10 +6,6 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import Any, cast
 
-from sqlalchemy import select, update
-from sqlalchemy.engine import CursorResult
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from app.approvals.models import (
     Approval,
     ApprovalDecision,
@@ -22,6 +18,9 @@ from app.events.bus import publish_event
 from app.events.models import InvestigationEventType
 from app.executions.hash import canonical_parameters_hash, execution_idempotency_key
 from app.executions.models import ActionExecution, ExecutionStatus
+from sqlalchemy import select, update
+from sqlalchemy.engine import CursorResult
+from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)
 

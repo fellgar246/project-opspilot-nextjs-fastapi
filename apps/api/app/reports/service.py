@@ -2,10 +2,6 @@ from __future__ import annotations
 
 import re
 import uuid
-from typing import Any
-
-from sqlalchemy import func, select
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.audit.event_types import AuditEventType
 from app.audit.service import record_audit_event
@@ -14,10 +10,10 @@ from app.events.models import InvestigationEventType
 from app.incidents.models import Evidence, Hypothesis
 from app.incidents.timeline import assemble_timeline
 from app.reports.models import Postmortem, PostmortemStatus
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
-REFERENCE_PATTERN = re.compile(
-    r"\[\[(evidence|hypothesis|action|timeline|incident):([^\]]+)\]\]"
-)
+REFERENCE_PATTERN = re.compile(r"\[\[(evidence|hypothesis|action|timeline|incident):([^\]]+)\]\]")
 
 
 async def validate_references(
@@ -116,7 +112,11 @@ async def save_postmortem(
         event_type=AuditEventType.POSTMORTEM_GENERATED,
         entity_type="postmortem",
         entity_id=postmortem.id,
-        payload={"incident_id": str(incident_id), "version": version, "invalid_references": invalid},
+        payload={
+            "incident_id": str(incident_id),
+            "version": version,
+            "invalid_references": invalid,
+        },
     )
     return postmortem
 

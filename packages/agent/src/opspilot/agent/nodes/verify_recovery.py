@@ -43,21 +43,21 @@ def make_verify_recovery_node(
     gateway: ToolGateway,
 ) -> Callable[[IncidentInvestigationState], Awaitable[dict[str, Any]]]:
     async def verify_recovery(state: IncidentInvestigationState) -> dict[str, Any]:
-        if state.get("execution_status") not in {"succeeded", None} and state.get("execution_status"):
-            if state.get("execution_status") != "succeeded":
-                return {
-                    "current_node": "verify_recovery",
-                    "completed_nodes": ["verify_recovery"],
-                    "recovery_verdict": {"status": "inconclusive", "metrics": [], "rationale": ""},
-                }
+        execution_status = state.get("execution_status")
+        if execution_status and execution_status != "succeeded":
+            return {
+                "current_node": "verify_recovery",
+                "completed_nodes": ["verify_recovery"],
+                "recovery_verdict": {"status": "inconclusive", "metrics": [], "rationale": ""},
+            }
 
         tool_settings = get_tool_settings()
         stabilization = tool_settings.recovery_stabilization_seconds
         await asyncio.sleep(min(stabilization, 1.0))
 
-        service = (state.get("affected_services") or state.get("service_names") or ["demo-service"])[
-            0
-        ]
+        service = (
+            state.get("affected_services") or state.get("service_names") or ["demo-service"]
+        )[0]
         metric_name = "http_error_rate"
         ctx = ToolContext(
             incident_id=as_uuid(state["incident_id"]),
@@ -125,9 +125,7 @@ def make_verify_recovery_node(
         )
 
         investigation_status = "running"
-        if status == "recovered":
-            investigation_status = "monitoring"
-        elif status == "partially_recovered":
+        if status == "recovered" or status == "partially_recovered":
             investigation_status = "monitoring"
         elif status == "not_recovered":
             investigation_status = "running"

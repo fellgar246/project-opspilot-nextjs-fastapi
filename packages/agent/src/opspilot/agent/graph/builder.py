@@ -27,8 +27,8 @@ from opspilot.agent.nodes.mitigation import (
     make_request_human_approval_node,
     make_risk_assessment_node,
 )
-from opspilot.agent.nodes.postmortem import make_generate_postmortem_node
 from opspilot.agent.nodes.plan import make_plan_node
+from opspilot.agent.nodes.postmortem import make_generate_postmortem_node
 from opspilot.agent.nodes.request_evidence import make_request_more_evidence_node
 from opspilot.agent.nodes.retrieve_runbooks import make_retrieve_runbooks_node
 from opspilot.agent.nodes.triage import make_triage_node

@@ -47,6 +47,11 @@ async def investigate_incident(ctx: dict[str, object], agent_run_id: str) -> dic
         retrieval_store = SqlRetrievalStore(session)
         registry = build_default_registry(retrieval_store=retrieval_store)
         persistence = SqlAlchemyToolPersistence(session)
+        publisher = WorkerEventPublisher(
+            session,
+            incident_id=agent_run.incident_id,
+            agent_run_id=agent_run.id,
+        )
         gateway = ToolGateway(registry, persistence, event_publisher=publisher)
         provider = create_provider()
 
@@ -58,11 +63,6 @@ async def investigate_incident(ctx: dict[str, object], agent_run_id: str) -> dic
                 return row is not None and row.status == AgentRunStatus.PAUSED
 
         approval_store = SqlApprovalStore(session)
-        publisher = WorkerEventPublisher(
-            session,
-            incident_id=agent_run.incident_id,
-            agent_run_id=agent_run.id,
-        )
 
         try:
             final_state = await run_investigation(

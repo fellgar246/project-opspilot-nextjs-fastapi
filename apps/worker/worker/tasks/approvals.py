@@ -49,15 +49,15 @@ async def resume_investigation(
         retrieval_store = SqlRetrievalStore(session)
         registry = build_default_registry(retrieval_store=retrieval_store)
         persistence = SqlAlchemyToolPersistence(session)
-        gateway = ToolGateway(registry, persistence, event_publisher=publisher)
-        provider = create_provider()
-        checkpointer = await create_postgres_checkpointer(str(settings.database_url))
-        approval_store = SqlApprovalStore(session)
         publisher = WorkerEventPublisher(
             session,
             incident_id=agent_run.incident_id,
             agent_run_id=agent_run.id,
         )
+        gateway = ToolGateway(registry, persistence, event_publisher=publisher)
+        provider = create_provider()
+        checkpointer = await create_postgres_checkpointer(str(settings.database_url))
+        approval_store = SqlApprovalStore(session)
 
         try:
             final_state = await run_investigation(

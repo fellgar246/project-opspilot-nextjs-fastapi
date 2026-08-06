@@ -16,7 +16,9 @@ async def test_publish_event_retries_on_seq_conflict(monkeypatch: pytest.MonkeyP
     session = AsyncMock()
     seq_calls = {"n": 0}
 
-    async def fake_next_seq(_session: object, _incident_id: uuid.UUID, *, max_retries: int = 5) -> int:
+    async def fake_next_seq(
+        _session: object, _incident_id: uuid.UUID, *, max_retries: int = 5
+    ) -> int:
         seq_calls["n"] += 1
         return seq_calls["n"]
 
@@ -74,7 +76,7 @@ async def test_list_events_after_seq_orders_by_sequence(monkeypatch: pytest.Monk
     ]
 
     class _Result:
-        def scalars(self) -> "_Result":
+        def scalars(self) -> _Result:
             return self
 
         def all(self) -> list[InvestigationEvent]:

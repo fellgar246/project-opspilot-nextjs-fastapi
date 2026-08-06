@@ -83,9 +83,7 @@ async def run_investigation(
             stream_mode="values",
         ):
             final_state = event
-            await _maybe_publish_state_events(
-                event_publisher, previous=final_state, current=event
-            )
+            await _maybe_publish_state_events(event_publisher, previous=final_state, current=event)
         return final_state
 
     state = initial_state(
@@ -169,9 +167,7 @@ async def _maybe_publish_state_events(
             },
         )
 
-    prev_evidence = {
-        ref.get("evidence_id") for ref in (previous.get("evidence_refs") or [])
-    }
+    prev_evidence = {ref.get("evidence_id") for ref in (previous.get("evidence_refs") or [])}
     for ref in current.get("evidence_refs") or []:
         evidence_id = ref.get("evidence_id")
         if evidence_id and evidence_id not in prev_evidence:
@@ -204,8 +200,9 @@ async def _maybe_publish_state_events(
                 },
             )
         else:
+            prev_hypotheses = previous.get("hypotheses") or []
             prev = next(
-                (item for item in (previous.get("hypotheses") or []) if item.get("id") == hypothesis_id),
+                (item for item in prev_hypotheses if item.get("id") == hypothesis_id),
                 None,
             )
             if prev and (

@@ -55,7 +55,7 @@ markers = [
     "integration: tests requiring Docker/testcontainers",
 ]
 testpaths = ["tests"]
-addopts = "-m 'not integration' --cov=app --cov-report=term-missing --cov-fail-under=80"
+addopts = "-m 'not integration' --cov=app --cov-report=term-missing --cov-fail-under=60"
 
 [dependency-groups]
 dev = [

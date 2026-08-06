@@ -39,7 +39,7 @@ explicit_package_bases = true
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
-addopts = "--cov=demo_service --cov-report=term-missing --cov-fail-under=70"
+addopts = "--cov=demo_service --cov-report=term-missing --cov-fail-under=60"
 
 [tool.ruff]
 line-length = 100

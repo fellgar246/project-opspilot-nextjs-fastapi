@@ -25,6 +25,7 @@ ACTIVE_STATUSES = {
     AgentRunStatus.PENDING,
     AgentRunStatus.RUNNING,
     AgentRunStatus.PAUSED,
+    AgentRunStatus.AWAITING_APPROVAL,
 }
 
 

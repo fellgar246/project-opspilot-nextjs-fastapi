@@ -8,6 +8,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes import router as health_router
+from app.approvals.router import router as approvals_router
 from app.audit.router import router as audit_router
 from app.auth.router import router as auth_router
 from app.core.config import get_settings
@@ -16,6 +17,7 @@ from app.core.logging import configure_logging
 from app.core.middleware import RequestIdLogFilter, RequestIdMiddleware
 from app.core.redis import close_redis, init_redis
 from app.db.session import init_db
+from app.events.router import router as events_router
 from app.incidents.router import router as incidents_router
 from app.investigation.router import router as investigation_router
 
@@ -48,4 +50,6 @@ def create_app() -> FastAPI:
     app.include_router(audit_router, prefix="/api/v1")
     app.include_router(incidents_router, prefix="/api/v1")
     app.include_router(investigation_router, prefix="/api/v1")
+    app.include_router(events_router, prefix="/api/v1")
+    app.include_router(approvals_router, prefix="/api/v1")
     return app

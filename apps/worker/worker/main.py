@@ -4,6 +4,7 @@ from arq.connections import RedisSettings
 
 from worker.config import get_worker_settings
 from worker.logging import configure_logging
+from worker.tasks.approvals import expire_pending_approvals, resume_investigation
 from worker.tasks.investigate import investigate_incident
 from worker.tasks.ping import ping
 
@@ -12,7 +13,10 @@ configure_logging(settings.log_level)
 
 
 class WorkerSettings:
-    functions = [ping, investigate_incident]
+    functions = [ping, investigate_incident, resume_investigation, expire_pending_approvals]
     redis_settings = RedisSettings.from_dsn(str(settings.redis_url))
     max_jobs = 10
     job_timeout = 900
+    cron_jobs = [
+        ("expire_pending_approvals", 60),
+    ]

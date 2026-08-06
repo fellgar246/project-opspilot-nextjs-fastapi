@@ -38,6 +38,12 @@ function DashboardContent() {
       {can("read_incidents") ? (
         <p>
           <Link href="/incidents">View incidents</Link>
+          {can("approve_action") ? (
+            <>
+              {" "}
+              · <Link href="/approvals">Approval Center</Link>
+            </>
+          ) : null}
         </p>
       ) : null}
 

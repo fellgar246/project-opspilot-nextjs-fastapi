@@ -70,6 +70,12 @@ class IncidentInvestigationState(TypedDict):
     started_at: str
     model: str
 
+    pending_action_id: str | None
+    proposal: dict[str, Any] | None
+    proposal_confidence: float | None
+    assessed_risk_level: str | None
+    approval_decision: dict[str, Any] | None
+
 
 def initial_state(
     *,
@@ -120,4 +126,9 @@ def initial_state(
         prompt_version=prompt_version,
         started_at=started_at,
         model=model,
+        pending_action_id=None,
+        proposal=None,
+        proposal_confidence=None,
+        assessed_risk_level=None,
+        approval_decision=None,
     )

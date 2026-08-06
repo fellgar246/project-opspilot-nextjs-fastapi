@@ -15,6 +15,29 @@ vi.mock("@/lib/auth-api", () => ({
   getDefaultApiBaseUrl: () => "http://localhost:8000",
 }));
 
+vi.mock("@/lib/investigation-api", () => ({
+  fetchAgentRuns: vi.fn().mockResolvedValue({ items: [] }),
+  fetchProposedActions: vi.fn().mockResolvedValue({ items: [] }),
+  fetchPendingApprovals: vi.fn().mockResolvedValue({ items: [] }),
+  startInvestigation: vi.fn(),
+  pauseInvestigation: vi.fn(),
+  resumeInvestigation: vi.fn(),
+  investigationEventsUrl: vi.fn().mockReturnValue("http://localhost:8000/api/v1/incidents/inc-1/events"),
+}));
+
+vi.mock("@/lib/sse-client", () => ({
+  InvestigationEventSource: class {
+    connect() {}
+    close() {}
+    needsFullReload() {
+      return false;
+    }
+    getLastEventId() {
+      return 0;
+    }
+  },
+}));
+
 vi.mock("@/lib/incidents-api", () => ({
   fetchIncident: vi.fn().mockResolvedValue({
     id: "inc-1",
@@ -123,12 +146,12 @@ describe("IncidentDetail tabs", () => {
     expect(screen.getByRole("button", { name: "Postmortem" })).toBeInTheDocument();
   });
 
-  it("shows placeholder when investigation tab selected", async () => {
+  it("shows investigation panel when investigation tab selected", async () => {
     const user = (await import("@testing-library/user-event")).default.setup();
     renderWithQuery(<IncidentDetail incidentId="inc-1" />);
     await screen.findByText("Checkout errors");
     await user.click(screen.getByRole("button", { name: "Investigation" }));
-    expect(screen.getByText(/SPEC-06/)).toBeInTheDocument();
+    expect(screen.getByText(/Connection:/)).toBeInTheDocument();
   });
 
   it("renders evidence tab content", async () => {
@@ -155,7 +178,7 @@ describe("IncidentDetail tabs", () => {
     renderWithQuery(<IncidentDetail incidentId="inc-1" />);
     await screen.findByRole("heading", { name: "Checkout errors" });
     await user.click(screen.getByRole("button", { name: "Actions" }));
-    expect(screen.getByText(/SPEC-08/)).toBeInTheDocument();
+    expect(screen.getByText(/No proposed actions yet/)).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Postmortem" }));
     expect(screen.getByText(/SPEC-09/)).toBeInTheDocument();
   });

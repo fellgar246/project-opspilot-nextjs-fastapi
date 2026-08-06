@@ -16,6 +16,7 @@ class AgentRunStatus(enum.StrEnum):
     PENDING = "pending"
     RUNNING = "running"
     PAUSED = "paused"
+    AWAITING_APPROVAL = "awaiting_approval"
     COMPLETED = "completed"
     FAILED = "failed"
     ITERATION_LIMIT = "iteration_limit_reached"

@@ -2,6 +2,8 @@
 
 from app.audit.models import AuditEvent  # noqa: F401
 from app.auth.models import RefreshToken, User  # noqa: F401
+from app.approvals.models import Approval, ProposedAction  # noqa: F401
+from app.events.models import InvestigationEvent  # noqa: F401
 from app.incidents.models import (  # noqa: F401
     Evidence,
     Hypothesis,

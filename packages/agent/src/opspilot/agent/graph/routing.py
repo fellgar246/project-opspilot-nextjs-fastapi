@@ -10,7 +10,7 @@ from opspilot.agent.state.schema import COLLECTION_NODES, TOOL_BY_COLLECTION_NOD
 
 def route_after_critique(
     state: IncidentInvestigationState,
-) -> Literal["request_more_evidence", "close"]:
+) -> Literal["request_more_evidence", "propose_mitigation", "close"]:
     stop_reason = should_stop(state)
     if stop_reason is not None:
         return "close"
@@ -21,7 +21,7 @@ def route_after_critique(
     ]
     top = max((item["confidence"] for item in hypotheses), default=0.0)
     if top >= settings.confidence_threshold:
-        return "close"
+        return "propose_mitigation"
     if state.get("suggested_collection") and unexplored_tools(state):
         return "request_more_evidence"
     if not unexplored_tools(state):

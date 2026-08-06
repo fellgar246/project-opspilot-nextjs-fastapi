@@ -36,6 +36,11 @@ class Settings(BaseSettings):
     max_tool_calls_per_run: int = 40
     confidence_threshold: float = 0.75
 
+    sse_max_connections_per_user: int = 3
+    sse_keepalive_seconds: int = 15
+    event_retention_hours: int = 24
+    approval_expiration_minutes: int = 60
+
     api_host: str = "0.0.0.0"
     api_port: int = 8000
     cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:3000"])

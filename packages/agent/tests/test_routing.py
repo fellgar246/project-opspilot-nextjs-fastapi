@@ -70,6 +70,15 @@ def test_route_closes_on_iteration_limit() -> None:
     assert route_after_hypotheses(state) == "close"
 
 
+def test_route_after_critique_proposes_mitigation_on_high_confidence() -> None:
+    state = _state(
+        hypotheses=[
+            {"statement": "x", "confidence": 0.9, "supporting_evidence": ["e"], "reasoning": "r"}
+        ]
+    )
+    assert route_after_critique(state) == "propose_mitigation"
+
+
 def test_route_after_critique_respects_rejected_hypotheses() -> None:
     state = _state(
         hypotheses=[

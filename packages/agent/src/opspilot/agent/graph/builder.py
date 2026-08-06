@@ -12,6 +12,11 @@ from opspilot.agent.nodes.collect import (
 )
 from opspilot.agent.nodes.critique import make_critique_hypotheses_node
 from opspilot.agent.nodes.hypotheses import make_hypotheses_node
+from opspilot.agent.nodes.mitigation import (
+    make_propose_mitigation_node,
+    make_request_human_approval_node,
+    make_risk_assessment_node,
+)
 from opspilot.agent.nodes.plan import make_plan_node
 from opspilot.agent.nodes.request_evidence import make_request_more_evidence_node
 from opspilot.agent.nodes.retrieve_runbooks import make_retrieve_runbooks_node
@@ -38,6 +43,7 @@ def build_investigation_graph(
     gateway: ToolGateway,
     *,
     checkpointer,
+    approval_store=None,
 ):
     graph: StateGraph = StateGraph(IncidentInvestigationState)
 
@@ -52,6 +58,9 @@ def build_investigation_graph(
     graph.add_node("generate_hypotheses", make_hypotheses_node(provider))
     graph.add_node("critique_hypotheses", make_critique_hypotheses_node(provider))
     graph.add_node("request_more_evidence", make_request_more_evidence_node())
+    graph.add_node("propose_mitigation", make_propose_mitigation_node(gateway, approval_store))
+    graph.add_node("risk_assessment", make_risk_assessment_node())
+    graph.add_node("request_human_approval", make_request_human_approval_node(approval_store))
     graph.add_node("close_investigation", make_close_investigation_node())
 
     graph.add_edge(START, "triage_incident")
@@ -70,9 +79,14 @@ def build_investigation_graph(
         route_after_critique,
         {
             "request_more_evidence": "request_more_evidence",
+            "propose_mitigation": "propose_mitigation",
             "close": "close_investigation",
         },
     )
+
+    graph.add_edge("propose_mitigation", "risk_assessment")
+    graph.add_edge("risk_assessment", "request_human_approval")
+    graph.add_edge("request_human_approval", "close_investigation")
 
     def route_after_request(state: IncidentInvestigationState) -> str:
         target = state.get("next_collection_node")

@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { HypothesesPanel } from "@/features/hypotheses/HypothesesPanel";
+import { IncidentActionsPanel } from "@/features/approvals/IncidentActionsPanel";
+import { InvestigationLivePanel } from "@/features/investigation-live/InvestigationLivePanel";
 import { useAuth } from "@/features/auth/AuthProvider";
 import { getDefaultApiBaseUrl } from "@/lib/auth-api";
 import {
@@ -189,9 +191,7 @@ export function IncidentDetail({ incidentId }: IncidentDetailProps) {
           </div>
         ) : null}
 
-        {activeTab === "investigation" ? (
-          <Placeholder spec="SPEC-06" title="Agent investigation" />
-        ) : null}
+        {activeTab === "investigation" ? <InvestigationLivePanel incidentId={incidentId} /> : null}
 
         {activeTab === "timeline" ? (
           <div>
@@ -284,9 +284,7 @@ export function IncidentDetail({ incidentId }: IncidentDetailProps) {
           </div>
         ) : null}
 
-        {activeTab === "actions" ? (
-          <Placeholder spec="SPEC-08 / SPEC-09" title="Proposed actions" />
-        ) : null}
+        {activeTab === "actions" ? <IncidentActionsPanel incidentId={incidentId} /> : null}
 
         {activeTab === "audit" ? (
           <div>

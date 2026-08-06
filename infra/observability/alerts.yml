@@ -1,0 +1,36 @@
+groups:
+  - name: opspilot-alerts
+    rules:
+      - alert: ApiHighErrorRate
+        expr: |
+          sum(rate(opspilot_http_requests_total{status=~"5.."}[5m]))
+          / sum(rate(opspilot_http_requests_total[5m])) > 0.05
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: API error rate above 5%
+
+      - alert: ToolCallFailures
+        expr: sum(rate(opspilot_agent_tool_calls_total{status="error"}[5m])) > 0.1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: Elevated tool call failure rate
+
+      - alert: InvestigationBudgetExceeded
+        expr: increase(opspilot_agent_retries_total[10m]) > 20
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Investigations exceeding retry budget
+
+      - alert: ApprovalsNearExpiry
+        expr: opspilot_agent_approvals_total{outcome="pending"} > 0
+        for: 50m
+        labels:
+          severity: info
+        annotations:
+          summary: Pending approvals approaching expiration window

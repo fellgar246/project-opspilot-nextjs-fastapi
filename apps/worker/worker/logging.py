@@ -20,6 +20,7 @@ class JsonFormatter(logging.Formatter):
             "incident_id": getattr(record, "incident_id", None),
             "agent_run_id": getattr(record, "agent_run_id", None),
             "trace_id": getattr(record, "trace_id", None),
+            "span_id": getattr(record, "span_id", None),
         }
         return json.dumps(payload, ensure_ascii=True)
 

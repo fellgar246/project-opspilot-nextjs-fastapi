@@ -24,6 +24,11 @@ COPY --from=builder /app/.venv /app/.venv
 COPY --from=builder /app/apps/worker /app/apps/worker
 COPY --from=builder /app/packages /app/packages
 
+RUN addgroup --system opspilot && adduser --system --ingroup opspilot opspilot \
+    && chown -R opspilot:opspilot /app
+
 WORKDIR /app/apps/worker
+
+USER opspilot
 
 CMD ["arq", "worker.main.WorkerSettings"]

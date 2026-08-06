@@ -1,3 +1,55 @@
-"""Structured logging and OpenTelemetry helpers (SPEC-10)."""
+"""Shared observability utilities for OpsPilot services."""
 
-__all__: list[str] = []
+from opspilot.telemetry.langfuse import LangfuseClient
+from opspilot.telemetry.metrics import (
+    AGENT_APPROVALS,
+    AGENT_NODE_DURATION,
+    AGENT_RETRIES,
+    AGENT_TOKENS,
+    AGENT_TOOL_CALLS,
+    APP_INFO,
+    BUSINESS_RESOLVED,
+    BUSINESS_TIME_TO_HYPOTHESIS,
+    BUSINESS_TIME_TO_MITIGATION,
+    HTTP_LATENCY,
+    HTTP_REQUESTS,
+    QUEUE_DEPTH,
+)
+from opspilot.telemetry.tracing import (
+    TraceContextLogFilter,
+    configure_tracing,
+    current_span_id,
+    current_trace_id,
+    deserialize_trace_context,
+    extract_trace_context,
+    get_tracer,
+    inject_trace_context,
+    serialize_trace_context,
+    set_correlation_attrs,
+)
+
+__all__ = [
+    "AGENT_APPROVALS",
+    "AGENT_NODE_DURATION",
+    "AGENT_RETRIES",
+    "AGENT_TOKENS",
+    "AGENT_TOOL_CALLS",
+    "APP_INFO",
+    "BUSINESS_RESOLVED",
+    "BUSINESS_TIME_TO_HYPOTHESIS",
+    "BUSINESS_TIME_TO_MITIGATION",
+    "HTTP_LATENCY",
+    "HTTP_REQUESTS",
+    "LangfuseClient",
+    "QUEUE_DEPTH",
+    "TraceContextLogFilter",
+    "configure_tracing",
+    "current_span_id",
+    "current_trace_id",
+    "deserialize_trace_context",
+    "extract_trace_context",
+    "get_tracer",
+    "inject_trace_context",
+    "serialize_trace_context",
+    "set_correlation_attrs",
+]

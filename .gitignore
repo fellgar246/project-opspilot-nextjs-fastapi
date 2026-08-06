@@ -33,6 +33,8 @@ apps/web/coverage/
 
 # Docker
 *.log
+reports/
+backups/
 
 # Simulator generated artifacts (recreated by make sim-seed)
 simulator/data/repos/

@@ -241,9 +241,11 @@ async def load_incident_context(session: AsyncSession, incident_id: uuid.UUID) -
 
 
 async def _enqueue_investigation(agent_run_id: uuid.UUID, settings: Settings) -> None:
+    from app.worker.enqueue import enqueue_kwargs
+
     redis_settings = RedisSettings.from_dsn(str(settings.redis_url))
     pool = await create_pool(redis_settings)
     try:
-        await pool.enqueue_job("investigate_incident", str(agent_run_id))
+        await pool.enqueue_job("investigate_incident", str(agent_run_id), **enqueue_kwargs())
     finally:
         await pool.aclose()

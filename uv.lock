@@ -211,6 +211,15 @@ wheels = [
 ]
 
 [[package]]
+name = "backoff"
+version = "2.2.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/47/d7/5bbeb12c44d7c4f2fb5b56abce497eb5ed9f34d85701de869acedd602619/backoff-2.2.1.tar.gz", hash = "sha256:03f829f5bb1923180821643f8753b0502c3b682293992485b0eef2807afa5cba", size = 17001, upload-time = "2022-10-05T19:19:32.061Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/df/73/b6e24bd22e6720ca8ee9a85a0c4a2971af8497d8f3193fa05390cbd46e09/backoff-2.2.1-py3-none-any.whl", hash = "sha256:63579f9a0628e06278f7e47b7d7d5b6ce20dc65c5e96a6f3ca99a6adca0396e8", size = 15148, upload-time = "2022-10-05T19:19:30.546Z" },
+]
+
+[[package]]
 name = "certifi"
 version = "2026.7.22"
 source = { registry = "https://pypi.org/simple" }
@@ -885,6 +894,25 @@ wheels = [
 ]
 
 [[package]]
+name = "langfuse"
+version = "4.14.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "backoff" },
+    { name = "httpx" },
+    { name = "opentelemetry-api" },
+    { name = "opentelemetry-exporter-otlp-proto-http" },
+    { name = "opentelemetry-sdk" },
+    { name = "packaging" },
+    { name = "pydantic" },
+    { name = "wrapt" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/36/7c/4cdf76a100f169a0855d4a7e69598a3bbe19bd2f048c5de3c298af1aa2c0/langfuse-4.14.2.tar.gz", hash = "sha256:76eb3f2c2106ddd63271154d1a33f8b3d4036f449a9f9b48403c36bd5e7c1bba", size = 389507, upload-time = "2026-07-30T11:54:48.46Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/8b/b5/1499bcedb6872e8acc4e7043c522c9f3a4fe2eafd78a6f37e73308d18753/langfuse-4.14.2-py3-none-any.whl", hash = "sha256:27879cbaea570e94323c6ced60a0997feedf5294f18b51436009947c42f9f92e", size = 688132, upload-time = "2026-07-30T11:54:49.553Z" },
+]
+
+[[package]]
 name = "langgraph"
 version = "1.2.10"
 source = { registry = "https://pypi.org/simple" }
@@ -1372,11 +1400,13 @@ dependencies = [
     { name = "asyncpg" },
     { name = "email-validator" },
     { name = "fastapi" },
+    { name = "opentelemetry-instrumentation-fastapi" },
     { name = "opspilot-agent" },
     { name = "opspilot-schemas" },
     { name = "opspilot-telemetry" },
     { name = "opspilot-tools" },
     { name = "pgvector" },
+    { name = "prometheus-client" },
     { name = "pydantic-settings" },
     { name = "pyjwt" },
     { name = "python-multipart" },
@@ -1408,11 +1438,13 @@ requires-dist = [
     { name = "email-validator", specifier = ">=2.3.0" },
     { name = "fastapi", specifier = ">=0.115.0" },
     { name = "httpx", marker = "extra == 'dev'", specifier = ">=0.28.0" },
+    { name = "opentelemetry-instrumentation-fastapi", specifier = ">=0.50b0" },
     { name = "opspilot-agent", editable = "packages/agent" },
     { name = "opspilot-schemas", editable = "packages/schemas" },
     { name = "opspilot-telemetry", editable = "packages/telemetry" },
     { name = "opspilot-tools", editable = "packages/tools" },
     { name = "pgvector", specifier = ">=0.3.6" },
+    { name = "prometheus-client", specifier = ">=0.21.0" },
     { name = "pydantic-settings", specifier = ">=2.6.0" },
     { name = "pyjwt", specifier = ">=2.13.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.3.0" },
@@ -1483,6 +1515,7 @@ dependencies = [
     { name = "opspilot-schemas" },
     { name = "opspilot-telemetry" },
     { name = "opspilot-tools" },
+    { name = "prometheus-client" },
     { name = "pydantic-settings" },
     { name = "redis" },
     { name = "sqlalchemy", extra = ["asyncio"] },
@@ -1504,6 +1537,7 @@ requires-dist = [
     { name = "opspilot-schemas", editable = "packages/schemas" },
     { name = "opspilot-telemetry", editable = "packages/telemetry" },
     { name = "opspilot-tools", editable = "packages/tools" },
+    { name = "prometheus-client", specifier = ">=0.21.0" },
     { name = "pydantic-settings", specifier = ">=2.6.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.3.0" },
     { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.24.0" },
@@ -1522,9 +1556,11 @@ dependencies = [
     { name = "langgraph-checkpoint-postgres" },
     { name = "openai" },
     { name = "opspilot-schemas" },
+    { name = "opspilot-telemetry" },
     { name = "opspilot-tools" },
     { name = "pydantic" },
     { name = "pydantic-settings" },
+    { name = "pyyaml" },
 ]
 
 [package.optional-dependencies]
@@ -1539,11 +1575,13 @@ requires-dist = [
     { name = "langgraph-checkpoint-postgres", specifier = ">=2.0.0" },
     { name = "openai", specifier = ">=1.60.0" },
     { name = "opspilot-schemas", editable = "packages/schemas" },
+    { name = "opspilot-telemetry", editable = "packages/telemetry" },
     { name = "opspilot-tools", editable = "packages/tools" },
     { name = "pydantic", specifier = ">=2.10.0" },
     { name = "pydantic-settings", specifier = ">=2.6.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.3.0" },
     { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.24.0" },
+    { name = "pyyaml", specifier = ">=6.0.2" },
 ]
 provides-extras = ["dev"]
 
@@ -1562,6 +1600,29 @@ requires-dist = [{ name = "pydantic", specifier = ">=2.10.0" }]
 name = "opspilot-telemetry"
 version = "0.1.0"
 source = { editable = "packages/telemetry" }
+dependencies = [
+    { name = "opentelemetry-api" },
+    { name = "opentelemetry-exporter-otlp-proto-http" },
+    { name = "opentelemetry-instrumentation-fastapi" },
+    { name = "opentelemetry-sdk" },
+    { name = "prometheus-client" },
+]
+
+[package.optional-dependencies]
+langfuse = [
+    { name = "langfuse" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "langfuse", marker = "extra == 'langfuse'", specifier = ">=2.0.0" },
+    { name = "opentelemetry-api", specifier = ">=1.29.0" },
+    { name = "opentelemetry-exporter-otlp-proto-http", specifier = ">=1.29.0" },
+    { name = "opentelemetry-instrumentation-fastapi", specifier = ">=0.50b0" },
+    { name = "opentelemetry-sdk", specifier = ">=1.29.0" },
+    { name = "prometheus-client", specifier = ">=0.21.0" },
+]
+provides-extras = ["langfuse"]
 
 [[package]]
 name = "opspilot-tools"

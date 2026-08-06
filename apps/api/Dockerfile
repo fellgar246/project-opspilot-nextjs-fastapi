@@ -27,7 +27,12 @@ COPY --from=builder /app/.venv /app/.venv
 COPY --from=builder /app/apps/api /app/apps/api
 COPY --from=builder /app/packages /app/packages
 
+RUN addgroup --system opspilot && adduser --system --ingroup opspilot opspilot \
+    && chown -R opspilot:opspilot /app
+
 WORKDIR /app/apps/api
+
+USER opspilot
 
 EXPOSE 8000
 

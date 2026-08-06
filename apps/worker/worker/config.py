@@ -24,6 +24,7 @@ class WorkerSettings(BaseSettings):
     model_provider: Literal["mock", "openai"] = "mock"
     openai_api_key: SecretStr | None = None
     openai_model: str = "gpt-4o-mini"
+    otel_exporter_endpoint: str | None = None
 
 
 def get_worker_settings() -> WorkerSettings:

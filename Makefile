@@ -5,7 +5,7 @@ PROFILE ?= minimal
 UV := uv
 PNPM := $(if $(wildcard node_modules/.bin/pnpm),./node_modules/.bin/pnpm,$(shell command -v pnpm 2>/dev/null || echo npx\ --yes\ pnpm@9))
 
-.PHONY: bootstrap up down reset lint format typecheck test migrate compose-validate build security-scan smoke seed-users seed-services seed-perf sim-seed sim-reset sim-scenario ingest-runbooks
+.PHONY: bootstrap up down reset lint format typecheck test migrate compose-validate build security-scan smoke seed-users seed-services seed-perf sim-seed sim-reset sim-scenario ingest-runbooks eval eval-smoke verify backup restore demo
 
 bootstrap:
 	@bash infra/scripts/bootstrap.sh
@@ -19,6 +19,9 @@ down:
 
 reset:
 	@bash infra/scripts/reset.sh
+
+reset-test:
+	@RESET_TEST_ONLY=1 bash infra/scripts/reset.sh
 
 lint:
 	@$(UV) run ruff check apps packages simulator/demo-service simulator/scripts simulator/traffic
@@ -87,3 +90,22 @@ sim-scenario:
 
 ingest-runbooks:
 	@cd apps/api && $(UV) run python -m app.cli.ingest_runbooks
+
+eval:
+	@bash infra/scripts/eval.sh
+
+eval-smoke:
+	@EVAL_SMOKE=true bash infra/scripts/eval.sh
+
+verify:
+	@bash infra/scripts/verify.sh
+
+backup:
+	@bash infra/scripts/backup.sh
+
+restore:
+	@test -n "$(DIR)" || (echo "Usage: make restore DIR=backups/YYYYMMDD-HHMMSS" && exit 1)
+	@bash infra/scripts/restore.sh "$(DIR)"
+
+demo:
+	@bash infra/scripts/demo.sh

@@ -13,6 +13,7 @@ dependencies = [
     "opspilot-tools",
     "opspilot-telemetry",
     "ops-pilot-api",
+    "prometheus-client>=0.21.0",
 ]
 
 [project.optional-dependencies]

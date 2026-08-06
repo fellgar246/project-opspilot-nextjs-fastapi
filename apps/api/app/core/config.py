@@ -45,6 +45,11 @@ class Settings(BaseSettings):
     api_port: int = 8000
     cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:3000"])
 
+    otel_exporter_endpoint: str | None = Field(default=None, validation_alias="OTEL_EXPORTER_ENDPOINT")
+    langfuse_public_key: str | None = Field(default=None, validation_alias="LANGFUSE_PUBLIC_KEY")
+    langfuse_secret_key: SecretStr | None = Field(default=None, validation_alias="LANGFUSE_SECRET_KEY")
+    langfuse_host: str | None = Field(default=None, validation_alias="LANGFUSE_HOST")
+
     jwt_secret: SecretStr = Field(validation_alias="JWT_SECRET")
     jwt_access_ttl_seconds: int = Field(default=900, validation_alias="JWT_ACCESS_TTL_SECONDS")
     jwt_refresh_ttl_seconds: int = Field(

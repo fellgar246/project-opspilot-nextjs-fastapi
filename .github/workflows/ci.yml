@@ -39,5 +39,8 @@ jobs:
       - name: Compose validate
         run: make compose-validate
 
+      - name: Evaluation smoke
+        run: make eval-smoke
+
       - name: Security scan
         run: make security-scan

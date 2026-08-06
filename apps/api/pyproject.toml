@@ -20,6 +20,8 @@ dependencies = [
     "pyjwt>=2.13.0",
     "python-multipart>=0.0.32",
     "email-validator>=2.3.0",
+    "prometheus-client>=0.21.0",
+    "opentelemetry-instrumentation-fastapi>=0.50b0",
 ]
 
 [project.optional-dependencies]

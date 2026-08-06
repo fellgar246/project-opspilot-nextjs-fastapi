@@ -1,0 +1,37 @@
+{
+  "uid": "opspilot-business",
+  "title": "OpsPilot — Business Metrics",
+  "tags": ["opspilot", "business"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "panels": [
+    {
+      "id": 1,
+      "title": "Time to Hypothesis P50",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+      "targets": [
+        {"expr": "histogram_quantile(0.5, sum(rate(opspilot_time_to_hypothesis_seconds_bucket[5m])) by (le))", "legendFormat": "p50"}
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Time to Mitigation P50",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+      "targets": [
+        {"expr": "histogram_quantile(0.5, sum(rate(opspilot_time_to_mitigation_seconds_bucket[5m])) by (le))", "legendFormat": "p50"}
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Incidents Resolved",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8},
+      "targets": [
+        {"expr": "sum(rate(opspilot_incidents_resolved_total[5m])) by (outcome)", "legendFormat": "{{outcome}}"}
+      ]
+    }
+  ]
+}

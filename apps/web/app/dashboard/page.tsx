@@ -31,6 +31,7 @@ function DashboardContent() {
           <li>Propose mitigation: {can("propose_mitigation") ? "yes" : "hidden"}</li>
           <li>Approve actions: {can("approve_action") ? "yes" : "hidden"}</li>
           <li>Read audit log: {can("read_audit") ? "yes" : "hidden"}</li>
+          <li>Run evaluations: {can("run_evaluations") ? "yes" : "hidden"}</li>
           <li>Manage users: {can("manage_users") ? "yes" : "hidden"}</li>
         </ul>
       </section>
@@ -42,6 +43,12 @@ function DashboardContent() {
             <>
               {" "}
               · <Link href="/approvals">Approval Center</Link>
+            </>
+          ) : null}
+          {can("run_evaluations") ? (
+            <>
+              {" "}
+              · <Link href="/evaluations">Evaluation Lab</Link>
             </>
           ) : null}
         </p>

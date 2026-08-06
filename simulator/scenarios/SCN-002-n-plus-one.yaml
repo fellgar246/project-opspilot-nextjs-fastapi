@@ -20,7 +20,7 @@ signals:
     note: "Ruido: el pool sube un poco por latencia, pero no está saturado."
 deployment:
   version: v2.13.1
-  commit_sha: PLACEHOLDER_SCN002
+  commit_sha: 03581197d51c600e04ac7a8840a3fad913f767fd
   offset_seconds: -60
   changelog: "Refactor catalog loader"
 effects:

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import subprocess
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -12,8 +13,19 @@ PR_DIR = DATA / "pull_requests"
 SCENARIOS = ROOT / "scenarios"
 
 
+def _patch_scenarios_from_commit_map() -> None:
+    commit_map = json.loads(COMMIT_MAP.read_text(encoding="utf-8"))
+    scripts = ROOT / "scripts"
+    if str(scripts) not in sys.path:
+        sys.path.insert(0, str(scripts))
+    from build_repo import patch_scenarios
+
+    patch_scenarios(commit_map)
+
+
 def _ensure_seeded() -> None:
     if REPO.exists() and (REPO / "HEAD").exists() and COMMIT_MAP.exists():
+        _patch_scenarios_from_commit_map()
         return
     subprocess.run(
         ["uv", "run", "python", str(ROOT / "scripts" / "seed.py")],

@@ -20,7 +20,7 @@ signals:
     note: "Ruido correlacionado: latencia sube por reintentos, pero la causa es el proveedor."
 deployment:
   version: v2.14.2
-  commit_sha: PLACEHOLDER_SCN004
+  commit_sha: 7bd83f44af81a383d46014e83ee9cd5fc8b58fd7
   offset_seconds: -300
   changelog: "Routine patch — unrelated to payments outage"
 effects:

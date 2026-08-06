@@ -24,7 +24,7 @@ feature_flag:
   bug_rate: 0.8
 deployment:
   version: v2.15.1
-  commit_sha: PLACEHOLDER_SCN006
+  commit_sha: 8e6718a57268e05d4c90a56189f9f9baa315b9e0
   offset_seconds: -30
   changelog: "Enable new-checkout-flow at 100%"
 effects:

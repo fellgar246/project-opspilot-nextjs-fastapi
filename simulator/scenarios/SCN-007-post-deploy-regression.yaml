@@ -19,7 +19,7 @@ signals:
     note: "Ruido: el pool parece más ocupado por retries, pero no es la causa."
 deployment:
   version: v2.16.0
-  commit_sha: PLACEHOLDER_SCN007
+  commit_sha: ff06e2196b52053eb35921f2405e38c8a186154f
   offset_seconds: -120
   changelog: "Harden order_id validation"
 effects:

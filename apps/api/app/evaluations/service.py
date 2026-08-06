@@ -3,6 +3,7 @@ from __future__ import annotations
 import uuid
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Any
 
 from app.core.config import Settings
 from app.evaluations.models import EvaluationCase, EvaluationCaseResult, EvaluationRun
@@ -171,7 +172,7 @@ def run_to_read(
                 "evaluator_results": cr.evaluator_results,
             }
             for cr in (case_results or [])
-        ],  # type: ignore[arg-type]
+        ],
     )
 
 
@@ -180,22 +181,15 @@ async def compare_evaluation_runs(
     *,
     baseline_id: uuid.UUID,
     candidate_id: uuid.UUID,
-) -> dict:
+) -> dict[str, Any]:
     baseline = await get_run(session, baseline_id)
     candidate = await get_run(session, candidate_id)
     if baseline is None or candidate is None:
         raise ValueError("run not found")
-    from dataclasses import fields
-
     from opspilot.agent.evaluations.metrics import EvaluationMetrics
 
-    valid = {f.name for f in fields(EvaluationMetrics)}
-    base_metrics = EvaluationMetrics(
-        **{k: float(v) for k, v in baseline.metrics.items() if k in valid}
-    )
-    cand_metrics = EvaluationMetrics(
-        **{k: float(v) for k, v in candidate.metrics.items() if k in valid}
-    )
+    base_metrics = EvaluationMetrics.from_dict(baseline.metrics)
+    cand_metrics = EvaluationMetrics.from_dict(candidate.metrics)
     base_cases = {row.case_id: row.status for row in await get_case_results(session, baseline_id)}
     cand_cases = {row.case_id: row.status for row in await get_case_results(session, candidate_id)}
     report = compare_runs(

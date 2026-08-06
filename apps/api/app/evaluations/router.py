@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Annotated
+from typing import Annotated, Any
 from uuid import UUID
 
 from app.auth.dependencies import require_capability
@@ -82,7 +82,7 @@ async def compare_runs(
     body: EvaluationCompareRequest,
     _: Annotated[User, Depends(require_capability(Capability.RUN_EVALUATIONS))],
     session: Annotated[AsyncSession, Depends(get_session)],
-) -> dict:
+) -> dict[str, Any]:
     try:
         return await service.compare_evaluation_runs(
             session,

@@ -7,6 +7,7 @@ from fastapi.routing import APIRoute
 
 PUBLIC_ROUTE_PATHS: set[tuple[str, str]] = {
     ("GET", "/health"),
+    ("GET", "/metrics"),
     ("POST", "/api/v1/auth/login"),
     ("POST", "/api/v1/auth/refresh"),
 }

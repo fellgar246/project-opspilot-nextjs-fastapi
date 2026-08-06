@@ -22,7 +22,7 @@ signals:
     rate_per_minute: 40
 deployment:
   version: v2.14.0
-  commit_sha: PLACEHOLDER_SCN003
+  commit_sha: a3c7dfeee57875b560a3b668c69cf2001703817f
   offset_seconds: -120
   changelog: "Tune DB pool for cost savings"
 effects:

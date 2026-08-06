@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import yaml  # type: ignore[import-untyped]
+import yaml
 
 from demo_service.scenarios.models import ScenarioDefinition
 

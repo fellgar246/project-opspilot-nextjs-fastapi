@@ -21,7 +21,7 @@ signals:
     note: "Ruido: reintentos al proveedor coinciden en el tiempo pero no son la causa."
 deployment:
   version: v2.12.0
-  commit_sha: PLACEHOLDER_SCN001
+  commit_sha: 888222eca2b344d7ea5bc49e7e579c657925a89e
   offset_seconds: -90
   changelog: "Wire payments client to PAYMENTS_API_KEY"
 effects:

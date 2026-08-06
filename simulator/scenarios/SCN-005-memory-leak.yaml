@@ -19,7 +19,7 @@ signals:
     note: "Ruido: GC pauses elevan latencia de forma correlacionada pero secundaria."
 deployment:
   version: v2.15.0
-  commit_sha: PLACEHOLDER_SCN005
+  commit_sha: 551d40722cfeb0182c0a1f554dfb6cbd3cfac36c
   offset_seconds: -180
   changelog: "Add in-process order response cache"
 effects:

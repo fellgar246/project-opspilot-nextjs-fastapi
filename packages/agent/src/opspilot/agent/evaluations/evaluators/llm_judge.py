@@ -57,7 +57,7 @@ async def run_llm_judges(
                     LLMMessage(role="user", content=investigation_summary[:4000]),
                 ]
             )
-            score, justification = _parse_judge_response(response.content)
+            score, justification = _parse_judge_response(response.content or "")
             scores.append(score)
             justifications.append(justification)
             report.results.append(

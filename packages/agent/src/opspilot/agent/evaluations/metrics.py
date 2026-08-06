@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, fields
 from typing import Any
 
 from opspilot.agent.evaluations.models import CaseRunResult
@@ -23,6 +23,17 @@ class EvaluationMetrics:
     recovery_verification_accuracy: float = 0.0
     case_count: int = 0
     errored_count: int = 0
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> EvaluationMetrics:
+        int_fields = {"token_usage_total", "case_count", "errored_count"}
+        valid = {field.name for field in fields(cls)}
+        kwargs: dict[str, float | int] = {}
+        for key, value in data.items():
+            if key not in valid:
+                continue
+            kwargs[key] = int(value) if key in int_fields else float(value)
+        return cls(**kwargs)  # type: ignore[arg-type]
 
     def to_dict(self) -> dict[str, Any]:
         return {

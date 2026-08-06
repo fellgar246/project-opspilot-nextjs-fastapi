@@ -11,3 +11,4 @@ from app.incidents.models import (  # noqa: F401
     IncidentStatusHistory,
     Service,
 )
+from app.tools.store import ToolCall  # noqa: F401

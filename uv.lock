@@ -1283,11 +1283,28 @@ name = "opspilot-tools"
 version = "0.1.0"
 source = { editable = "packages/tools" }
 dependencies = [
+    { name = "httpx" },
     { name = "opspilot-schemas" },
+    { name = "pydantic" },
+    { name = "pydantic-settings" },
+]
+
+[package.optional-dependencies]
+dev = [
+    { name = "pytest" },
+    { name = "pytest-asyncio" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "opspilot-schemas", editable = "packages/schemas" }]
+requires-dist = [
+    { name = "httpx", specifier = ">=0.28.0" },
+    { name = "opspilot-schemas", editable = "packages/schemas" },
+    { name = "pydantic", specifier = ">=2.10.0" },
+    { name = "pydantic-settings", specifier = ">=2.6.0" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.3.0" },
+    { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.24.0" },
+]
+provides-extras = ["dev"]
 
 [[package]]
 name = "packaging"

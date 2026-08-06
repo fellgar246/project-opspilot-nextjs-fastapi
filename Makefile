@@ -38,11 +38,13 @@ typecheck:
 test:
 	@cd apps/api && $(UV) run pytest
 	@cd apps/worker && $(UV) run pytest
+	@cd packages/tools && $(UV) run pytest
 	@cd simulator/demo-service && $(UV) run pytest
 	@$(PNPM) test
 
 migrate:
-	@cd apps/api && $(UV) run alembic upgrade head
+	@$(COMPOSE) --profile $(PROFILE) up -d postgres
+	@$(COMPOSE) --profile $(PROFILE) run --rm api alembic upgrade head
 
 compose-validate:
 	@$(COMPOSE) --profile minimal config >/dev/null

@@ -56,7 +56,7 @@ def make_propose_mitigation_node(
             role=ToolRole.OPERATOR,
             request_id=state["graph_thread_id"],
         )
-        tool_payload = {
+        tool_payload: dict[str, Any] = {
             "service": service,
             "deployment_id": "latest",
             "hypothesis_ids": [str(hypothesis.get("id", "draft"))],

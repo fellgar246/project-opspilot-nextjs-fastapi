@@ -10,6 +10,7 @@ from typing import Any, cast
 from arq import create_pool
 from arq.connections import RedisSettings
 from sqlalchemy import select, update
+from sqlalchemy.engine import CursorResult
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.approvals.models import (
@@ -220,7 +221,7 @@ async def consume_resume_token(session: AsyncSession, approval: Approval) -> boo
         )
         .values(resume_token_consumed=True)
     )
-    if result.rowcount == 0:
+    if cast(CursorResult[Any], result).rowcount == 0:
         return False
     approval.resume_token_consumed = True
     return True

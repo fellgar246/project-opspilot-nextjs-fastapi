@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+from typing import Any, cast
+
 from opspilot.agent.graph.routing import route_after_approval
-from opspilot.agent.state.graph_state import initial_state
+from opspilot.agent.state.graph_state import IncidentInvestigationState, initial_state
 
 
-def _state(**overrides: object) -> dict[str, object]:
+def _state(**overrides: Any) -> IncidentInvestigationState:
     base = initial_state(
         incident_id="inc-1",
         agent_run_id="run-1",
@@ -18,8 +20,7 @@ def _state(**overrides: object) -> dict[str, object]:
         model="mock-v1",
         started_at="2026-01-01T00:00:00Z",
     )
-    base.update(overrides)
-    return base
+    return cast(IncidentInvestigationState, {**base, **overrides})
 
 
 def test_route_after_approval_approved_closes() -> None:

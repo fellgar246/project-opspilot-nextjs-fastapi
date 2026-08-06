@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { HypothesesPanel } from "@/features/hypotheses/HypothesesPanel";
@@ -72,8 +72,14 @@ const evidence = [
 describe("HypothesesPanel", () => {
   it("renders active hypothesis details and collapses rejected", () => {
     render(<HypothesesPanel hypotheses={hypotheses} evidence={evidence} />);
-    expect(screen.getByText(/Deployment regression caused checkout errors/)).toBeInTheDocument();
+    const activeCard = document.querySelector(".hypothesis-card:not(.rejected)");
+    expect(activeCard).not.toBeNull();
+    expect(
+      within(activeCard as HTMLElement).getByText(/Deployment regression caused checkout errors/),
+    ).toBeInTheDocument();
     expect(screen.getByText(/Missing evidence/)).toBeInTheDocument();
     expect(screen.getByText(/1 rejected hypotheses/)).toBeInTheDocument();
+    expect(screen.getByLabelText("Compare A")).toBeInTheDocument();
+    expect(screen.getByLabelText("Compare B")).toBeInTheDocument();
   });
 });

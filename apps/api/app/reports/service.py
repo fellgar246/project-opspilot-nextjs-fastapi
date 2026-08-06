@@ -39,18 +39,18 @@ async def validate_references(
             invalid.append(f"{kind}:{ref_id}")
             continue
         if kind == "evidence":
-            row = await session.get(Evidence, parsed)
-            if row is None or row.incident_id != incident_id:
+            evidence = await session.get(Evidence, parsed)
+            if evidence is None or evidence.incident_id != incident_id:
                 invalid.append(f"{kind}:{ref_id}")
         elif kind == "hypothesis":
-            row = await session.get(Hypothesis, parsed)
-            if row is None or row.incident_id != incident_id:
+            hypothesis = await session.get(Hypothesis, parsed)
+            if hypothesis is None or hypothesis.incident_id != incident_id:
                 invalid.append(f"{kind}:{ref_id}")
         elif kind == "action":
             from app.approvals.models import ProposedAction
 
-            row = await session.get(ProposedAction, parsed)
-            if row is None or row.incident_id != incident_id:
+            action = await session.get(ProposedAction, parsed)
+            if action is None or action.incident_id != incident_id:
                 invalid.append(f"{kind}:{ref_id}")
     return invalid
 

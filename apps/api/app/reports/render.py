@@ -20,8 +20,8 @@ def render_pdf_bytes(content: str) -> bytes | None:
     try:
         import io
 
-        from reportlab.lib.pagesizes import letter
-        from reportlab.pdfgen import canvas
+        from reportlab.lib.pagesizes import letter  # type: ignore[import-untyped]
+        from reportlab.pdfgen import canvas  # type: ignore[import-untyped]
 
         buffer = io.BytesIO()
         pdf = canvas.Canvas(buffer, pagesize=letter)

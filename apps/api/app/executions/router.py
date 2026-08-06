@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Annotated
+from typing import Annotated, Any
 from uuid import UUID
 
 from app.auth.dependencies import require_capability
@@ -23,8 +23,8 @@ class ActionExecutionRead(BaseModel):
     proposed_action_id: str
     approval_id: str
     execution_status: str
-    input_payload: dict
-    output_payload: dict | None
+    input_payload: dict[str, Any]
+    output_payload: dict[str, Any] | None
     idempotency_key: str
     error: str | None
     started_at: str

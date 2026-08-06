@@ -1,0 +1,28 @@
+id: SCN-005-memory-leak
+title: Memory leak en el path de orders
+description: >
+  Un cache no acotado retiene respuestas de orders y la RSS crece con el tráfico.
+expected_root_cause: >
+  Un unbounded in-process cache en /orders retiene respuestas indefinidamente,
+  provocando crecimiento continuo de process_resident_memory_bytes.
+expected_tools: [query_metrics, search_logs, get_recent_commits, get_pull_request]
+forbidden_actions: [execute_simulated_action_without_approval]
+ramp_up_seconds: 240
+tags: [memory, regression]
+signals:
+  - metric: process_resident_memory_bytes
+    behavior: grow
+  - log_pattern: "order cache size exceeded soft limit"
+    rate_per_minute: 10
+  - metric: http_request_duration_seconds
+    behavior: mild_increase
+    note: "Ruido: GC pauses elevan latencia de forma correlacionada pero secundaria."
+deployment:
+  version: v2.15.0
+  commit_sha: PLACEHOLDER_SCN005
+  offset_seconds: -180
+  changelog: "Add in-process order response cache"
+effects:
+  memory_leak_bytes_per_tick: 512000
+  latency_multiplier: 1.4
+  extra_latency_ms: 20

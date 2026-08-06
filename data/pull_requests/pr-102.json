@@ -1,0 +1,17 @@
+{
+  "number": 102,
+  "title": "Refactor catalog loader",
+  "description": "Load item details individually for clarity.",
+  "author": "ben.ortiz@example.com",
+  "commits": [
+    "03581197d51c600e04ac7a8840a3fad913f767fd"
+  ],
+  "files_changed": [
+    "src/catalog.py"
+  ],
+  "merged_at": "2024-01-14T09:00:00Z",
+  "reviewers": [
+    "diego.ruiz@example.com"
+  ],
+  "scenario_id": "SCN-002-n-plus-one"
+}

@@ -1,0 +1,10 @@
+{
+  "incident_id": "INC-H-008",
+  "title": "Redis eviction storm",
+  "service": "demo-service",
+  "root_cause": "Cache memory too small",
+  "resolution": "Raised Redis maxmemory",
+  "tags": [
+    "historical"
+  ]
+}

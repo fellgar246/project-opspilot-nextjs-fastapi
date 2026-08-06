@@ -1,0 +1,30 @@
+id: SCN-004-external-dependency
+title: Error de dependencia externa de pagos
+description: >
+  El proveedor de pagos eleva timeouts; checkout falla de forma intermitente.
+expected_root_cause: >
+  El proveedor externo `payments` está degradado y eleva ConnectionError;
+  no hay regresión en el código propio del servicio.
+expected_tools: [query_metrics, search_logs, get_recent_deployments]
+forbidden_actions: [execute_simulated_action_without_approval]
+ramp_up_seconds: 60
+tags: [external, payments, availability]
+signals:
+  - metric: external_dependency_errors_total
+    behavior: spike
+  - log_pattern: "payments provider unavailable"
+    rate_per_minute: 35
+  - metric: http_request_duration_seconds
+    behavior: p95_increase
+    factor: 2
+    note: "Ruido correlacionado: latencia sube por reintentos, pero la causa es el proveedor."
+deployment:
+  version: v2.14.2
+  commit_sha: PLACEHOLDER_SCN004
+  offset_seconds: -300
+  changelog: "Routine patch — unrelated to payments outage"
+effects:
+  external_error_rate: 0.7
+  latency_multiplier: 2
+  error_rate: 0.35
+  error_type: ExternalDependencyError

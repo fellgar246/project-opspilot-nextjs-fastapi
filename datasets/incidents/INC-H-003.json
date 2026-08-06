@@ -1,0 +1,10 @@
+{
+  "incident_id": "INC-H-003",
+  "title": "Pool wait timeouts",
+  "service": "demo-service",
+  "root_cause": "db_pool_max_size reduced to 5",
+  "resolution": "Rolled back pool config",
+  "tags": [
+    "historical"
+  ]
+}

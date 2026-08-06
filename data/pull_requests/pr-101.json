@@ -1,0 +1,17 @@
+{
+  "number": 101,
+  "title": "Reduce DB pool size",
+  "description": "Cut costs by lowering db_pool_max_size.",
+  "author": "cara.singh@example.com",
+  "commits": [
+    "a3c7dfeee57875b560a3b668c69cf2001703817f"
+  ],
+  "files_changed": [
+    "src/db.py"
+  ],
+  "merged_at": "2024-01-15T10:00:00Z",
+  "reviewers": [
+    "ava.chen@example.com"
+  ],
+  "scenario_id": "SCN-003-db-pool-exhaustion"
+}

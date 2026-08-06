@@ -5,7 +5,7 @@ PROFILE ?= minimal
 UV := uv
 PNPM := $(if $(wildcard node_modules/.bin/pnpm),./node_modules/.bin/pnpm,$(shell command -v pnpm 2>/dev/null || echo npx\ --yes\ pnpm@9))
 
-.PHONY: bootstrap up down reset lint format typecheck test migrate compose-validate build security-scan smoke seed-users seed-services seed-perf
+.PHONY: bootstrap up down reset lint format typecheck test migrate compose-validate build security-scan smoke seed-users seed-services seed-perf sim-seed sim-reset sim-scenario
 
 bootstrap:
 	@bash infra/scripts/bootstrap.sh
@@ -21,22 +21,24 @@ reset:
 	@bash infra/scripts/reset.sh
 
 lint:
-	@$(UV) run ruff check apps packages
-	@$(UV) run ruff format --check apps packages
+	@$(UV) run ruff check apps packages simulator/demo-service simulator/scripts simulator/traffic
+	@$(UV) run ruff format --check apps packages simulator/demo-service simulator/scripts simulator/traffic
 	@$(PNPM) lint
 
 format:
-	@$(UV) run ruff format apps packages
-	@$(UV) run ruff check --fix apps packages
+	@$(UV) run ruff format apps packages simulator/demo-service simulator/scripts simulator/traffic
+	@$(UV) run ruff check --fix apps packages simulator/demo-service simulator/scripts simulator/traffic
 	@$(PNPM) format
 
 typecheck:
-	@$(UV) run mypy apps/api/app packages
+	@$(UV) run mypy demo_services/api/app packages
+	@cd simulator/demo-service && $(UV) run mypy demo_service
 	@$(PNPM) typecheck
 
 test:
 	@cd apps/api && $(UV) run pytest
 	@cd apps/worker && $(UV) run pytest
+	@cd simulator/demo-service && $(UV) run pytest
 	@$(PNPM) test
 
 migrate:
@@ -46,8 +48,9 @@ compose-validate:
 	@$(COMPOSE) --profile minimal config >/dev/null
 	@$(COMPOSE) --profile ai config >/dev/null
 	@$(COMPOSE) --profile observability config >/dev/null
+	@$(COMPOSE) --profile sim config >/dev/null
 	@$(COMPOSE) --profile full config >/dev/null
-	@! $(COMPOSE) --profile minimal config | grep -E 'ollama|prometheus|grafana|loki|tempo|otel-collector|langfuse'
+	@! $(COMPOSE) --profile minimal config | grep -E 'ollama|prometheus|grafana|loki|tempo|otel-collector|langfuse|demo-service|traffic-generator'
 
 build:
 	@$(COMPOSE) --profile minimal build
@@ -66,3 +69,15 @@ seed-services:
 
 seed-perf:
 	@cd apps/api && $(UV) run python -m app.cli.seed_perf
+
+sim-seed:
+	@cd simulator/demo-service && $(UV) run python ../scripts/seed.py
+
+sim-reset:
+	@cd simulator/demo-service && $(UV) run python ../scripts/reset.py
+
+sim-scenario:
+	@test -n "$(ID)" || (echo "Usage: make sim-scenario ID=SCN-003-db-pool-exhaustion" && exit 1)
+	@curl -sS -X POST "http://127.0.0.1:8080/sim/scenarios/$(ID)/activate" \
+		-H "Content-Type: application/json" \
+		-d "{\"seed\": $${SEED:-42}, \"mode\": \"$${MODE:-live}\"}" | python -m json.tool

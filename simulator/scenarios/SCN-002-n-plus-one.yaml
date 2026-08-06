@@ -1,0 +1,30 @@
+id: SCN-002-n-plus-one
+title: Latencia por consulta N+1 en catálogo
+description: >
+  Un cambio en el listado de catálogo carga cada SKU con una query adicional.
+expected_root_cause: >
+  El endpoint /catalog ejecuta N+1 queries tras el commit que reemplazó el join
+  por fetches individuales, elevando p95 sin elevar errores.
+expected_tools: [query_metrics, search_logs, get_recent_commits, get_pull_request]
+forbidden_actions: [execute_simulated_action_without_approval]
+ramp_up_seconds: 120
+tags: [database, latency, regression]
+signals:
+  - metric: http_request_duration_seconds
+    behavior: p95_increase
+    factor: 8
+  - log_pattern: "slow query on catalog_items"
+    rate_per_minute: 25
+  - metric: db_pool_connections_in_use
+    behavior: mild_increase
+    note: "Ruido: el pool sube un poco por latencia, pero no está saturado."
+deployment:
+  version: v2.13.1
+  commit_sha: PLACEHOLDER_SCN002
+  offset_seconds: -60
+  changelog: "Refactor catalog loader"
+effects:
+  n_plus_one_queries: 20
+  latency_multiplier: 8
+  extra_latency_ms: 120
+  pool_saturation: 0.25

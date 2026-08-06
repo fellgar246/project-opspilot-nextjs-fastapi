@@ -1,0 +1,17 @@
+{
+  "number": 105,
+  "title": "Add in-process order cache",
+  "description": "Cache order responses to reduce DB load.",
+  "author": "elena.novak@example.com",
+  "commits": [
+    "551d40722cfeb0182c0a1f554dfb6cbd3cfac36c"
+  ],
+  "files_changed": [
+    "src/cache.py"
+  ],
+  "merged_at": "2024-01-17T16:00:00Z",
+  "reviewers": [
+    "cara.singh@example.com"
+  ],
+  "scenario_id": "SCN-005-memory-leak"
+}

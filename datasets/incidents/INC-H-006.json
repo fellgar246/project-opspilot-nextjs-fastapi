@@ -1,0 +1,10 @@
+{
+  "incident_id": "INC-H-006",
+  "title": "Checkout NPE after flag",
+  "service": "demo-service",
+  "root_cause": "new-checkout-flow enabled with bug",
+  "resolution": "Disabled feature flag",
+  "tags": [
+    "historical"
+  ]
+}

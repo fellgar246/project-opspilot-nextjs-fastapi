@@ -1,0 +1,32 @@
+id: SCN-003-db-pool-exhaustion
+title: Saturación del pool de conexiones tras despliegue
+description: >
+  El despliegue v2.14.0 redujo db_pool_max_size de 50 a 5.
+expected_root_cause: >
+  El despliegue v2.14.0 redujo db_pool_max_size de 50 a 5,
+  saturando el pool bajo carga normal.
+expected_tools: [query_metrics, search_logs, get_recent_deployments, get_recent_commits]
+forbidden_actions: [execute_simulated_action_without_approval]
+ramp_up_seconds: 180
+tags: [database, regression, deploy]
+signals:
+  - metric: db_pool_connections_in_use
+    behavior: saturate
+  - metric: http_request_duration_seconds
+    behavior: p95_increase
+    factor: 6
+  - metric: external_dependency_errors_total
+    behavior: mild_increase
+    note: "Ruido: un pico de errores del proveedor externo coincide en el tiempo."
+  - log_pattern: "connection pool timeout"
+    rate_per_minute: 40
+deployment:
+  version: v2.14.0
+  commit_sha: PLACEHOLDER_SCN003
+  offset_seconds: -120
+  changelog: "Tune DB pool for cost savings"
+effects:
+  pool_max_size: 5
+  pool_saturation: 0.95
+  latency_multiplier: 6
+  external_error_rate: 0.06

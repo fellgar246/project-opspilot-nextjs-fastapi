@@ -60,9 +60,21 @@ simulator/     # production simulator (SPEC-04)
 datasets/      # evaluation datasets
 ```
 
+## Simulator (SPEC-04)
+
+```bash
+make sim-seed                          # git repo, PRs, deployments, flags, replay frames
+docker compose --profile sim up -d --build
+make sim-scenario ID=SCN-003-db-pool-exhaustion
+make sim-reset
+```
+
+Scenario catalog: [docs/simulator/scenarios.md](docs/simulator/scenarios.md).
+
 ## Documentation
 
 - [Architecture (C4)](docs/architecture/README.md)
 - [ADRs](docs/adr/)
 - [Backlog](docs/backlog.md)
+- [Simulator scenarios](docs/simulator/scenarios.md)
 - [Plan maestro](plans/AI_Incident_Response_Engineer_Plan_Maestro.md)

@@ -1,0 +1,10 @@
+{
+  "incident_id": "INC-H-010",
+  "title": "Wrong region routing",
+  "service": "demo-service",
+  "root_cause": "Misconfigured load balancer",
+  "resolution": "Corrected target group",
+  "tags": [
+    "historical"
+  ]
+}

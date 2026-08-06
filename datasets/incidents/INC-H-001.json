@@ -1,0 +1,10 @@
+{
+  "incident_id": "INC-H-001",
+  "title": "Checkout 500s after config deploy",
+  "service": "demo-service",
+  "root_cause": "Missing PAYMENTS_API_KEY",
+  "resolution": "Re-injected secret and restarted",
+  "tags": [
+    "historical"
+  ]
+}

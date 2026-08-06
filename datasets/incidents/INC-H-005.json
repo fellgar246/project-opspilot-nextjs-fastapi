@@ -1,0 +1,10 @@
+{
+  "incident_id": "INC-H-005",
+  "title": "RSS climb on orders",
+  "service": "demo-service",
+  "root_cause": "Unbounded order cache",
+  "resolution": "Bounded cache + restart",
+  "tags": [
+    "historical"
+  ]
+}

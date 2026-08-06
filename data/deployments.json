@@ -1,0 +1,72 @@
+[
+  {
+    "deployment_id": "dep-seed-001",
+    "service": "demo-service",
+    "version": "v2.12.0",
+    "commit_sha": "888222eca2b344d7ea5bc49e7e579c657925a89e",
+    "deployed_at": 1785298442.168811,
+    "deployed_by": "ci-bot",
+    "status": "success",
+    "changelog": "Seed deployment for SCN-001-missing-env"
+  },
+  {
+    "deployment_id": "dep-seed-002",
+    "service": "demo-service",
+    "version": "v2.13.1",
+    "commit_sha": "03581197d51c600e04ac7a8840a3fad913f767fd",
+    "deployed_at": 1785384842.168811,
+    "deployed_by": "ci-bot",
+    "status": "success",
+    "changelog": "Seed deployment for SCN-002-n-plus-one"
+  },
+  {
+    "deployment_id": "dep-seed-003",
+    "service": "demo-service",
+    "version": "v2.14.0",
+    "commit_sha": "a3c7dfeee57875b560a3b668c69cf2001703817f",
+    "deployed_at": 1785471242.168811,
+    "deployed_by": "ci-bot",
+    "status": "success",
+    "changelog": "Seed deployment for SCN-003-db-pool-exhaustion"
+  },
+  {
+    "deployment_id": "dep-seed-004",
+    "service": "demo-service",
+    "version": "v2.14.2",
+    "commit_sha": "7bd83f44af81a383d46014e83ee9cd5fc8b58fd7",
+    "deployed_at": 1785557642.168811,
+    "deployed_by": "ci-bot",
+    "status": "success",
+    "changelog": "Seed deployment for SCN-004-external-dependency"
+  },
+  {
+    "deployment_id": "dep-seed-005",
+    "service": "demo-service",
+    "version": "v2.15.0",
+    "commit_sha": "551d40722cfeb0182c0a1f554dfb6cbd3cfac36c",
+    "deployed_at": 1785644042.168811,
+    "deployed_by": "ci-bot",
+    "status": "success",
+    "changelog": "Seed deployment for SCN-005-memory-leak"
+  },
+  {
+    "deployment_id": "dep-seed-006",
+    "service": "demo-service",
+    "version": "v2.15.1",
+    "commit_sha": "8e6718a57268e05d4c90a56189f9f9baa315b9e0",
+    "deployed_at": 1785730442.168811,
+    "deployed_by": "ci-bot",
+    "status": "success",
+    "changelog": "Seed deployment for SCN-006-bad-feature-flag"
+  },
+  {
+    "deployment_id": "dep-seed-007",
+    "service": "demo-service",
+    "version": "v2.16.0",
+    "commit_sha": "ff06e2196b52053eb35921f2405e38c8a186154f",
+    "deployed_at": 1785816842.168811,
+    "deployed_by": "ci-bot",
+    "status": "success",
+    "changelog": "Seed deployment for SCN-007-post-deploy-regression"
+  }
+]

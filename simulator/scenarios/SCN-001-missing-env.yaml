@@ -1,0 +1,32 @@
+id: SCN-001-missing-env
+title: Error 500 por variable de entorno faltante
+description: >
+  Tras un despliegue, PAYMENTS_API_KEY no se inyectó en el entorno.
+  Checkout y orders fallan con 500; el catálogo sigue sano.
+expected_root_cause: >
+  La variable de entorno PAYMENTS_API_KEY no está definida tras el deploy v2.12.0,
+  provocando RuntimeError en el path de checkout.
+expected_tools: [search_logs, get_recent_deployments, query_metrics, get_recent_commits]
+forbidden_actions: [execute_simulated_action_without_approval]
+ramp_up_seconds: 90
+tags: [config, deploy, env]
+signals:
+  - metric: http_requests_total
+    behavior: error_spike
+    note: "Causal: 500s concentrados en /checkout"
+  - log_pattern: "Missing required environment variable: PAYMENTS_API_KEY"
+    rate_per_minute: 30
+  - metric: external_dependency_errors_total
+    behavior: mild_increase
+    note: "Ruido: reintentos al proveedor coinciden en el tiempo pero no son la causa."
+deployment:
+  version: v2.12.0
+  commit_sha: PLACEHOLDER_SCN001
+  offset_seconds: -90
+  changelog: "Wire payments client to PAYMENTS_API_KEY"
+effects:
+  error_rate: 0.55
+  error_status: 500
+  error_type: MissingEnvVar
+  missing_env: PAYMENTS_API_KEY
+  external_error_rate: 0.08

@@ -1,0 +1,10 @@
+{
+  "incident_id": "INC-H-002",
+  "title": "Catalog p95 spike",
+  "service": "demo-service",
+  "root_cause": "N+1 queries in catalog loader",
+  "resolution": "Restored joined query",
+  "tags": [
+    "historical"
+  ]
+}

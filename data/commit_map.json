@@ -1,0 +1,9 @@
+{
+  "SCN-001-missing-env": "888222eca2b344d7ea5bc49e7e579c657925a89e",
+  "SCN-002-n-plus-one": "03581197d51c600e04ac7a8840a3fad913f767fd",
+  "SCN-003-db-pool-exhaustion": "a3c7dfeee57875b560a3b668c69cf2001703817f",
+  "SCN-004-external-dependency": "7bd83f44af81a383d46014e83ee9cd5fc8b58fd7",
+  "SCN-005-memory-leak": "551d40722cfeb0182c0a1f554dfb6cbd3cfac36c",
+  "SCN-006-bad-feature-flag": "8e6718a57268e05d4c90a56189f9f9baa315b9e0",
+  "SCN-007-post-deploy-regression": "ff06e2196b52053eb35921f2405e38c8a186154f"
+}

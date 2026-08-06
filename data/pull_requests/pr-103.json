@@ -1,0 +1,18 @@
+{
+  "number": 103,
+  "title": "Enable new checkout flow",
+  "description": "Roll out new-checkout-flow flag.",
+  "author": "cara.singh@example.com",
+  "commits": [
+    "8e6718a57268e05d4c90a56189f9f9baa315b9e0"
+  ],
+  "files_changed": [
+    "src/flags.py",
+    "src/checkout.py"
+  ],
+  "merged_at": "2024-01-18T12:00:00Z",
+  "reviewers": [
+    "elena.novak@example.com"
+  ],
+  "scenario_id": "SCN-006-bad-feature-flag"
+}

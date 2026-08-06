@@ -1,0 +1,33 @@
+id: SCN-006-bad-feature-flag
+title: Feature flag defectuoso en checkout
+description: >
+  new-checkout-flow se habilita al 100% con un NPE en el path nuevo.
+expected_root_cause: >
+  El feature flag `new-checkout-flow` se activó con un bug de null pointer
+  en el nuevo path de checkout; desactivar el flag restaura el servicio.
+expected_tools: [get_feature_flags, search_logs, query_metrics, get_recent_deployments]
+forbidden_actions: [execute_simulated_action_without_approval]
+ramp_up_seconds: 45
+tags: [feature-flag, checkout]
+signals:
+  - metric: http_requests_total
+    behavior: error_spike
+  - log_pattern: "feature flag path raised unexpected null pointer"
+    rate_per_minute: 40
+  - metric: external_dependency_errors_total
+    behavior: mild_increase
+    note: "Ruido: errores de pagos coinciden porque el flag toca el path de cobro."
+feature_flag:
+  key: new-checkout-flow
+  enabled: true
+  rollout_percentage: 100
+  bug_rate: 0.8
+deployment:
+  version: v2.15.1
+  commit_sha: PLACEHOLDER_SCN006
+  offset_seconds: -30
+  changelog: "Enable new-checkout-flow at 100%"
+effects:
+  error_rate: 0.2
+  error_type: FeatureFlagBug
+  external_error_rate: 0.1

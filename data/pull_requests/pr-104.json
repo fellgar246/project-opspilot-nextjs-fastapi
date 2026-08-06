@@ -1,0 +1,18 @@
+{
+  "number": 104,
+  "title": "Harden order_id validation",
+  "description": "Reject short order ids more aggressively.",
+  "author": "diego.ruiz@example.com",
+  "commits": [
+    "ff06e2196b52053eb35921f2405e38c8a186154f"
+  ],
+  "files_changed": [
+    "src/orders.py"
+  ],
+  "merged_at": "2024-01-19T08:30:00Z",
+  "reviewers": [
+    "ava.chen@example.com",
+    "ben.ortiz@example.com"
+  ],
+  "scenario_id": "SCN-007-post-deploy-regression"
+}

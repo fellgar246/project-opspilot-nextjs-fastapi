@@ -1,0 +1,10 @@
+{
+  "incident_id": "INC-H-007",
+  "title": "Orders validation failures",
+  "service": "demo-service",
+  "root_cause": "Bad order_id check in deploy",
+  "resolution": "Rolled back v2.16.0",
+  "tags": [
+    "historical"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "incident_id": "INC-H-004",
+  "title": "Payments timeouts",
+  "service": "demo-service",
+  "root_cause": "External provider degradation",
+  "resolution": "Failed open with retries; provider recovered",
+  "tags": [
+    "historical"
+  ]
+}

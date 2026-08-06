@@ -4,3 +4,4 @@ include:
   - path: infra/compose/compose.base.yml
   - path: infra/compose/compose.ai.yml
   - path: infra/compose/compose.observability.yml
+  - path: infra/compose/compose.sim.yml

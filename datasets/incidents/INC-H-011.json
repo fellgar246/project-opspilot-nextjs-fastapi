@@ -1,0 +1,10 @@
+{
+  "incident_id": "INC-H-011",
+  "title": "Slow migrations lock",
+  "service": "demo-service",
+  "root_cause": "Long ALTER on items",
+  "resolution": "Canceled migration, used expand-contract",
+  "tags": [
+    "historical"
+  ]
+}

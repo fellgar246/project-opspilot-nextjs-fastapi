@@ -1,0 +1,26 @@
+[
+  {
+    "key": "new-checkout-flow",
+    "service": "demo-service",
+    "enabled": false,
+    "rollout_percentage": 0.0,
+    "updated_at": 1785903242.168936,
+    "updated_by": "seed"
+  },
+  {
+    "key": "catalog-v2",
+    "service": "demo-service",
+    "enabled": true,
+    "rollout_percentage": 100.0,
+    "updated_at": 1785903242.168937,
+    "updated_by": "seed"
+  },
+  {
+    "key": "orders-cache",
+    "service": "demo-service",
+    "enabled": true,
+    "rollout_percentage": 50.0,
+    "updated_at": 1785903242.168937,
+    "updated_by": "seed"
+  }
+]

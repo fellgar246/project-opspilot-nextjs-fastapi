@@ -1,0 +1,49 @@
+services:
+  demo-service:
+    build:
+      context: ../..
+      dockerfile: simulator/demo-service/Dockerfile
+    profiles: [sim, observability, full]
+    environment:
+      LOG_LEVEL: INFO
+      INTERNAL_AUTH_TOKEN: ${SIM_INTERNAL_AUTH_TOKEN:-sim-internal-dev-token}
+      OTEL_EXPORTER_ENDPOINT: ${OTEL_EXPORTER_ENDPOINT:-http://otel-collector:4318/v1/traces}
+      SCENARIOS_DIR: /app/simulator/scenarios
+      DATA_DIR: /app/simulator/data
+    ports:
+      - "8080:8080"
+    volumes:
+      - ../../simulator/scenarios:/app/simulator/scenarios:ro
+      - ../../simulator/data:/app/simulator/data
+    networks:
+      - opspilot-net
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+
+  traffic-generator:
+    build:
+      context: ../..
+      dockerfile: simulator/traffic/Dockerfile
+    profiles: [sim, full]
+    environment:
+      SIM_URL: http://demo-service:8080
+      TRAFFIC_RPS: ${TRAFFIC_RPS:-5}
+    depends_on:
+      demo-service:
+        condition: service_healthy
+    networks:
+      - opspilot-net
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 128M

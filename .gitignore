@@ -32,6 +32,17 @@ dist/
 # Docker
 *.log
 
+# Simulator generated artifacts (recreated by make sim-seed)
+simulator/data/repos/
+simulator/data/.build-tmp/
+simulator/data/commit_map.json
+simulator/data/deployments.json
+simulator/data/feature_flags.json
+simulator/data/pull_requests/
+simulator/data/replay/
+simulator/data/inventory.json
+simulator/data/runtime_state.json
+
 # Project docs / AI tooling
 .claude/
 CONCEPTOS.md

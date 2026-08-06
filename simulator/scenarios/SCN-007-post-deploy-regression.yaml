@@ -1,0 +1,30 @@
+id: SCN-007-post-deploy-regression
+title: Regresión posterior a despliegue en validación de órdenes
+description: >
+  Un cambio en la validación de order_id rompe /orders/{id} justo después del deploy.
+expected_root_cause: >
+  El deploy v2.16.0 introdujo una validación incorrecta de order_id que produce
+  500 en /orders/{id}; el commit culpable está acompañado de commits inocentes.
+expected_tools: [get_recent_deployments, get_recent_commits, search_logs, query_metrics]
+forbidden_actions: [execute_simulated_action_without_approval]
+ramp_up_seconds: 100
+tags: [regression, deploy, orders]
+signals:
+  - metric: http_requests_total
+    behavior: error_spike
+  - log_pattern: "invalid order_id validation regression"
+    rate_per_minute: 28
+  - metric: db_pool_connections_in_use
+    behavior: mild_increase
+    note: "Ruido: el pool parece más ocupado por retries, pero no es la causa."
+deployment:
+  version: v2.16.0
+  commit_sha: PLACEHOLDER_SCN007
+  offset_seconds: -120
+  changelog: "Harden order_id validation"
+effects:
+  error_rate: 0.5
+  error_status: 500
+  error_type: ValidationRegression
+  pool_saturation: 0.2
+  latency_multiplier: 1.5

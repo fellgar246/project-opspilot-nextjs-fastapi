@@ -1,0 +1,15 @@
+{
+  "number": 106,
+  "title": "Docs: README ops section",
+  "description": "Innocent documentation PR.",
+  "author": "cara.singh@example.com",
+  "commits": [],
+  "files_changed": [
+    "README.md"
+  ],
+  "merged_at": "2024-01-12T11:00:00Z",
+  "reviewers": [
+    "ben.ortiz@example.com"
+  ],
+  "scenario_id": null
+}

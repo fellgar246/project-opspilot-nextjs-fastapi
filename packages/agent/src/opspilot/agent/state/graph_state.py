@@ -75,6 +75,8 @@ class IncidentInvestigationState(TypedDict):
     proposal_confidence: float | None
     assessed_risk_level: str | None
     approval_decision: dict[str, Any] | None
+    proposal_attempts: int
+    rejected_action_ids: list[str]
 
 
 def initial_state(
@@ -131,4 +133,6 @@ def initial_state(
         proposal_confidence=None,
         assessed_risk_level=None,
         approval_decision=None,
+        proposal_attempts=0,
+        rejected_action_ids=[],
     )

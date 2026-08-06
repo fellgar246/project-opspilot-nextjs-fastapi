@@ -47,7 +47,7 @@ async def investigate_incident(ctx: dict[str, object], agent_run_id: str) -> dic
         retrieval_store = SqlRetrievalStore(session)
         registry = build_default_registry(retrieval_store=retrieval_store)
         persistence = SqlAlchemyToolPersistence(session)
-        gateway = ToolGateway(registry, persistence)
+        gateway = ToolGateway(registry, persistence, event_publisher=publisher)
         provider = create_provider()
 
         checkpointer = await create_postgres_checkpointer(str(settings.database_url))

@@ -49,7 +49,7 @@ async def resume_investigation(
         retrieval_store = SqlRetrievalStore(session)
         registry = build_default_registry(retrieval_store=retrieval_store)
         persistence = SqlAlchemyToolPersistence(session)
-        gateway = ToolGateway(registry, persistence)
+        gateway = ToolGateway(registry, persistence, event_publisher=publisher)
         provider = create_provider()
         checkpointer = await create_postgres_checkpointer(str(settings.database_url))
         approval_store = SqlApprovalStore(session)
@@ -78,6 +78,12 @@ async def resume_investigation(
             agent_run.completed_at = datetime.now(UTC)
             await session.commit()
             return {"status": "failed"}
+
+        if final_state.get("investigation_status") == "awaiting_approval":
+            agent_run.status = AgentRunStatus.AWAITING_APPROVAL
+            await session.commit()
+            await engine.dispose()
+            return {"status": "awaiting_approval"}
 
         await finalize_agent_run(session, agent_run, final_state=final_state)
         await session.commit()

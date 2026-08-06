@@ -1,4 +1,7 @@
 import { fetchWithAuth } from "@/lib/api-client";
+import type { InvestigationEvent } from "@/lib/sse-client";
+
+export type { InvestigationEvent };
 
 export type AgentRun = {
   id: string;
@@ -108,4 +111,20 @@ export async function rejectAction(
 
 export function investigationEventsUrl(apiBaseUrl: string, incidentId: string): string {
   return `${apiBaseUrl}/api/v1/incidents/${incidentId}/events`;
+}
+
+export function approvalEventsUrl(apiBaseUrl: string): string {
+  return `${apiBaseUrl}/api/v1/approvals/events`;
+}
+
+export async function fetchEventHistory(
+  apiBaseUrl: string,
+  incidentId: string,
+  afterSeq = 0,
+): Promise<{ items: InvestigationEvent[]; latest_seq: number }> {
+  const params = afterSeq > 0 ? `?after_seq=${afterSeq}` : "";
+  return fetchWithAuth(
+    apiBaseUrl,
+    `/api/v1/incidents/${incidentId}/events/history${params}`,
+  );
 }

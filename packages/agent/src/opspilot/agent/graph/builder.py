@@ -5,7 +5,7 @@ from typing import Any
 
 from langgraph.graph import END, START, StateGraph
 from opspilot.agent.approvals.protocol import ApprovalStore
-from opspilot.agent.graph.routing import route_after_critique
+from opspilot.agent.graph.routing import route_after_approval, route_after_critique
 from opspilot.agent.nodes.close import make_close_investigation_node
 from opspilot.agent.nodes.collect import (
     make_code_changes_node,
@@ -90,7 +90,14 @@ def build_investigation_graph(
 
     graph.add_edge("propose_mitigation", "risk_assessment")
     graph.add_edge("risk_assessment", "request_human_approval")
-    graph.add_edge("request_human_approval", "close_investigation")
+    graph.add_conditional_edges(
+        "request_human_approval",
+        route_after_approval,
+        {
+            "propose_mitigation": "propose_mitigation",
+            "close_investigation": "close_investigation",
+        },
+    )
 
     def route_after_request(state: IncidentInvestigationState) -> str:
         target = state.get("next_collection_node")

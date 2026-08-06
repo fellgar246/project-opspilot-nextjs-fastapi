@@ -83,7 +83,9 @@ async def run_investigation(
             stream_mode="values",
         ):
             final_state = event
-            await _maybe_publish_node_events(event_publisher, previous=final_state, current=event)
+            await _maybe_publish_state_events(
+                event_publisher, previous=final_state, current=event
+            )
         return final_state
 
     state = initial_state(
@@ -112,7 +114,7 @@ async def run_investigation(
     final_state = state
 
     async for event in app.astream(state, config=config, stream_mode="values"):
-        await _maybe_publish_node_events(event_publisher, previous=previous, current=event)
+        await _maybe_publish_state_events(event_publisher, previous=previous, current=event)
         previous = event
         final_state = event
         if pause_checker and await pause_checker():
@@ -142,6 +144,82 @@ async def run_investigation(
         await event_publisher.publish(terminal, {"status": final_state.get("investigation_status")})
 
     return final_state
+
+
+async def _maybe_publish_state_events(
+    publisher: Any | None,
+    *,
+    previous: IncidentInvestigationState,
+    current: IncidentInvestigationState,
+) -> None:
+    if publisher is None:
+        return
+    await _maybe_publish_node_events(publisher, previous=previous, current=current)
+
+    prev_errors = set(previous.get("errors") or [])
+    curr_errors = current.get("errors") or []
+    if len(curr_errors) > len(prev_errors):
+        new_error = curr_errors[-1]
+        await publisher.publish(
+            "node_failed",
+            {
+                "node": current.get("current_node"),
+                "message": new_error,
+                "error_type": "node_error",
+            },
+        )
+
+    prev_evidence = {
+        ref.get("evidence_id") for ref in (previous.get("evidence_refs") or [])
+    }
+    for ref in current.get("evidence_refs") or []:
+        evidence_id = ref.get("evidence_id")
+        if evidence_id and evidence_id not in prev_evidence:
+            await publisher.publish(
+                "evidence_added",
+                {
+                    "evidence_id": evidence_id,
+                    "source_type": ref.get("source_type"),
+                    "title": ref.get("title"),
+                    "summary": ref.get("summary"),
+                    "tool_name": ref.get("tool_name"),
+                },
+            )
+
+    prev_hypothesis_ids = {
+        item.get("id") for item in (previous.get("hypotheses") or []) if item.get("id")
+    }
+    for hypothesis in current.get("hypotheses") or []:
+        hypothesis_id = hypothesis.get("id")
+        if not hypothesis_id:
+            continue
+        if hypothesis_id not in prev_hypothesis_ids:
+            await publisher.publish(
+                "hypothesis_added",
+                {
+                    "hypothesis_id": str(hypothesis_id),
+                    "statement": hypothesis.get("statement", "")[:200],
+                    "confidence": hypothesis.get("confidence"),
+                    "status": hypothesis.get("status"),
+                },
+            )
+        else:
+            prev = next(
+                (item for item in (previous.get("hypotheses") or []) if item.get("id") == hypothesis_id),
+                None,
+            )
+            if prev and (
+                prev.get("confidence") != hypothesis.get("confidence")
+                or prev.get("status") != hypothesis.get("status")
+            ):
+                await publisher.publish(
+                    "hypothesis_updated",
+                    {
+                        "hypothesis_id": str(hypothesis_id),
+                        "confidence": hypothesis.get("confidence"),
+                        "status": hypothesis.get("status"),
+                    },
+                )
 
 
 async def _maybe_publish_node_events(

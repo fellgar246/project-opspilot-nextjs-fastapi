@@ -28,11 +28,13 @@ class ToolGateway:
         *,
         settings: ToolGatewaySettings | None = None,
         suspicious_callback: Any | None = None,
+        event_publisher: Any | None = None,
     ) -> None:
         self.registry = registry
         self.persistence = persistence
         self.settings = settings or get_tool_settings()
         self.suspicious_callback = suspicious_callback
+        self.event_publisher = event_publisher
         self._breakers: dict[str, CircuitBreaker] = {}
         self._limiter = ConcurrencyLimiter(
             global_limit=self.settings.global_concurrency_limit,
@@ -129,6 +131,14 @@ class ToolGateway:
             )
 
         evidence_records = None
+        if self.event_publisher is not None:
+            await self.event_publisher.publish(
+                "tool_called",
+                {
+                    "tool": tool_name,
+                    "params_summary": _summarize_params(payload),
+                },
+            )
         try:
             try:
                 output, retry_count = await run_with_retries(
@@ -188,9 +198,20 @@ class ToolGateway:
         finally:
             await self._limiter.release(tool_name)
 
-        return await self._finalize(
+        finalized = await self._finalize(
             ctx, spec, payload, result, retry_count, evidence_records, started
         )
+        if self.event_publisher is not None:
+            await self.event_publisher.publish(
+                "tool_result",
+                {
+                    "tool": tool_name,
+                    "status": finalized.status,
+                    "latency_ms": finalized.latency_ms,
+                    "evidence_count": len(finalized.evidence_ids or []),
+                },
+            )
+        return finalized
 
     async def _finalize(
         self,
@@ -280,6 +301,16 @@ class ToolGateway:
             truncated=truncated,
             notes=notes or [],
         )
+
+
+def _summarize_params(payload: dict[str, Any]) -> dict[str, Any]:
+    summary: dict[str, Any] = {}
+    for key, value in payload.items():
+        if isinstance(value, str) and len(value) > 120:
+            summary[key] = value[:120] + "…"
+        else:
+            summary[key] = value
+    return summary
 
 
 def result_collected_at(started: float) -> datetime:

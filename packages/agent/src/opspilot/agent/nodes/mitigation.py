@@ -67,7 +67,23 @@ def make_propose_mitigation_node(
                 f"Mitigate incident based on hypothesis: {hypothesis['statement'][:120]}"
             ),
         }
-        result = await gateway.invoke("propose_rollback", tool_payload, ctx, collect_evidence=False)
+        tool_name = "propose_rollback"
+        attempts = state.get("proposal_attempts", 0)
+        if attempts >= 1:
+            tool_name = "propose_feature_flag_change"
+            tool_payload = {
+                "service": service,
+                "flag_name": "incident_mitigation_mode",
+                "desired_value": False,
+                "hypothesis_ids": [str(hypothesis.get("id", "draft"))],
+                "supporting_evidence": evidence_ids,
+                "expected_result": "Mitigation flag disabled to reduce blast radius",
+                "rollback_plan": f"Re-enable feature flag {service}/incident_mitigation_mode",
+                "description": (
+                    f"Alternative mitigation after rejection: {hypothesis['statement'][:120]}"
+                ),
+            }
+        result = await gateway.invoke(tool_name, tool_payload, ctx, collect_evidence=False)
         if result.status != "ok" or result.data is None:
             error_msg = result.error.message if result.error else result.status
             return {
@@ -135,6 +151,7 @@ def make_request_human_approval_node(
                 "current_node": "request_human_approval",
                 "completed_nodes": ["request_human_approval"],
                 "investigation_status": "completed",
+                "approval_decision": {"decision": "skipped"},
             }
 
         if risk_level not in {"medium", "high"}:
@@ -142,6 +159,7 @@ def make_request_human_approval_node(
                 "current_node": "request_human_approval",
                 "completed_nodes": ["request_human_approval"],
                 "investigation_status": "completed",
+                "approval_decision": {"decision": "skipped"},
             }
 
         approval_id_value: str | None = None
@@ -163,13 +181,24 @@ def make_request_human_approval_node(
         )
         branch = (decision or {}).get("decision", "rejected")
         status = "completed"
-        if branch == "approved":
-            status = "awaiting_execution"
-        return {
+        updates: dict[str, Any] = {
             "current_node": "request_human_approval",
             "completed_nodes": ["request_human_approval"],
             "approval_decision": decision,
-            "investigation_status": status,
         }
+        if branch == "approved":
+            status = "awaiting_execution"
+            updates["investigation_status"] = status
+            return updates
+
+        rejected_ids = list(state.get("rejected_action_ids") or [])
+        if pending_action_id:
+            rejected_ids.append(pending_action_id)
+        updates["rejected_action_ids"] = rejected_ids
+        updates["pending_action_id"] = None
+        updates["proposal"] = None
+        updates["proposal_attempts"] = state.get("proposal_attempts", 0) + 1
+        updates["investigation_status"] = "running"
+        return updates
 
     return request_human_approval

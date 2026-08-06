@@ -1,4 +1,5 @@
 export type InvestigationEvent = {
+  id?: string;
   incident_id: string;
   agent_run_id: string | null;
   seq: number;

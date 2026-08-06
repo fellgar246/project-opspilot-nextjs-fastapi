@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+import logging
 import secrets
 import uuid
 from datetime import UTC, datetime, timedelta
@@ -7,7 +9,7 @@ from typing import Any, cast
 
 from arq import create_pool
 from arq.connections import RedisSettings
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.approvals.models import (
@@ -29,6 +31,8 @@ from app.events.bus import publish_event
 from app.events.models import InvestigationEventType
 from app.incidents.models import Hypothesis, Incident
 from app.investigation.models import AgentRun, AgentRunStatus
+
+logger = logging.getLogger(__name__)
 
 
 class ProposalValidationError(AppError):
@@ -176,6 +180,21 @@ async def create_pending_approval(
             "expires_at": approval.expires_at.isoformat(),
         },
     )
+    try:
+        from app.core.redis import get_redis
+
+        await get_redis().publish(
+            "approvals:pending",
+            json.dumps(
+                {
+                    "approval_id": str(approval.id),
+                    "incident_id": str(proposed_action.incident_id),
+                    "risk_level": proposed_action.risk_level,
+                }
+            ),
+        )
+    except Exception:
+        logger.exception("approval_global_publish_failed")
     await record_audit_event(
         session,
         actor_type="agent",
@@ -193,10 +212,17 @@ async def create_pending_approval(
 
 async def consume_resume_token(session: AsyncSession, approval: Approval) -> bool:
     """Atomically consume resume token; returns False if already consumed."""
-    if approval.resume_token_consumed:
+    result = await session.execute(
+        update(Approval)
+        .where(
+            Approval.id == approval.id,
+            Approval.resume_token_consumed.is_(False),
+        )
+        .values(resume_token_consumed=True)
+    )
+    if result.rowcount == 0:
         return False
     approval.resume_token_consumed = True
-    await session.flush()
     return True
 
 

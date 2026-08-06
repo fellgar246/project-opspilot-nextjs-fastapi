@@ -2,17 +2,17 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useAuth } from "@/features/auth/AuthProvider";
 import { getDefaultApiBaseUrl } from "@/lib/auth-api";
 import {
   approveAction,
+  approvalEventsUrl,
   fetchPendingApprovals,
   rejectAction,
   type Approval,
 } from "@/lib/investigation-api";
-import { InvestigationEventSource, type InvestigationEvent } from "@/lib/sse-client";
 
 function formatCountdown(expiresAt: string): string {
   const remainingMs = new Date(expiresAt).getTime() - Date.now();
@@ -96,6 +96,42 @@ function ApprovalCard({ approval, canDecide, onDecided }: ApprovalCardProps) {
             <pre>{JSON.stringify(approval.action.parameters, null, 2)}</pre>
           </dd>
         </div>
+        <div>
+          <dt>Supporting hypotheses</dt>
+          <dd>
+            {approval.action.hypothesis_ids.length === 0 ? (
+              "None"
+            ) : (
+              <ul>
+                {approval.action.hypothesis_ids.map((id) => (
+                  <li key={id}>
+                    <Link href={`/incidents/${approval.incident_id}?tab=hypotheses#hypothesis-${id}`}>
+                      {id}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </dd>
+        </div>
+        <div>
+          <dt>Supporting evidence</dt>
+          <dd>
+            {approval.action.supporting_evidence.length === 0 ? (
+              "None"
+            ) : (
+              <ul>
+                {approval.action.supporting_evidence.map((id) => (
+                  <li key={id}>
+                    <Link href={`/incidents/${approval.incident_id}?tab=evidence#evidence-${id}`}>
+                      {id}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </dd>
+        </div>
       </dl>
 
       {canDecide ? (
@@ -150,7 +186,7 @@ export function ApprovalCenter() {
   const pendingQuery = useQuery({
     queryKey: ["approvals", "pending"],
     queryFn: () => fetchPendingApprovals(apiBaseUrl),
-    refetchInterval: 30_000,
+    refetchInterval: 10_000,
   });
 
   useEffect(() => {
@@ -159,30 +195,18 @@ export function ApprovalCenter() {
     }
   }, [pendingQuery.data]);
 
-  const incidentIds = useMemo(
-    () => [...new Set(liveApprovals.map((item) => item.incident_id))],
-    [liveApprovals],
-  );
-
   useEffect(() => {
-    const sources: InvestigationEventSource[] = [];
-    for (const incidentId of incidentIds) {
-      const source = new InvestigationEventSource(
-        `${apiBaseUrl}/api/v1/incidents/${incidentId}/events`,
-        (event: InvestigationEvent) => {
-          if (event.type === "approval_requested") {
-            void queryClient.invalidateQueries({ queryKey: ["approvals", "pending"] });
-          }
-        },
-        setConnectionState,
-      );
-      source.connect();
-      sources.push(source);
-    }
+    const source = new EventSource(approvalEventsUrl(apiBaseUrl), { withCredentials: true });
+    source.addEventListener("approval_requested", () => {
+      void queryClient.invalidateQueries({ queryKey: ["approvals", "pending"] });
+    });
+    source.onopen = () => setConnectionState("connected");
+    source.onerror = () => setConnectionState("reconnecting");
     return () => {
-      for (const source of sources) source.close();
+      source.close();
+      setConnectionState("disconnected");
     };
-  }, [apiBaseUrl, incidentIds, queryClient]);
+  }, [apiBaseUrl, queryClient]);
 
   const refresh = () => {
     void queryClient.invalidateQueries({ queryKey: ["approvals", "pending"] });

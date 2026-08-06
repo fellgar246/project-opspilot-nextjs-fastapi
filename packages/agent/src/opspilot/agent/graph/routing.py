@@ -8,6 +8,19 @@ from opspilot.agent.state.graph_state import IncidentInvestigationState
 from opspilot.agent.state.schema import COLLECTION_NODES, TOOL_BY_COLLECTION_NODE
 
 
+def route_after_approval(
+    state: IncidentInvestigationState,
+) -> Literal["propose_mitigation", "close_investigation"]:
+    decision = state.get("approval_decision") or {}
+    branch = decision.get("decision", "rejected")
+    if branch in {"approved", "skipped"}:
+        return "close_investigation"
+    attempts = state.get("proposal_attempts", 0)
+    if attempts < 2:
+        return "propose_mitigation"
+    return "close_investigation"
+
+
 def route_after_critique(
     state: IncidentInvestigationState,
 ) -> Literal["request_more_evidence", "propose_mitigation", "close"]:

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import uuid
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from app.approvals import service as approval_service
@@ -57,6 +57,10 @@ async def test_double_resume_token_rejected(monkeypatch: pytest.MonkeyPatch) -> 
         hypothesis_ids=[uuid.uuid4()],
     )
     session.get = AsyncMock(side_effect=lambda model, pk: action if pk == action.id else approval)
+
+    update_result = MagicMock()
+    update_result.rowcount = 0
+    session.execute = AsyncMock(return_value=update_result)
 
     with pytest.raises(AppError) as exc:
         await approval_service.approve_action(

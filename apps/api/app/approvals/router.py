@@ -1,9 +1,14 @@
 from __future__ import annotations
 
+import asyncio
+import json
+import logging
+from collections.abc import AsyncIterator
 from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Request
+from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.approvals import service as approval_service
@@ -19,9 +24,13 @@ from app.approvals.schemas import (
 from app.auth.dependencies import require_capability
 from app.auth.models import User
 from app.auth.policy import Capability
+from app.core.config import get_settings
 from app.core.errors import AppError
+from app.core.redis import get_redis
 from app.db.session import get_session
 from app.incidents.service import require_incident
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(tags=["approvals"])
 
@@ -71,6 +80,46 @@ async def list_pending_approvals(
         for approval, action, incident in rows
     ]
     return ApprovalListResponse(items=items)
+
+
+async def _approval_event_stream() -> AsyncIterator[str]:
+    settings = get_settings()
+    redis = get_redis()
+    pubsub = redis.pubsub()
+    channel = "approvals:pending"
+    keepalive_ticks = 0
+    try:
+        await pubsub.subscribe(channel)
+        while True:
+            message = await pubsub.get_message(ignore_subscribe_messages=True, timeout=1.0)
+            if message and message.get("type") == "message":
+                payload = message["data"]
+                if isinstance(payload, bytes):
+                    payload = payload.decode()
+                yield f"event: approval_requested\ndata: {payload}\n\n"
+            keepalive_ticks += 1
+            if keepalive_ticks >= settings.sse_keepalive_seconds:
+                yield ": keep-alive\n\n"
+                keepalive_ticks = 0
+            await asyncio.sleep(0.05)
+    finally:
+        await pubsub.unsubscribe(channel)
+        await pubsub.aclose()  # type: ignore[no-untyped-call]
+
+
+@router.get("/approvals/events")
+async def stream_approval_events(
+    _: Annotated[User, Depends(require_capability(Capability.READ_INCIDENTS))],
+) -> StreamingResponse:
+    return StreamingResponse(
+        _approval_event_stream(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )
 
 
 @router.get("/incidents/{incident_id}/proposed-actions", response_model=ProposedActionListResponse)

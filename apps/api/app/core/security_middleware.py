@@ -3,11 +3,10 @@ from __future__ import annotations
 import time
 from collections.abc import Awaitable, Callable
 
+from opspilot.telemetry.metrics import HTTP_LATENCY, HTTP_REQUESTS
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import Response
-
-from opspilot.telemetry.metrics import HTTP_LATENCY, HTTP_REQUESTS
 
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
@@ -20,7 +19,8 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
         response.headers["Content-Security-Policy"] = (
-            "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'"
+            "default-src 'self'; script-src 'self' 'unsafe-inline'; "
+            "style-src 'self' 'unsafe-inline'"
         )
         if request.url.scheme == "https":
             response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"

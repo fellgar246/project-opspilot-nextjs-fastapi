@@ -8,7 +8,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Protocol
 
-from opspilot.agent.evaluations.compare import GATE_THRESHOLDS, compare_runs
+from opspilot.agent.evaluations.compare import GATE_THRESHOLDS
 from opspilot.agent.evaluations.evaluators.deterministic import run_deterministic_evaluators
 from opspilot.agent.evaluations.evaluators.llm_judge import run_llm_judges
 from opspilot.agent.evaluations.metrics import EvaluationMetrics, compute_metrics

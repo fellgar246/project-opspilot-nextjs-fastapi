@@ -4,13 +4,12 @@ import uuid
 from datetime import UTC, datetime
 from pathlib import Path
 
-from opspilot.agent.evaluations import RunConfig, compare_runs, run_evaluation
-from sqlalchemy import func, select
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from app.core.config import Settings
 from app.evaluations.models import EvaluationCase, EvaluationCaseResult, EvaluationRun
 from app.evaluations.schemas import EvaluationCaseRead, EvaluationRunRead
+from opspilot.agent.evaluations import RunConfig, compare_runs, run_evaluation
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 async def sync_cases_from_repo(session: AsyncSession, dataset_dir: Path | None = None) -> int:
@@ -186,9 +185,9 @@ async def compare_evaluation_runs(
     candidate = await get_run(session, candidate_id)
     if baseline is None or candidate is None:
         raise ValueError("run not found")
-    from opspilot.agent.evaluations.metrics import EvaluationMetrics
-
     from dataclasses import fields
+
+    from opspilot.agent.evaluations.metrics import EvaluationMetrics
 
     valid = {f.name for f in fields(EvaluationMetrics)}
     base_metrics = EvaluationMetrics(

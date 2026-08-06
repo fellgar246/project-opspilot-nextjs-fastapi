@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-import uuid
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
@@ -9,8 +8,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
-from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 from opspilot.telemetry import APP_INFO, TraceContextLogFilter, configure_tracing
+from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 
 from app.api.routes import router as health_router
 from app.approvals.router import router as approvals_router

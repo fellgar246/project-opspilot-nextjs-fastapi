@@ -3,9 +3,6 @@ from __future__ import annotations
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Query
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from app.auth.dependencies import require_capability
 from app.auth.models import User
 from app.auth.policy import Capability
@@ -20,6 +17,8 @@ from app.evaluations.schemas import (
     EvaluationRunRead,
     EvaluationRunRequest,
 )
+from fastapi import APIRouter, Depends, Query
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(prefix="/evaluations", tags=["evaluations"])
 

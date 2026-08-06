@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import pytest
-
 from opspilot.agent.evaluations import RunConfig, compare_runs, load_cases, run_evaluation
 from opspilot.agent.evaluations.metrics import EvaluationMetrics, compute_metrics
 from opspilot.agent.evaluations.models import (

@@ -5,8 +5,8 @@ import threading
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 from arq.connections import RedisSettings
-from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 from opspilot.telemetry import TraceContextLogFilter, configure_tracing
+from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 
 from worker.config import get_worker_settings
 from worker.logging import configure_logging
@@ -17,7 +17,9 @@ from worker.tasks.ping import ping
 settings = get_worker_settings()
 configure_logging(settings.log_level)
 logging.getLogger().addFilter(TraceContextLogFilter())
-configure_tracing("opspilot-worker", otlp_endpoint=getattr(settings, "otel_exporter_endpoint", None))
+configure_tracing(
+    "opspilot-worker", otlp_endpoint=getattr(settings, "otel_exporter_endpoint", None)
+)
 
 
 class _MetricsHandler(BaseHTTPRequestHandler):

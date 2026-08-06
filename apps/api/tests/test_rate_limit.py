@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 import pytest
-from starlette.requests import Request
-
 from app.core.security_middleware import RateLimitMiddleware
+from starlette.requests import Request
 
 
 @pytest.mark.asyncio

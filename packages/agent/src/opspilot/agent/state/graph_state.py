@@ -78,6 +78,15 @@ class IncidentInvestigationState(TypedDict):
     proposal_attempts: int
     rejected_action_ids: list[str]
 
+    execution_id: str | None
+    execution_status: str | None
+    execution_result: dict[str, Any] | None
+    recovery_verdict: dict[str, Any] | None
+    postmortem_id: str | None
+    postmortem_status: str | None
+    postmortem_content: str | None
+    close_summary: dict[str, Any] | None
+
 
 def initial_state(
     *,
@@ -135,4 +144,12 @@ def initial_state(
         approval_decision=None,
         proposal_attempts=0,
         rejected_action_ids=[],
+        execution_id=None,
+        execution_status=None,
+        execution_result=None,
+        recovery_verdict=None,
+        postmortem_id=None,
+        postmortem_status=None,
+        postmortem_content=None,
+        close_summary=None,
     )

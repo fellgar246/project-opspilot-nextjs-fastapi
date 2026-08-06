@@ -2,10 +2,12 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
-import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
+import { ActionsPanel } from "@/features/actions/ActionsPanel";
 import { HypothesesPanel } from "@/features/hypotheses/HypothesesPanel";
-import { IncidentActionsPanel } from "@/features/approvals/IncidentActionsPanel";
+import { PostmortemPanel } from "@/features/postmortem/PostmortemPanel";
 import { InvestigationLivePanel } from "@/features/investigation-live/InvestigationLivePanel";
 import { useAuth } from "@/features/auth/AuthProvider";
 import { getDefaultApiBaseUrl } from "@/lib/auth-api";
@@ -69,9 +71,20 @@ export function IncidentDetail({ incidentId }: IncidentDetailProps) {
   const { can } = useAuth();
   const apiBaseUrl = getDefaultApiBaseUrl();
   const queryClient = useQueryClient();
-  const [activeTab, setActiveTab] = useState<TabId>("overview");
+  const searchParams = useSearchParams();
+  const initialTab = searchParams.get("tab");
+  const [activeTab, setActiveTab] = useState<TabId>(
+    TABS.includes(initialTab as TabId) ? (initialTab as TabId) : "overview",
+  );
   const [note, setNote] = useState("");
   const [focusedEvidenceId, setFocusedEvidenceId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab && TABS.includes(tab as TabId)) {
+      setActiveTab(tab as TabId);
+    }
+  }, [searchParams]);
 
   const incidentQuery = useQuery({
     queryKey: ["incident", incidentId],
@@ -284,7 +297,7 @@ export function IncidentDetail({ incidentId }: IncidentDetailProps) {
           </div>
         ) : null}
 
-        {activeTab === "actions" ? <IncidentActionsPanel incidentId={incidentId} /> : null}
+        {activeTab === "actions" ? <ActionsPanel incidentId={incidentId} /> : null}
 
         {activeTab === "audit" ? (
           <div>
@@ -307,9 +320,7 @@ export function IncidentDetail({ incidentId }: IncidentDetailProps) {
           </div>
         ) : null}
 
-        {activeTab === "postmortem" ? (
-          <Placeholder spec="SPEC-09" title="Postmortem" />
-        ) : null}
+        {activeTab === "postmortem" ? <PostmortemPanel incidentId={incidentId} /> : null}
       </div>
     </section>
   );

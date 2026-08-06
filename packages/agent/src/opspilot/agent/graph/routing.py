@@ -10,15 +10,45 @@ from opspilot.agent.state.schema import COLLECTION_NODES, TOOL_BY_COLLECTION_NOD
 
 def route_after_approval(
     state: IncidentInvestigationState,
-) -> Literal["propose_mitigation", "close_investigation"]:
+) -> Literal[
+    "propose_mitigation",
+    "execute_approved_action",
+    "generate_postmortem",
+    "close_investigation",
+]:
     decision = state.get("approval_decision") or {}
     branch = decision.get("decision", "rejected")
-    if branch in {"approved", "skipped"}:
-        return "close_investigation"
+    if branch == "approved":
+        return "execute_approved_action"
+    if branch == "skipped":
+        return "generate_postmortem"
     attempts = state.get("proposal_attempts", 0)
     if attempts < 2:
         return "propose_mitigation"
     return "close_investigation"
+
+
+def route_after_execution(
+    state: IncidentInvestigationState,
+) -> Literal["verify_recovery", "propose_mitigation", "close_investigation"]:
+    if state.get("execution_status") == "succeeded":
+        return "verify_recovery"
+    attempts = state.get("proposal_attempts", 0)
+    if attempts < 2:
+        return "propose_mitigation"
+    return "close_investigation"
+
+
+def route_after_verify_recovery(
+    state: IncidentInvestigationState,
+) -> Literal["generate_postmortem", "propose_mitigation", "close_investigation"]:
+    verdict = (state.get("recovery_verdict") or {}).get("status")
+    if verdict == "not_recovered":
+        attempts = state.get("proposal_attempts", 0)
+        if attempts < 2:
+            return "propose_mitigation"
+        return "close_investigation"
+    return "generate_postmortem"
 
 
 def route_after_critique(

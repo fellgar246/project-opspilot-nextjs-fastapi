@@ -138,6 +138,41 @@ class SimulatorApiAdapter(DeploymentBackend, FeatureFlagBackend, ServiceCatalogB
             }
         ]
 
+    async def rollback_deployment(
+        self,
+        deployment_id: str,
+        *,
+        auth_token: str,
+    ) -> dict[str, Any]:
+        client = await self._get_client()
+        response = await client.post(
+            f"{self.base_url}/sim/deployments/{deployment_id}/rollback",
+            headers={"Authorization": f"Bearer {auth_token}"},
+        )
+        response.raise_for_status()
+        return cast(dict[str, Any], response.json())
+
+    async def mutate_feature_flag(
+        self,
+        key: str,
+        *,
+        enabled: bool,
+        auth_token: str,
+        rollout_percentage: float = 100.0,
+    ) -> dict[str, Any]:
+        client = await self._get_client()
+        response = await client.post(
+            f"{self.base_url}/sim/feature-flags/{key}",
+            headers={"Authorization": f"Bearer {auth_token}"},
+            json={
+                "enabled": enabled,
+                "rollout_percentage": rollout_percentage,
+                "updated_by": "opspilot-agent",
+            },
+        )
+        response.raise_for_status()
+        return cast(dict[str, Any], response.json())
+
     async def get_health(self, service: str) -> dict[str, Any]:
         try:
             client = await self._get_client()

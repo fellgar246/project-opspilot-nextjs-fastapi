@@ -34,6 +34,8 @@ class ProposedActionStatus(enum.StrEnum):
     APPROVED = "approved"
     REJECTED = "rejected"
     CANCELLED = "cancelled"
+    EXECUTED = "executed"
+    FAILED = "failed"
 
 
 class ApprovalDecision(enum.StrEnum):
@@ -125,6 +127,8 @@ class Approval(Base):
     reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     resume_token: Mapped[str] = mapped_column(String(64), nullable=False, unique=True)
     resume_token_consumed: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    parameters_hash: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    execution_consumed: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     agent_run_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
         ForeignKey("agent_runs.id", ondelete="CASCADE"),

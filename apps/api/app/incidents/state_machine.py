@@ -8,7 +8,7 @@ ALLOWED_TRANSITIONS: dict[IncidentStatus, set[IncidentStatus]] = {
     IncidentStatus.MITIGATING: {IncidentStatus.MONITORING},
     IncidentStatus.MONITORING: {IncidentStatus.RESOLVED},
     IncidentStatus.RESOLVED: {IncidentStatus.CLOSED},
-    IncidentStatus.CLOSED: set(),
+    IncidentStatus.CLOSED: {IncidentStatus.INVESTIGATING},
 }
 
 ADMIN_CLOSE_FROM: frozenset[IncidentStatus] = frozenset(

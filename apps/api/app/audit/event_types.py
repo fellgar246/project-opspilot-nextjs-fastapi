@@ -21,5 +21,8 @@ class AuditEventType(enum.StrEnum):
     APPROVAL_REQUESTED = "approval.requested"
     APPROVAL_GRANTED = "approval.granted"
     APPROVAL_REJECTED = "approval.rejected"
+    ACTION_PARAMETER_MISMATCH = "action.parameter_mismatch"
     ACTION_EXECUTED = "action.executed"
+    ACTION_ROLLED_BACK = "action.rolled_back"
+    RECOVERY_VERIFIED = "recovery.verified"
     POSTMORTEM_GENERATED = "postmortem.generated"

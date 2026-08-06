@@ -55,7 +55,7 @@ async def start_investigation(
     actor: User,
     request_id: str | None,
 ) -> AgentRun:
-    if incident.status not in {IncidentStatus.OPEN, IncidentStatus.INVESTIGATING}:
+    if incident.status not in {IncidentStatus.OPEN, IncidentStatus.INVESTIGATING, IncidentStatus.CLOSED}:
         raise AppError(
             f"Cannot start investigation from status '{incident.status.value}'",
             status_code=409,
@@ -98,6 +98,15 @@ async def start_investigation(
             incident,
             target_status=IncidentStatus.INVESTIGATING,
             reason="Investigation started",
+            actor=actor,
+            request_id=request_id,
+        )
+    elif incident.status == IncidentStatus.CLOSED:
+        await update_incident_status(
+            session,
+            incident,
+            target_status=IncidentStatus.INVESTIGATING,
+            reason="Incident reopened for new investigation",
             actor=actor,
             request_id=request_id,
         )

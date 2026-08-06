@@ -19,6 +19,8 @@ from opspilot.tools.read.retrieval_tools import SearchRunbooksTool, SearchSimila
 from opspilot.tools.registry import ToolRegistry
 from opspilot.tools.retrieval.memory import InMemoryRetrievalStore
 from opspilot.tools.retrieval.protocol import RetrievalStore
+from opspilot.tools.execute.protocol import ExecutionStore
+from opspilot.tools.execute.execute_simulated_action import ExecuteSimulatedActionTool
 from opspilot.tools.write_proposals.proposals import (
     ProposeFeatureFlagChangeTool,
     ProposeRollbackTool,
@@ -29,6 +31,7 @@ def build_default_registry(
     settings: ToolGatewaySettings | None = None,
     *,
     retrieval_store: RetrievalStore | None = None,
+    execution_store: ExecutionStore | None = None,
 ) -> ToolRegistry:
     settings = settings or get_tool_settings()
     registry = ToolRegistry()
@@ -63,5 +66,14 @@ def build_default_registry(
         ProposeFeatureFlagChangeTool(),
     ):
         registry.register(tool)
+
+    if execution_store is not None:
+        registry.register(
+            ExecuteSimulatedActionTool(
+                simulator,
+                execution_store,
+                internal_auth_token=settings.sim_internal_auth_token,
+            )
+        )
 
     return registry

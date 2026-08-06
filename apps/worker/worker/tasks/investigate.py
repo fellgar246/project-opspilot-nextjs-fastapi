@@ -19,6 +19,8 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from worker.adapters import SqlApprovalStore, WorkerEventPublisher
 from worker.config import get_worker_settings
 from worker.db import database_url_async
+from worker.execution_store import SqlExecutionStore
+from worker.postmortem_store import SqlPostmortemStore
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +47,10 @@ async def investigate_incident(ctx: dict[str, object], agent_run_id: str) -> dic
 
         incident = await load_incident_context(session, agent_run.incident_id)
         retrieval_store = SqlRetrievalStore(session)
-        registry = build_default_registry(retrieval_store=retrieval_store)
+        registry = build_default_registry(
+            retrieval_store=retrieval_store,
+            execution_store=SqlExecutionStore(session),
+        )
         persistence = SqlAlchemyToolPersistence(session)
         publisher = WorkerEventPublisher(
             session,
@@ -63,6 +68,7 @@ async def investigate_incident(ctx: dict[str, object], agent_run_id: str) -> dic
                 return row is not None and row.status == AgentRunStatus.PAUSED
 
         approval_store = SqlApprovalStore(session)
+        postmortem_store = SqlPostmortemStore(session)
 
         try:
             final_state = await run_investigation(
@@ -74,6 +80,7 @@ async def investigate_incident(ctx: dict[str, object], agent_run_id: str) -> dic
                 graph_thread_id=agent_run.graph_thread_id,
                 pause_checker=pause_checker,
                 approval_store=approval_store,
+                postmortem_store=postmortem_store,
                 event_publisher=publisher,
             )
         except Exception as exc:

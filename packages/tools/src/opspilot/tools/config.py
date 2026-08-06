@@ -34,6 +34,12 @@ class ToolGatewaySettings(BaseSettings):
     max_log_limit: int = 500
     max_metric_points: int = 100
     output_summary_max_chars: int = 2000
+    sim_internal_auth_token: str = "sim-internal-dev-token"
+
+    recovery_stabilization_seconds: int = 30
+    recovery_observation_seconds: int = 60
+    recovery_error_rate_threshold: float = 0.05
+    recovery_partial_threshold: float = 0.15
 
 
 @lru_cache

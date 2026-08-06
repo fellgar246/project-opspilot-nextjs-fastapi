@@ -31,6 +31,9 @@ NODE_NAMES = {
     "propose_mitigation",
     "risk_assessment",
     "request_human_approval",
+    "execute_approved_action",
+    "verify_recovery",
+    "generate_postmortem",
     "close_investigation",
 }
 
@@ -64,6 +67,7 @@ async def run_investigation(
     pause_checker: Any | None = None,
     approval_store: Any | None = None,
     event_publisher: Any | None = None,
+    postmortem_store: Any | None = None,
     resume_value: dict[str, Any] | None = None,
 ) -> IncidentInvestigationState:
     settings = settings or get_agent_settings()
@@ -72,6 +76,7 @@ async def run_investigation(
         gateway,
         checkpointer=checkpointer,
         approval_store=approval_store,
+        postmortem_store=postmortem_store,
     )
     config: Any = {"configurable": {"thread_id": graph_thread_id}}
 

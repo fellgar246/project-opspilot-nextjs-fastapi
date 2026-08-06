@@ -29,6 +29,9 @@ class InvestigationEventType(enum.StrEnum):
     RUN_RESUMED = "run_resumed"
     RUN_COMPLETED = "run_completed"
     RUN_FAILED = "run_failed"
+    ACTION_EXECUTED = "action_executed"
+    RECOVERY_VERIFIED = "recovery_verified"
+    POSTMORTEM_GENERATED = "postmortem_generated"
 
 
 TERMINAL_EVENT_TYPES = {

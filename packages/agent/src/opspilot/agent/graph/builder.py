@@ -5,7 +5,12 @@ from typing import Any
 
 from langgraph.graph import END, START, StateGraph
 from opspilot.agent.approvals.protocol import ApprovalStore
-from opspilot.agent.graph.routing import route_after_approval, route_after_critique
+from opspilot.agent.graph.routing import (
+    route_after_approval,
+    route_after_critique,
+    route_after_execution,
+    route_after_verify_recovery,
+)
 from opspilot.agent.nodes.close import make_close_investigation_node
 from opspilot.agent.nodes.collect import (
     make_code_changes_node,
@@ -15,16 +20,19 @@ from opspilot.agent.nodes.collect import (
     make_service_health_node,
 )
 from opspilot.agent.nodes.critique import make_critique_hypotheses_node
+from opspilot.agent.nodes.execute_action import make_execute_approved_action_node
 from opspilot.agent.nodes.hypotheses import make_hypotheses_node
 from opspilot.agent.nodes.mitigation import (
     make_propose_mitigation_node,
     make_request_human_approval_node,
     make_risk_assessment_node,
 )
+from opspilot.agent.nodes.postmortem import make_generate_postmortem_node
 from opspilot.agent.nodes.plan import make_plan_node
 from opspilot.agent.nodes.request_evidence import make_request_more_evidence_node
 from opspilot.agent.nodes.retrieve_runbooks import make_retrieve_runbooks_node
 from opspilot.agent.nodes.triage import make_triage_node
+from opspilot.agent.nodes.verify_recovery import make_verify_recovery_node
 from opspilot.agent.providers.base import LLMProvider
 from opspilot.agent.state.graph_state import IncidentInvestigationState
 from opspilot.agent.state.reducers import (
@@ -48,6 +56,7 @@ def build_investigation_graph(
     *,
     checkpointer: Any,
     approval_store: ApprovalStore | None = None,
+    postmortem_store: Any | None = None,
 ) -> Any:
     graph: Any = StateGraph(IncidentInvestigationState)
 
@@ -65,6 +74,9 @@ def build_investigation_graph(
     graph.add_node("propose_mitigation", make_propose_mitigation_node(gateway, approval_store))
     graph.add_node("risk_assessment", make_risk_assessment_node())
     graph.add_node("request_human_approval", make_request_human_approval_node(approval_store))
+    graph.add_node("execute_approved_action", make_execute_approved_action_node(gateway))
+    graph.add_node("verify_recovery", make_verify_recovery_node(gateway))
+    graph.add_node("generate_postmortem", make_generate_postmortem_node(postmortem_store))
     graph.add_node("close_investigation", make_close_investigation_node())
 
     graph.add_edge(START, "triage_incident")
@@ -95,9 +107,30 @@ def build_investigation_graph(
         route_after_approval,
         {
             "propose_mitigation": "propose_mitigation",
+            "execute_approved_action": "execute_approved_action",
+            "generate_postmortem": "generate_postmortem",
             "close_investigation": "close_investigation",
         },
     )
+    graph.add_conditional_edges(
+        "execute_approved_action",
+        route_after_execution,
+        {
+            "verify_recovery": "verify_recovery",
+            "propose_mitigation": "propose_mitigation",
+            "close_investigation": "close_investigation",
+        },
+    )
+    graph.add_conditional_edges(
+        "verify_recovery",
+        route_after_verify_recovery,
+        {
+            "generate_postmortem": "generate_postmortem",
+            "propose_mitigation": "propose_mitigation",
+            "close_investigation": "close_investigation",
+        },
+    )
+    graph.add_edge("generate_postmortem", "close_investigation")
 
     def route_after_request(state: IncidentInvestigationState) -> str:
         target = state.get("next_collection_node")

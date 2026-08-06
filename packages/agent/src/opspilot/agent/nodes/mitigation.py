@@ -179,12 +179,15 @@ def make_request_human_approval_node(
                 "pending_action_id": pending_action_id,
             }
         )
-        branch = (decision or {}).get("decision", "rejected")
+        merged = dict(decision or {})
+        if approval_id_value and "approval_id" not in merged:
+            merged["approval_id"] = approval_id_value
+        branch = merged.get("decision", "rejected")
         status = "completed"
         updates: dict[str, Any] = {
             "current_node": "request_human_approval",
             "completed_nodes": ["request_human_approval"],
-            "approval_decision": decision,
+            "approval_decision": merged,
         }
         if branch == "approved":
             status = "awaiting_execution"

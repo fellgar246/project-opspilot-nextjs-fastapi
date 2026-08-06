@@ -30,6 +30,7 @@ from app.core.config import Settings, get_settings
 from app.core.errors import AppError
 from app.events.bus import publish_event
 from app.events.models import InvestigationEventType
+from app.executions.hash import canonical_parameters_hash
 from app.incidents.models import Hypothesis, Incident
 from app.investigation.models import AgentRun, AgentRunStatus
 
@@ -251,6 +252,7 @@ async def approve_action(
     approval.decision = ApprovalDecision.APPROVED
     approval.reviewed_by = actor.id
     approval.reviewed_at = datetime.now(UTC)
+    approval.parameters_hash = canonical_parameters_hash(action.parameters or {})
     action.status = ProposedActionStatus.APPROVED
 
     agent_run = await session.get(AgentRun, approval.agent_run_id)
@@ -282,7 +284,11 @@ async def approve_action(
         request_id=request_id,
     )
 
-    await _enqueue_resume(approval.id, {"decision": "approved"}, get_settings())
+    await _enqueue_resume(
+        approval.id,
+        {"decision": "approved", "approval_id": str(approval.id)},
+        get_settings(),
+    )
     return approval
 
 

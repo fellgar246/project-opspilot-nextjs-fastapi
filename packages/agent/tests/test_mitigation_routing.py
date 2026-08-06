@@ -23,9 +23,9 @@ def _state(**overrides: Any) -> IncidentInvestigationState:
     return cast(IncidentInvestigationState, {**base, **overrides})
 
 
-def test_route_after_approval_approved_closes() -> None:
+def test_route_after_approval_approved_executes() -> None:
     state = _state(approval_decision={"decision": "approved"})
-    assert route_after_approval(state) == "close_investigation"
+    assert route_after_approval(state) == "execute_approved_action"
 
 
 def test_route_after_approval_rejected_retries_once() -> None:
@@ -38,6 +38,6 @@ def test_route_after_approval_rejected_closes_after_limit() -> None:
     assert route_after_approval(state) == "close_investigation"
 
 
-def test_route_after_approval_skipped_closes() -> None:
+def test_route_after_approval_skipped_generates_postmortem() -> None:
     state = _state(approval_decision={"decision": "skipped"})
-    assert route_after_approval(state) == "close_investigation"
+    assert route_after_approval(state) == "generate_postmortem"

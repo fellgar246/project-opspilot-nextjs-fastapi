@@ -66,6 +66,9 @@ export class InvestigationEventSource {
       "run_resumed",
       "run_completed",
       "run_failed",
+      "action_executed",
+      "recovery_verified",
+      "postmortem_generated",
       "retention_expired",
     ];
 

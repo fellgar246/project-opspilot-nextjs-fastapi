@@ -19,6 +19,8 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from worker.adapters import SqlApprovalStore, WorkerEventPublisher
 from worker.config import get_worker_settings
 from worker.db import database_url_async
+from worker.execution_store import SqlExecutionStore
+from worker.postmortem_store import SqlPostmortemStore
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +49,10 @@ async def resume_investigation(
 
         incident = await load_incident_context(session, agent_run.incident_id)
         retrieval_store = SqlRetrievalStore(session)
-        registry = build_default_registry(retrieval_store=retrieval_store)
+        registry = build_default_registry(
+            retrieval_store=retrieval_store,
+            execution_store=SqlExecutionStore(session),
+        )
         persistence = SqlAlchemyToolPersistence(session)
         publisher = WorkerEventPublisher(
             session,
@@ -58,6 +63,7 @@ async def resume_investigation(
         provider = create_provider()
         checkpointer = await create_postgres_checkpointer(str(settings.database_url))
         approval_store = SqlApprovalStore(session)
+        postmortem_store = SqlPostmortemStore(session)
 
         try:
             final_state = await run_investigation(
@@ -68,6 +74,7 @@ async def resume_investigation(
                 agent_run_id=agent_run.id,
                 graph_thread_id=agent_run.graph_thread_id,
                 approval_store=approval_store,
+                postmortem_store=postmortem_store,
                 event_publisher=publisher,
                 resume_value=resume_value,
             )

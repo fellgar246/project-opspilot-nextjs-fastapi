@@ -139,6 +139,23 @@ class ClaimsOutput(BaseModel):
     claims: list[ClaimItem]
 
 
+class MetricComparison(BaseModel):
+    metric: str
+    window: str
+    baseline_value: float | None = None
+    degraded_value: float | None = None
+    post_action_value: float | None = None
+    unit: str | None = None
+
+
+class RecoveryVerdict(BaseModel):
+    status: Literal["recovered", "partially_recovered", "not_recovered", "inconclusive"]
+    metrics: list[MetricComparison] = Field(default_factory=list)
+    window_seconds: int
+    rationale: str
+    evidence_ids: list[str] = Field(default_factory=list)
+
+
 COLLECTION_NODE_BY_TOOL: dict[str, str] = {
     "get_service_health": "collect_service_health",
     "query_metrics": "collect_metrics",

@@ -7,8 +7,6 @@ from opspilot.agent.providers.base import LLMMessage, LLMProvider, LLMResponse
 from opspilot.agent.providers.mock import MockProvider
 from opspilot.agent.providers.resilient import ResilientLLMProvider
 from opspilot.agent.state.schema import HypothesesOutput, InvestigationPlanOutput, TriageOutput
-
-
 from pydantic import BaseModel
 
 

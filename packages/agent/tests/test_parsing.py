@@ -6,11 +6,9 @@ from opspilot.agent.parsing import (
     parse_structured_output,
     reset_parse_error_count,
 )
-from opspilot.agent.providers.base import LLMMessage, LLMResponse, LLMProvider
+from opspilot.agent.providers.base import LLMMessage, LLMResponse
 from opspilot.agent.providers.mock import MockProvider
 from opspilot.agent.state.schema import TriageOutput
-
-
 from pydantic import BaseModel
 
 

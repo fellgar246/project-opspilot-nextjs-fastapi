@@ -9,9 +9,7 @@ from opspilot.tools.base import ROLE_ORDER, ToolContext, ToolError, ToolResult, 
 from opspilot.tools.config import ToolGatewaySettings, get_tool_settings
 from opspilot.tools.normalize import apply_evidence_to_result, normalize_to_evidence
 from opspilot.tools.persistence import (
-    AuditEventRecord,
     EvidenceRecord,
-    ToolCallRecord,
     ToolPersistence,
     build_audit_event,
     build_tool_call_record,

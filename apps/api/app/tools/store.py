@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
+from typing import Any
 
 from opspilot.tools.persistence import (
     AuditEventRecord,
@@ -9,8 +10,6 @@ from opspilot.tools.persistence import (
     ToolCallRecord,
     ToolPersistence,
 )
-from typing import Any
-
 from sqlalchemy import DateTime, Index, Integer, String, func
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.ext.asyncio import AsyncSession

@@ -6,10 +6,10 @@ from uuid import uuid4
 import pytest
 from opspilot.tools.base import ToolContext, ToolRole
 from opspilot.tools.bootstrap import build_default_registry
-from opspilot.tools.registry import ToolRegistry
 from opspilot.tools.config import ToolGatewaySettings
 from opspilot.tools.gateway import ToolGateway
 from opspilot.tools.persistence import InMemoryToolPersistence
+from opspilot.tools.registry import ToolRegistry
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 

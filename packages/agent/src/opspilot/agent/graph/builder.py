@@ -4,6 +4,7 @@ from collections.abc import Callable
 from typing import Any
 
 from langgraph.graph import END, START, StateGraph
+from opspilot.agent.approvals.protocol import ApprovalStore
 from opspilot.agent.graph.routing import route_after_critique
 from opspilot.agent.nodes.close import make_close_investigation_node
 from opspilot.agent.nodes.collect import (
@@ -38,7 +39,6 @@ from opspilot.agent.state.reducers import (
     merge_parse_errors,
     merge_timeline,
 )
-from opspilot.agent.approvals.protocol import ApprovalStore
 from opspilot.tools.gateway import ToolGateway
 
 

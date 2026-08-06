@@ -9,16 +9,19 @@ from opspilot.tools.config import ToolGatewaySettings
 REPO_ROOT = Path(__file__).resolve().parents[3]
 
 
-def test_registry_lists_eleven_read_tools() -> None:
+def test_registry_lists_default_tools() -> None:
     settings = ToolGatewaySettings(repo_root=REPO_ROOT)
     registry = build_default_registry(settings)
     names = registry.names()
-    assert len(names) == 11
+    assert len(names) == 13
     assert "get_service_health" in names
     assert "query_metrics" in names
     assert "search_logs" in names
     assert "search_runbooks" in names
     assert "search_similar_incidents" in names
+    assert "propose_rollback" in names
+    assert "propose_feature_flag_change" in names
+    # Proposal tools are not writes: they only create approval payloads.
     assert all(not registry.require(name).spec.is_write for name in names)
 
 

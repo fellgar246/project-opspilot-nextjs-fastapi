@@ -10,7 +10,7 @@ OpsPilot demonstrates how to build an incident investigation agent with human-in
 
 ## Quick start
 
-Requirements: Docker, [uv](https://docs.astral.sh/uv/), [pnpm](https://pnpm.io/) (via Corepack). Recommended: 8 GB RAM, 4 CPU cores.
+Requirements: Docker, [uv](https://docs.astral.sh/uv/), **Node.js 22+**, [pnpm](https://pnpm.io/) (via Corepack). Recommended: 8 GB RAM, 4 CPU cores.
 
 ```bash
 git clone <repo-url> ops-pilot
@@ -58,6 +58,8 @@ Reports are written to `reports/` (JSON + HTML). Gates block on: Root Cause Top-
 make lint typecheck test migrate security-scan
 make verify        # full 10-step validation pipeline
 ```
+
+`make test` runs Vitest 3 for the web app, which requires Node 22+. `make security-scan` checks Python deps (`pip-audit`), JS deps (`pnpm audit`), and secrets in the working tree.
 
 Optional CI workflow: `.github/workflows/verify.yml` invokes `make verify`.
 

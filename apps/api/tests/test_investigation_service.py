@@ -43,7 +43,9 @@ async def test_start_investigation_creates_agent_run() -> None:
     session.execute = AsyncMock(return_value=scalar_result)
 
     with (
-        patch("app.investigation.service.acquire_investigation_lock", new=AsyncMock(return_value=True)),
+        patch(
+            "app.investigation.service.acquire_investigation_lock", new=AsyncMock(return_value=True)
+        ),
         patch("app.investigation.service._enqueue_investigation", new=AsyncMock()),
         patch("app.investigation.service.update_incident_status", new=AsyncMock()),
         patch("app.investigation.service.record_audit_event", new=AsyncMock()),
@@ -69,10 +71,13 @@ async def test_start_investigation_rejects_active_run() -> None:
         prompt_version="v1",
     )
 
-    with patch(
-        "app.investigation.service.get_active_run",
-        new=AsyncMock(return_value=existing),
-    ), pytest.raises(AppError, match="active investigation"):
+    with (
+        patch(
+            "app.investigation.service.get_active_run",
+            new=AsyncMock(return_value=existing),
+        ),
+        pytest.raises(AppError, match="active investigation"),
+    ):
         await start_investigation(session, incident=incident, actor=actor, request_id=None)
 
 
@@ -106,7 +111,9 @@ async def test_pause_and_resume_investigation() -> None:
         patch("app.investigation.service._enqueue_investigation", new=AsyncMock()),
         patch("app.investigation.service.record_audit_event", new=AsyncMock()),
     ):
-        resumed = await resume_investigation(session, incident=incident, actor=actor, request_id=None)
+        resumed = await resume_investigation(
+            session, incident=incident, actor=actor, request_id=None
+        )
         assert resumed.status == AgentRunStatus.RUNNING
 
 
@@ -215,10 +222,13 @@ async def test_start_investigation_rejects_lock_contention() -> None:
 
     with (
         patch("app.investigation.service.get_active_run", new=AsyncMock(return_value=None)),
-        patch("app.investigation.service.acquire_investigation_lock", new=AsyncMock(return_value=False)),
+        patch(
+            "app.investigation.service.acquire_investigation_lock",
+            new=AsyncMock(return_value=False),
+        ),
+        pytest.raises(AppError, match="lock"),
     ):
-        with pytest.raises(AppError, match="lock"):
-            await start_investigation(session, incident=incident, actor=actor, request_id=None)
+        await start_investigation(session, incident=incident, actor=actor, request_id=None)
 
 
 @pytest.mark.asyncio
@@ -227,9 +237,11 @@ async def test_pause_investigation_requires_running_run() -> None:
     incident = _incident(IncidentStatus.INVESTIGATING)
     actor = MagicMock(id=uuid.uuid4())
 
-    with patch("app.investigation.service.get_active_run", new=AsyncMock(return_value=None)):
-        with pytest.raises(AppError, match="No running investigation"):
-            await pause_investigation(session, incident=incident, actor=actor, request_id=None)
+    with (
+        patch("app.investigation.service.get_active_run", new=AsyncMock(return_value=None)),
+        pytest.raises(AppError, match="No running investigation"),
+    ):
+        await pause_investigation(session, incident=incident, actor=actor, request_id=None)
 
 
 @pytest.mark.asyncio
@@ -254,7 +266,9 @@ async def test_start_investigation_skips_status_change_when_already_investigatin
 
     with (
         patch("app.investigation.service.get_active_run", new=AsyncMock(return_value=None)),
-        patch("app.investigation.service.acquire_investigation_lock", new=AsyncMock(return_value=True)),
+        patch(
+            "app.investigation.service.acquire_investigation_lock", new=AsyncMock(return_value=True)
+        ),
         patch("app.investigation.service._enqueue_investigation", new=AsyncMock()),
         patch("app.investigation.service.update_incident_status", new=AsyncMock()) as status_update,
         patch("app.investigation.service.record_audit_event", new=AsyncMock()),

@@ -66,9 +66,7 @@ def upgrade() -> None:
         )
         """
     )
-    op.execute(
-        "CREATE INDEX ix_runbook_chunks_runbook ON runbook_chunks (runbook_id, chunk_index)"
-    )
+    op.execute("CREATE INDEX ix_runbook_chunks_runbook ON runbook_chunks (runbook_id, chunk_index)")
     op.execute(
         "CREATE INDEX ix_runbook_chunks_embedding ON runbook_chunks "
         "USING hnsw (embedding vector_cosine_ops)"
@@ -93,7 +91,7 @@ def upgrade() -> None:
         ),
     )
     op.execute(
-        f"""
+        """
         ALTER TABLE historical_incidents
         ADD COLUMN search_tsv tsvector
         GENERATED ALWAYS AS (to_tsvector('spanish', search_text)) STORED

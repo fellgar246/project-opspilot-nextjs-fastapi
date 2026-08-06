@@ -79,9 +79,7 @@ async def start_investigation(
         raise AppError("Investigation lock already held for this incident", status_code=409)
 
     model_name = (
-        agent_settings.openai_model
-        if agent_settings.model_provider == "openai"
-        else "mock-v1"
+        agent_settings.openai_model if agent_settings.model_provider == "openai" else "mock-v1"
     )
     agent_run = AgentRun(
         id=agent_run_id,

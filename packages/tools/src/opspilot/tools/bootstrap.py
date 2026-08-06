@@ -19,7 +19,10 @@ from opspilot.tools.read.retrieval_tools import SearchRunbooksTool, SearchSimila
 from opspilot.tools.registry import ToolRegistry
 from opspilot.tools.retrieval.memory import InMemoryRetrievalStore
 from opspilot.tools.retrieval.protocol import RetrievalStore
-from opspilot.tools.write_proposals.proposals import ProposeFeatureFlagChangeTool, ProposeRollbackTool
+from opspilot.tools.write_proposals.proposals import (
+    ProposeFeatureFlagChangeTool,
+    ProposeRollbackTool,
+)
 
 
 def build_default_registry(

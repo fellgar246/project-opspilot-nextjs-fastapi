@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import uuid
 from datetime import UTC, datetime
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock
 
 import pytest
 from app.auth.dependencies import get_current_user
@@ -61,7 +61,11 @@ async def test_sse_requires_incident_access(sse_client) -> None:
     with pytest.MonkeyPatch.context() as mp:
         mp.setattr(
             "app.events.router.require_incident",
-            AsyncMock(side_effect=__import__("app.core.errors", fromlist=["AppError"]).AppError("Forbidden", status_code=403)),
+            AsyncMock(
+                side_effect=__import__("app.core.errors", fromlist=["AppError"]).AppError(
+                    "Forbidden", status_code=403
+                )
+            ),
         )
         transport = ASGITransport(app=app)
         async with AsyncClient(transport=transport, base_url="http://test") as client:

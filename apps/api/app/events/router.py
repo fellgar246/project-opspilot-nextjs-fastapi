@@ -58,7 +58,9 @@ def _parse_last_event_id(last_event_id: str | None) -> int:
         raise AppError("Invalid Last-Event-ID header", status_code=400) from exc
 
 
-async def _is_seq_outside_retention(session: AsyncSession, incident_id: UUID, after_seq: int) -> bool:
+async def _is_seq_outside_retention(
+    session: AsyncSession, incident_id: UUID, after_seq: int
+) -> bool:
     settings = get_settings()
     if settings.event_retention_hours <= 0 or after_seq <= 0:
         return False
@@ -103,7 +105,9 @@ async def _event_stream(
                 yield 'event: retention_expired\ndata: {"reload":true}\n\n'
                 return
 
-            backlog = await list_events_after_seq(session, incident_id=incident_id, after_seq=after_seq)
+            backlog = await list_events_after_seq(
+                session, incident_id=incident_id, after_seq=after_seq
+            )
             for event in backlog:
                 if event.seq in delivered:
                     continue
@@ -193,7 +197,9 @@ async def stream_incident_events(
     )
 
 
-@router.get("/incidents/{incident_id}/events/history", response_model=InvestigationEventListResponse)
+@router.get(
+    "/incidents/{incident_id}/events/history", response_model=InvestigationEventListResponse
+)
 async def list_incident_event_history(
     incident_id: UUID,
     session: Annotated[AsyncSession, Depends(get_session)],

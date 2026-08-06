@@ -362,7 +362,9 @@ async def expire_approval(session: AsyncSession, approval: Approval) -> bool:
     return True
 
 
-async def list_pending_approvals(session: AsyncSession) -> list[tuple[Approval, ProposedAction, Incident]]:
+async def list_pending_approvals(
+    session: AsyncSession,
+) -> list[tuple[Approval, ProposedAction, Incident]]:
     result = await session.execute(
         select(Approval, ProposedAction, Incident)
         .join(ProposedAction, Approval.proposed_action_id == ProposedAction.id)
@@ -402,7 +404,9 @@ async def get_hypothesis_confidence(
     return max(item.confidence for item in hypotheses)
 
 
-async def _enqueue_resume(approval_id: uuid.UUID, resume_value: dict[str, Any], settings: Settings) -> None:
+async def _enqueue_resume(
+    approval_id: uuid.UUID, resume_value: dict[str, Any], settings: Settings
+) -> None:
     redis_settings = RedisSettings.from_dsn(str(settings.redis_url))
     pool = await create_pool(redis_settings)
     try:

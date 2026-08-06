@@ -115,7 +115,9 @@ def upgrade() -> None:
             server_default=sa.text("now()"),
         ),
     )
-    op.create_index("ix_proposed_actions_incident", "proposed_actions", ["incident_id", "created_at"])
+    op.create_index(
+        "ix_proposed_actions_incident", "proposed_actions", ["incident_id", "created_at"]
+    )
 
     op.create_table(
         "approvals",
@@ -150,7 +152,9 @@ def upgrade() -> None:
         ),
         sa.Column("reviewed_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("resume_token", sa.String(length=64), nullable=False, unique=True),
-        sa.Column("resume_token_consumed", sa.Boolean(), nullable=False, server_default=sa.text("false")),
+        sa.Column(
+            "resume_token_consumed", sa.Boolean(), nullable=False, server_default=sa.text("false")
+        ),
         sa.Column(
             "agent_run_id",
             postgresql.UUID(as_uuid=True),

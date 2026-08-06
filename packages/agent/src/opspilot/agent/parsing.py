@@ -2,13 +2,10 @@ from __future__ import annotations
 
 import json
 import re
-from typing import TypeVar
 
 from opspilot.agent.providers.base import LLMMessage, LLMProvider, LLMResponse
 from opspilot.agent.state.schema import ParseError
 from pydantic import BaseModel, ValidationError
-
-T = TypeVar("T", bound=BaseModel)
 
 PARSE_ERROR_COUNT = 0
 
@@ -27,7 +24,7 @@ def _increment_parse_errors() -> None:
     PARSE_ERROR_COUNT += 1
 
 
-async def parse_structured_output(
+async def parse_structured_output[T: BaseModel](
     provider: LLMProvider,
     *,
     messages: list[LLMMessage],
@@ -43,7 +40,7 @@ async def parse_structured_output(
 
     _increment_parse_errors()
     repair_messages = list(messages)
-    for attempt in range(max_repairs):
+    for _ in range(max_repairs):
         repair_messages.append(
             LLMMessage(
                 role="assistant",
@@ -76,7 +73,7 @@ async def parse_structured_output(
     return None, response, errors
 
 
-def _try_parse(content: str | None, response_model: type[T]) -> T | None:
+def _try_parse[T: BaseModel](content: str | None, response_model: type[T]) -> T | None:
     if not content:
         return None
     payload = _extract_json(content)

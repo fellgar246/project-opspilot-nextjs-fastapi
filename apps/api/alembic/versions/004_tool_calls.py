@@ -25,7 +25,12 @@ def upgrade() -> None:
         sa.Column("incident_id", postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column("tool_name", sa.String(length=100), nullable=False),
         sa.Column("tool_version", sa.String(length=32), nullable=False),
-        sa.Column("input_payload", postgresql.JSONB(), nullable=False, server_default=sa.text("'{}'::jsonb")),
+        sa.Column(
+            "input_payload",
+            postgresql.JSONB(),
+            nullable=False,
+            server_default=sa.text("'{}'::jsonb"),
+        ),
         sa.Column("output_summary", sa.String(length=4000), nullable=False, server_default=""),
         sa.Column("status", sa.String(length=32), nullable=False),
         sa.Column("risk_level", sa.String(length=16), nullable=False, server_default="low"),

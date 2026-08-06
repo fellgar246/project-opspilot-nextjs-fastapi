@@ -126,10 +126,15 @@ async def run_investigation(
         final_state = {**final_state, "investigation_status": "awaiting_approval"}
         return final_state
 
-    terminal = "run_completed" if final_state.get("investigation_status") in {
-        "completed",
-        "awaiting_execution",
-    } else "run_failed"
+    terminal = (
+        "run_completed"
+        if final_state.get("investigation_status")
+        in {
+            "completed",
+            "awaiting_execution",
+        }
+        else "run_failed"
+    )
     if event_publisher and final_state.get("investigation_status") != "paused":
         await event_publisher.publish(terminal, {"status": final_state.get("investigation_status")})
 

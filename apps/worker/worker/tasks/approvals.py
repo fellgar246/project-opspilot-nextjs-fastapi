@@ -23,7 +23,9 @@ from worker.db import database_url_async
 logger = logging.getLogger(__name__)
 
 
-async def resume_investigation(ctx: dict[str, object], approval_id: str, resume_value: dict) -> dict[str, str]:
+async def resume_investigation(
+    ctx: dict[str, object], approval_id: str, resume_value: dict
+) -> dict[str, str]:
     settings = get_worker_settings()
     approval_uuid = uuid.UUID(approval_id)
     engine = create_async_engine(database_url_async(str(settings.database_url)))

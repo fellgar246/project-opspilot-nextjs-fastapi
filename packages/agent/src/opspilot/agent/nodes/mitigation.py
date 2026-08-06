@@ -12,7 +12,9 @@ from opspilot.tools.gateway import ToolGateway
 
 
 def _top_hypothesis(state: IncidentInvestigationState) -> dict[str, Any] | None:
-    hypotheses = [item for item in (state.get("hypotheses") or []) if item.get("status") != "rejected"]
+    hypotheses = [
+        item for item in (state.get("hypotheses") or []) if item.get("status") != "rejected"
+    ]
     if not hypotheses:
         return None
     return max(hypotheses, key=lambda item: item.get("confidence", 0.0))
@@ -28,7 +30,9 @@ def make_propose_mitigation_node(gateway: ToolGateway, store: ApprovalStore | No
                 "errors": ["No hypothesis available for mitigation proposal"],
             }
 
-        service = (state.get("affected_services") or state.get("service_names") or ["demo-service"])[0]
+        service = (
+            state.get("affected_services") or state.get("service_names") or ["demo-service"]
+        )[0]
         evidence_ids = hypothesis.get("supporting_evidence") or []
         if not evidence_ids:
             evidence_ids = [ref["evidence_id"] for ref in (state.get("evidence_refs") or [])[:1]]
@@ -54,14 +58,17 @@ def make_propose_mitigation_node(gateway: ToolGateway, store: ApprovalStore | No
             "supporting_evidence": evidence_ids,
             "expected_result": "Error rate returns to baseline within 5 minutes",
             "rollback_plan": f"Re-deploy previous stable version of {service}",
-            "description": f"Mitigate incident based on hypothesis: {hypothesis['statement'][:120]}",
+            "description": (
+                f"Mitigate incident based on hypothesis: {hypothesis['statement'][:120]}"
+            ),
         }
         result = await gateway.invoke("propose_rollback", tool_payload, ctx, collect_evidence=False)
         if result.status != "ok" or result.data is None:
+            error_msg = result.error.message if result.error else result.status
             return {
                 "current_node": "propose_mitigation",
                 "completed_nodes": ["propose_mitigation"],
-                "errors": [f"Proposal tool failed: {result.error.message if result.error else result.status}"],
+                "errors": [f"Proposal tool failed: {error_msg}"],
             }
 
         output = result.data.model_dump()

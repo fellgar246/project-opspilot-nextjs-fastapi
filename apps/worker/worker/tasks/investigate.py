@@ -91,7 +91,11 @@ async def investigate_incident(ctx: dict[str, object], agent_run_id: str) -> dic
             return {"status": "awaiting_approval"}
 
         for hypothesis in final_state.get("hypotheses") or []:
-            status = HypothesisStatus.REJECTED if hypothesis.get("status") == "rejected" else HypothesisStatus.PROPOSED
+            status = (
+                HypothesisStatus.REJECTED
+                if hypothesis.get("status") == "rejected"
+                else HypothesisStatus.PROPOSED
+            )
             await create_hypothesis(
                 session,
                 incident_id=agent_run.incident_id,

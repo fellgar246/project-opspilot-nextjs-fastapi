@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import pytest
-from opspilot.tools.bootstrap import build_default_registry
 from opspilot.tools.base import ToolContext, ToolRole
+from opspilot.tools.bootstrap import build_default_registry
 from opspilot.tools.write_proposals.schemas import ProposeRollbackInput
 
 

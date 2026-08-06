@@ -1,15 +1,19 @@
 from __future__ import annotations
 
 import uuid
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock
 
 import pytest
-from app.approvals.models import ActionType, Approval, ApprovalDecision, ProposedAction, ProposedActionStatus
 from app.approvals import service as approval_service
+from app.approvals.models import (
+    ActionType,
+    Approval,
+    ApprovalDecision,
+    ProposedAction,
+)
 from app.auth.models import User, UserRole
 from app.auth.security import hash_password
 from app.core.errors import AppError
-from app.investigation.models import AgentRun, AgentRunStatus
 
 
 def _approver() -> User:
@@ -55,7 +59,9 @@ async def test_double_resume_token_rejected(monkeypatch: pytest.MonkeyPatch) -> 
     session.get = AsyncMock(side_effect=lambda model, pk: action if pk == action.id else approval)
 
     with pytest.raises(AppError) as exc:
-        await approval_service.approve_action(session, approval=approval, actor=_approver(), request_id=None)
+        await approval_service.approve_action(
+            session, approval=approval, actor=_approver(), request_id=None
+        )
     assert exc.value.status_code == 409
 
 

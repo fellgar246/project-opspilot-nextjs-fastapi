@@ -75,7 +75,9 @@ class ProposedAction(Base):
         nullable=False,
         default=list,
     )
-    status: Mapped[str] = mapped_column(String(32), nullable=False, default=ProposedActionStatus.PENDING)
+    status: Mapped[str] = mapped_column(
+        String(32), nullable=False, default=ProposedActionStatus.PENDING
+    )
     requested_by: Mapped[uuid.UUID | None] = mapped_column(
         UUID(as_uuid=True),
         ForeignKey("users.id", ondelete="SET NULL"),
@@ -109,7 +111,9 @@ class Approval(Base):
         ForeignKey("users.id", ondelete="SET NULL"),
         nullable=True,
     )
-    decision: Mapped[str] = mapped_column(String(32), nullable=False, default=ApprovalDecision.PENDING)
+    decision: Mapped[str] = mapped_column(
+        String(32), nullable=False, default=ApprovalDecision.PENDING
+    )
     reason: Mapped[str | None] = mapped_column(Text, nullable=True)
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     requested_at: Mapped[datetime] = mapped_column(

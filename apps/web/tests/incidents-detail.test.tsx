@@ -11,6 +11,10 @@ vi.mock("@/features/auth/AuthProvider", () => ({
   }),
 }));
 
+vi.mock("next/navigation", () => ({
+  useSearchParams: () => new URLSearchParams(),
+}));
+
 vi.mock("@/lib/auth-api", () => ({
   getDefaultApiBaseUrl: () => "http://localhost:8000",
 }));
@@ -23,6 +27,17 @@ vi.mock("@/lib/investigation-api", () => ({
   pauseInvestigation: vi.fn(),
   resumeInvestigation: vi.fn(),
   investigationEventsUrl: vi.fn().mockReturnValue("http://localhost:8000/api/v1/incidents/inc-1/events"),
+}));
+
+vi.mock("@/lib/actions-api", () => ({
+  fetchActionExecutions: vi.fn().mockResolvedValue({ items: [] }),
+}));
+
+vi.mock("@/lib/postmortem-api", () => ({
+  fetchPostmortem: vi.fn().mockRejectedValue(new Error("not found")),
+  generatePostmortem: vi.fn(),
+  savePostmortemEdit: vi.fn(),
+  postmortemExportUrl: vi.fn().mockReturnValue("http://localhost:8000/api/v1/incidents/inc-1/postmortem/export?format=md"),
 }));
 
 vi.mock("@/lib/sse-client", () => ({
@@ -180,6 +195,6 @@ describe("IncidentDetail tabs", () => {
     await user.click(screen.getByRole("button", { name: "Actions" }));
     expect(screen.getByText(/No proposed actions yet/)).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Postmortem" }));
-    expect(screen.getByText(/SPEC-09/)).toBeInTheDocument();
+    expect(screen.getByText(/No postmortem generated yet/)).toBeInTheDocument();
   });
 });

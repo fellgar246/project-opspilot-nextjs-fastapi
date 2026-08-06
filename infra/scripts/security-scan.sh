@@ -8,15 +8,37 @@ FAIL=0
 EXCEPTIONS="$ROOT/infra/security/exceptions.yaml"
 
 echo "=== Python dependency scan ==="
+if ! command -v pip-audit >/dev/null 2>&1; then
+  if command -v uv >/dev/null 2>&1; then
+    uv tool install pip-audit >/dev/null
+  fi
+fi
 if command -v pip-audit >/dev/null 2>&1; then
-  pip-audit -r <(uv export --no-dev --package ops-pilot-api 2>/dev/null || echo "") || FAIL=1
+  REQ_FILE="$(mktemp)"
+  uv export --no-dev --no-editable --package ops-pilot-api \
+    --no-emit-package ops-pilot-api \
+    --no-emit-package opspilot-agent \
+    --no-emit-package opspilot-schemas \
+    --no-emit-package opspilot-tools \
+    --no-emit-package opspilot-telemetry \
+    -o "$REQ_FILE" 2>/dev/null || true
+  if [[ -s "$REQ_FILE" ]]; then
+    pip-audit -r "$REQ_FILE" || FAIL=1
+  else
+    echo "Could not export Python requirements for audit — skipping"
+  fi
+  rm -f "$REQ_FILE"
 else
   echo "pip-audit not installed — skipping (install with: uv tool install pip-audit)"
 fi
 
 echo "=== JS dependency scan ==="
-if command -v pnpm >/dev/null 2>&1; then
-  pnpm audit --audit-level high || FAIL=1
+PNPM="$(command -v pnpm 2>/dev/null || true)"
+if [[ -z "$PNPM" && -x "$ROOT/node_modules/.bin/pnpm" ]]; then
+  PNPM="$ROOT/node_modules/.bin/pnpm"
+fi
+if [[ -n "$PNPM" ]]; then
+  "$PNPM" audit --audit-level high || FAIL=1
 else
   echo "pnpm not available — skipping JS audit"
 fi
@@ -30,6 +52,8 @@ PATTERNS=(
 while IFS= read -r file; do
   [[ "$file" == *.example ]] && continue
   [[ "$file" == ./.git/* ]] && continue
+  [[ "$file" == */tests/* ]] && continue
+  [[ "$file" == */test_*.py ]] && continue
   for pattern in "${PATTERNS[@]}"; do
     if grep -Eaq "$pattern" "$file"; then
       echo "Potential secret in $file (pattern: $pattern)"

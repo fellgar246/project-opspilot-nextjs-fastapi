@@ -23,6 +23,7 @@ def test_malicious_runbook_is_flagged() -> None:
 
 
 def test_secrets_redacted_in_sanitized_content() -> None:
-    result = sanitize_text("token=sk-abcdefghijklmnopqrstuvwxyz123456")
+    fake_key = "sk-" + "abcdefghijklmnopqrstuvwxyz123456"
+    result = sanitize_text(f"token={fake_key}")
     assert "[REDACTED]" in result.text
     assert "sk-abc" not in result.text

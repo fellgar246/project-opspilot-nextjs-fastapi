@@ -5,7 +5,8 @@ from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 
 
 async def create_postgres_checkpointer(database_url: str) -> AsyncPostgresSaver:
-    checkpointer = AsyncPostgresSaver.from_conn_string(database_url)
+    cm = AsyncPostgresSaver.from_conn_string(database_url)
+    checkpointer = await cm.__aenter__()
     await checkpointer.setup()
     return checkpointer
 

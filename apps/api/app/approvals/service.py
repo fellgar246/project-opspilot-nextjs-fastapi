@@ -3,7 +3,7 @@ from __future__ import annotations
 import secrets
 import uuid
 from datetime import UTC, datetime, timedelta
-from typing import Any
+from typing import Any, cast
 
 from arq import create_pool
 from arq.connections import RedisSettings
@@ -372,7 +372,10 @@ async def list_pending_approvals(
         .where(Approval.decision == ApprovalDecision.PENDING)
         .order_by(Incident.severity.asc(), Approval.requested_at.asc())
     )
-    return list(result.all())
+    return cast(
+        list[tuple[Approval, ProposedAction, Incident]],
+        list(result.all()),
+    )
 
 
 async def list_proposed_actions_for_incident(

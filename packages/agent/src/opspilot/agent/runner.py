@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Any
+from typing import Any, cast
 from uuid import UUID
 
 from langgraph.types import Command
@@ -42,7 +42,7 @@ def create_provider(
     if settings.model_provider == "openai":
         if not settings.openai_api_key:
             raise RuntimeError("OPENAI_API_KEY required for openai provider")
-        inner = OpenAIProvider(
+        inner: LLMProvider = OpenAIProvider(
             api_key=settings.openai_api_key,
             model=settings.openai_model,
             timeout_seconds=settings.llm_timeout_seconds,
@@ -56,7 +56,7 @@ async def run_investigation(
     *,
     provider: LLMProvider,
     gateway: ToolGateway,
-    checkpointer,
+    checkpointer: Any,
     incident: dict[str, Any],
     agent_run_id: UUID,
     graph_thread_id: str,
@@ -67,16 +67,16 @@ async def run_investigation(
     resume_value: dict[str, Any] | None = None,
 ) -> IncidentInvestigationState:
     settings = settings or get_agent_settings()
-    app = build_investigation_graph(
+    app: Any = build_investigation_graph(
         provider,
         gateway,
         checkpointer=checkpointer,
         approval_store=approval_store,
     )
-    config = {"configurable": {"thread_id": graph_thread_id}}
+    config: Any = {"configurable": {"thread_id": graph_thread_id}}
 
     if resume_value is not None:
-        final_state: IncidentInvestigationState = {}
+        final_state = cast(IncidentInvestigationState, {})
         async for event in app.astream(
             Command(resume=resume_value),
             config=config,
@@ -116,7 +116,10 @@ async def run_investigation(
         previous = event
         final_state = event
         if pause_checker and await pause_checker():
-            final_state = {**final_state, "paused": True, "investigation_status": "paused"}
+            final_state = cast(
+                IncidentInvestigationState,
+                {**final_state, "paused": True, "investigation_status": "paused"},
+            )
             if event_publisher:
                 await event_publisher.publish("run_paused", {})
             break

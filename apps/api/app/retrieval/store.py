@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import Any
 from uuid import UUID
 
@@ -148,11 +149,11 @@ class SqlRetrievalStore(RetrievalStore):
 
     def _fuse_runbook_rows(
         self,
-        vector_rows: list[Any],
-        lexical_rows: list[Any],
+        vector_rows: Sequence[Any],
+        lexical_rows: Sequence[Any],
         top_k: int,
     ) -> list[RunbookHit]:
-        by_key = {row["chunk_key"]: row for row in vector_rows + lexical_rows}
+        by_key = {row["chunk_key"]: row for row in list(vector_rows) + list(lexical_rows)}
         vector_ranked = [row["chunk_key"] for row in vector_rows]
         lexical_ranked = [row["chunk_key"] for row in lexical_rows]
         fused = reciprocal_rank_fusion([vector_ranked, lexical_ranked])
@@ -181,11 +182,11 @@ class SqlRetrievalStore(RetrievalStore):
 
     def _fuse_incident_rows(
         self,
-        vector_rows: list[Any],
-        lexical_rows: list[Any],
+        vector_rows: Sequence[Any],
+        lexical_rows: Sequence[Any],
         top_k: int,
     ) -> list[SimilarIncidentHit]:
-        by_key = {row["chunk_key"]: row for row in vector_rows + lexical_rows}
+        by_key = {row["chunk_key"]: row for row in list(vector_rows) + list(lexical_rows)}
         vector_ranked = [row["chunk_key"] for row in vector_rows]
         lexical_ranked = [row["chunk_key"] for row in lexical_rows]
         fused = reciprocal_rank_fusion([vector_ranked, lexical_ranked])

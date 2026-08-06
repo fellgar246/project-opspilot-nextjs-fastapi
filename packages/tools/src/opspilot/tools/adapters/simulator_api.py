@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import httpx
 from opspilot.tools.adapters.base import (
@@ -52,7 +52,7 @@ class SimulatorApiAdapter(DeploymentBackend, FeatureFlagBackend, ServiceCatalogB
             client = await self._get_client()
             response = await client.get(f"{self.base_url}/sim/deployments", params=params)
             response.raise_for_status()
-            items = response.json()
+            items = cast(list[dict[str, Any]], response.json())
             if items:
                 return items
         except httpx.HTTPError:
@@ -125,7 +125,7 @@ class SimulatorApiAdapter(DeploymentBackend, FeatureFlagBackend, ServiceCatalogB
             flags = json.loads(path.read_text(encoding="utf-8")) if path.exists() else []
         if key:
             flags = [f for f in flags if f.get("key") == key]
-        return flags
+        return cast(list[dict[str, Any]], flags)
 
     async def list_services(self) -> list[dict[str, Any]]:
         return [

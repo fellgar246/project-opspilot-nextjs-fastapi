@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+from typing import cast
+
 import pytest
 from opspilot.tools.base import ToolContext, ToolRole
 from opspilot.tools.bootstrap import build_default_registry
-from opspilot.tools.write_proposals.schemas import ProposeRollbackInput
+from opspilot.tools.write_proposals.schemas import ProposeRollbackInput, ProposeRollbackOutput
 
 
 @pytest.mark.asyncio
@@ -19,16 +21,19 @@ async def test_propose_rollback_is_not_write() -> None:
         role=ToolRole.OPERATOR,
         request_id="req-1",
     )
-    output = await tool.run(
-        ProposeRollbackInput(
-            service="checkout",
-            deployment_id="deploy-1",
-            hypothesis_ids=["hyp-1"],
-            supporting_evidence=["ev-1"],
-            expected_result="Errors drop",
-            rollback_plan="Redeploy previous version",
+    output = cast(
+        ProposeRollbackOutput,
+        await tool.run(
+            ProposeRollbackInput(
+                service="checkout",
+                deployment_id="deploy-1",
+                hypothesis_ids=["hyp-1"],
+                supporting_evidence=["ev-1"],
+                expected_result="Errors drop",
+                rollback_plan="Redeploy previous version",
+            ),
+            ctx,
         ),
-        ctx,
     )
     assert output.action_type == "rollback_deployment"
     assert output.target == "checkout/deploy-1"

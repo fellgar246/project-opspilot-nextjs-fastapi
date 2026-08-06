@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from pydantic import BaseModel
 
@@ -76,4 +76,4 @@ class ReplayBackend:
         result = await fn(*args, **kwargs)
         if self.mode == "record":
             self.store.save(tool_name, payload, result)
-        return result
+        return cast(BaseModel, result)

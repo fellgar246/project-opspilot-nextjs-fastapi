@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from opspilot.tools.adapters.base import MetricsBackend
 from opspilot.tools.adapters.prometheus import decimate_series
 from opspilot.tools.adapters.simulator_api import SimulatorApiAdapter
 from opspilot.tools.base import RetryPolicy, RiskLevel, ToolContext, ToolRole, ToolSpec
@@ -49,7 +50,7 @@ class QueryMetricsTool:
         is_write=False,
     )
 
-    def __init__(self, metrics_backend, settings: ToolGatewaySettings) -> None:
+    def __init__(self, metrics_backend: MetricsBackend, settings: ToolGatewaySettings) -> None:
         self.metrics = metrics_backend
         self.settings = settings
         self.last_notes: list[str] = []

@@ -9,6 +9,8 @@ from opspilot.tools.persistence import (
     ToolCallRecord,
     ToolPersistence,
 )
+from typing import Any
+
 from sqlalchemy import DateTime, Index, Integer, String, func
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -29,7 +31,7 @@ class ToolCall(Base):
     incident_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False, index=True)
     tool_name: Mapped[str] = mapped_column(String(100), nullable=False)
     tool_version: Mapped[str] = mapped_column(String(32), nullable=False)
-    input_payload: Mapped[dict] = mapped_column(JSONB, nullable=False, default=dict)
+    input_payload: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False, default=dict)
     output_summary: Mapped[str] = mapped_column(String(4000), nullable=False, default="")
     status: Mapped[str] = mapped_column(String(32), nullable=False)
     risk_level: Mapped[str] = mapped_column(String(16), nullable=False, default="low")

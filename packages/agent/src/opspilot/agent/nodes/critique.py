@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import time
+from collections.abc import Awaitable, Callable
 from typing import Any, Literal
 
 from opspilot.agent.nodes.base import (
@@ -22,7 +23,9 @@ from opspilot.agent.state.graph_state import IncidentInvestigationState
 from opspilot.agent.state.schema import CritiqueOutput, HypothesisDraft
 
 
-def make_critique_hypotheses_node(provider: LLMProvider):
+def make_critique_hypotheses_node(
+    provider: LLMProvider,
+) -> Callable[[IncidentInvestigationState], Awaitable[dict[str, Any]]]:
     async def critique_hypotheses(state: IncidentInvestigationState) -> dict[str, Any]:
         started = time.perf_counter()
         known_ids = valid_evidence_ids(state)

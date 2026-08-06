@@ -5,7 +5,7 @@ import json
 import subprocess
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from opspilot.tools.adapters.base import GitBackend
 
@@ -115,4 +115,4 @@ class GitAdapter(GitBackend):
         pr = json.loads(path.read_text(encoding="utf-8"))
         pr["repository"] = repository
         pr["diff_summary"] = f"Files: {', '.join(pr.get('files_changed', []))}"
-        return pr
+        return cast(dict[str, Any], pr)

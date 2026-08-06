@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any, cast
 from uuid import uuid4
 
 import pytest
@@ -9,6 +10,7 @@ from opspilot.tools.bootstrap import build_default_registry
 from opspilot.tools.config import ToolGatewaySettings
 from opspilot.tools.gateway import ToolGateway
 from opspilot.tools.persistence import InMemoryToolPersistence
+from opspilot.tools.read.schemas import QueryMetricsOutput
 from opspilot.tools.time_range import TimeRangeInput, resolve_time_range
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
@@ -77,7 +79,7 @@ def ctx() -> ToolContext:
     ],
 )
 async def test_read_tool_contract(
-    gateway: ToolGateway, ctx: ToolContext, tool_name: str, payload: dict
+    gateway: ToolGateway, ctx: ToolContext, tool_name: str, payload: dict[str, Any]
 ) -> None:
     result = await gateway.invoke(tool_name, payload, ctx)
     assert result.status == "ok", result.error
@@ -118,4 +120,5 @@ async def test_query_metrics_decimation_note(gateway: ToolGateway, ctx: ToolCont
     )
     assert result.status == "ok"
     assert result.data is not None
-    assert len(result.data.series) <= gateway.settings.max_metric_points
+    metrics = cast(QueryMetricsOutput, result.data)
+    assert len(metrics.series) <= gateway.settings.max_metric_points

@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime
-from uuid import uuid4
+from typing import Any
+from uuid import UUID, uuid4
 
 import pytest
 from opspilot.agent.graph.checkpointer import create_memory_checkpointer
@@ -9,7 +10,7 @@ from opspilot.agent.nodes.triage import make_triage_node
 from opspilot.agent.providers.mock import MockProvider
 from opspilot.agent.runner import create_provider, run_investigation
 from opspilot.agent.state.graph_state import initial_state
-from opspilot.tools.base import ToolResult, ToolSpec
+from opspilot.tools.base import ToolContext, ToolResult, ToolSpec
 from opspilot.tools.gateway import ToolGateway
 from opspilot.tools.persistence import ToolPersistence
 from opspilot.tools.registry import ToolRegistry
@@ -34,17 +35,30 @@ class _StubTool:
         is_write=False,
     )
 
-    async def run(self, payload, ctx):
+    async def run(self, payload: _EmptyInput, ctx: ToolContext) -> _EmptyOutput:
         return _EmptyOutput()
 
 
 class _MemoryPersistence(ToolPersistence):
-    async def persist_invocation(self, *, tool_call, audit_event, evidence):
+    async def persist_invocation(
+        self,
+        *,
+        tool_call: Any,
+        audit_event: Any,
+        evidence: list[Any],
+    ) -> list[UUID]:
         return [uuid4()]
 
 
 class _StubGateway(ToolGateway):
-    async def invoke(self, tool_name, payload, ctx, *, collect_evidence=True) -> ToolResult:
+    async def invoke(
+        self,
+        tool_name: str,
+        payload: dict[str, Any],
+        ctx: ToolContext,
+        *,
+        collect_evidence: bool = True,
+    ) -> ToolResult:
         return ToolResult(
             status="ok",
             tool_name=tool_name,

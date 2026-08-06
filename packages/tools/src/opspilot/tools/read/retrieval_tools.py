@@ -83,7 +83,7 @@ class SearchSimilarIncidentsTool:
         hits = await self.store.search_similar_incidents(
             payload.query,
             service=payload.service,
-            time_range=payload.time_range.label if payload.time_range else None,
+            time_range=payload.time_range.relative if payload.time_range else None,
             top_k=payload.top_k,
         )
         return SearchSimilarIncidentsOutput(

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import cast
 
 from opspilot.tools.record_replay import RecordingStore
 from pydantic import BaseModel
@@ -15,7 +16,7 @@ def test_recording_store_roundtrip(tmp_path: Path) -> None:
     output = SampleOutput(value="hello")
     payload = {"key": "value"}
     store.save("echo", payload, output)
-    loaded = store.load("echo", payload, SampleOutput)
+    loaded = cast(SampleOutput | None, store.load("echo", payload, SampleOutput))
     assert loaded is not None
     assert loaded.value == "hello"
 

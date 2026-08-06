@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import time
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 from datetime import UTC, datetime
 from typing import Any
 
@@ -26,7 +26,11 @@ def _primary_service(state: IncidentInvestigationState) -> str:
 def _time_range(state: IncidentInvestigationState) -> dict[str, str]:
     window = state.get("time_window") or {}
     if window:
-        return {"label": "incident_window", "start": window.get("start"), "end": window.get("end")}
+        return {
+            "label": "incident_window",
+            "start": window.get("start") or "",
+            "end": window.get("end") or "",
+        }
     return {"label": "last_1h"}
 
 
@@ -116,7 +120,7 @@ def make_collect_node(
     *,
     node: str,
     build_payload: Callable[[IncidentInvestigationState, str], dict[str, Any]],
-):
+) -> Callable[[IncidentInvestigationState], Awaitable[dict[str, Any]]]:
     tool_name = TOOL_BY_COLLECTION_NODE[node]
 
     async def collect(state: IncidentInvestigationState) -> dict[str, Any]:
@@ -136,7 +140,9 @@ def make_collect_node(
     return collect
 
 
-def make_service_health_node(gateway: ToolGateway):
+def make_service_health_node(
+    gateway: ToolGateway,
+) -> Callable[[IncidentInvestigationState], Awaitable[dict[str, Any]]]:
     return make_collect_node(
         gateway,
         node="collect_service_health",
@@ -144,7 +150,9 @@ def make_service_health_node(gateway: ToolGateway):
     )
 
 
-def make_metrics_node(gateway: ToolGateway):
+def make_metrics_node(
+    gateway: ToolGateway,
+) -> Callable[[IncidentInvestigationState], Awaitable[dict[str, Any]]]:
     return make_collect_node(
         gateway,
         node="collect_metrics",
@@ -156,7 +164,9 @@ def make_metrics_node(gateway: ToolGateway):
     )
 
 
-def make_logs_node(gateway: ToolGateway):
+def make_logs_node(
+    gateway: ToolGateway,
+) -> Callable[[IncidentInvestigationState], Awaitable[dict[str, Any]]]:
     return make_collect_node(
         gateway,
         node="collect_logs",
@@ -169,7 +179,9 @@ def make_logs_node(gateway: ToolGateway):
     )
 
 
-def make_deployments_node(gateway: ToolGateway):
+def make_deployments_node(
+    gateway: ToolGateway,
+) -> Callable[[IncidentInvestigationState], Awaitable[dict[str, Any]]]:
     return make_collect_node(
         gateway,
         node="collect_deployments",
@@ -180,7 +192,9 @@ def make_deployments_node(gateway: ToolGateway):
     )
 
 
-def make_code_changes_node(gateway: ToolGateway):
+def make_code_changes_node(
+    gateway: ToolGateway,
+) -> Callable[[IncidentInvestigationState], Awaitable[dict[str, Any]]]:
     def build_payload(state: IncidentInvestigationState, service: str) -> dict[str, Any]:
         repository = state.get("repository") or "ops-pilot/demo-service"
         return {

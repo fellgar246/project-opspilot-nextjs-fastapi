@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Callable
+from typing import Any
+
 from langgraph.graph import END, START, StateGraph
 from opspilot.agent.graph.routing import route_after_critique
 from opspilot.agent.nodes.close import make_close_investigation_node
@@ -35,6 +38,7 @@ from opspilot.agent.state.reducers import (
     merge_parse_errors,
     merge_timeline,
 )
+from opspilot.agent.approvals.protocol import ApprovalStore
 from opspilot.tools.gateway import ToolGateway
 
 
@@ -42,10 +46,10 @@ def build_investigation_graph(
     provider: LLMProvider,
     gateway: ToolGateway,
     *,
-    checkpointer,
-    approval_store=None,
-):
-    graph: StateGraph = StateGraph(IncidentInvestigationState)
+    checkpointer: Any,
+    approval_store: ApprovalStore | None = None,
+) -> Any:
+    graph: Any = StateGraph(IncidentInvestigationState)
 
     graph.add_node("triage_incident", make_triage_node(provider))
     graph.add_node("build_investigation_plan", make_plan_node(provider))
@@ -112,7 +116,7 @@ def build_investigation_graph(
     return graph.compile(checkpointer=checkpointer)
 
 
-def graph_reducers() -> dict[str, tuple]:
+def graph_reducers() -> dict[str, Callable[..., Any]]:
     """Reducer map used when constructing state manually in tests."""
     return {
         "evidence_refs": merge_evidence_refs,

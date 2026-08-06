@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Awaitable, Callable
 from typing import Any
 from uuid import UUID
 
@@ -7,11 +8,12 @@ from langgraph.types import interrupt
 from opspilot.agent.approvals.protocol import ApprovalStore
 from opspilot.agent.nodes.base import as_uuid
 from opspilot.agent.state.graph_state import IncidentInvestigationState
+from opspilot.agent.state.schema import HypothesisDraft
 from opspilot.tools.base import ToolContext, ToolRole
 from opspilot.tools.gateway import ToolGateway
 
 
-def _top_hypothesis(state: IncidentInvestigationState) -> dict[str, Any] | None:
+def _top_hypothesis(state: IncidentInvestigationState) -> HypothesisDraft | None:
     hypotheses = [
         item for item in (state.get("hypotheses") or []) if item.get("status") != "rejected"
     ]
@@ -20,7 +22,10 @@ def _top_hypothesis(state: IncidentInvestigationState) -> dict[str, Any] | None:
     return max(hypotheses, key=lambda item: item.get("confidence", 0.0))
 
 
-def make_propose_mitigation_node(gateway: ToolGateway, store: ApprovalStore | None = None):
+def make_propose_mitigation_node(
+    gateway: ToolGateway,
+    store: ApprovalStore | None = None,
+) -> Callable[[IncidentInvestigationState], Awaitable[dict[str, Any]]]:
     async def propose_mitigation(state: IncidentInvestigationState) -> dict[str, Any]:
         hypothesis = _top_hypothesis(state)
         if hypothesis is None:
@@ -100,7 +105,9 @@ def make_propose_mitigation_node(gateway: ToolGateway, store: ApprovalStore | No
     return propose_mitigation
 
 
-def make_risk_assessment_node():
+def make_risk_assessment_node() -> Callable[
+    [IncidentInvestigationState], Awaitable[dict[str, Any]]
+]:
     async def risk_assessment(state: IncidentInvestigationState) -> dict[str, Any]:
         proposal = state.get("proposal") or {}
         risk_level = proposal.get("risk_level")
@@ -117,7 +124,9 @@ def make_risk_assessment_node():
     return risk_assessment
 
 
-def make_request_human_approval_node(store: ApprovalStore | None = None):
+def make_request_human_approval_node(
+    store: ApprovalStore | None = None,
+) -> Callable[[IncidentInvestigationState], Awaitable[dict[str, Any]]]:
     async def request_human_approval(state: IncidentInvestigationState) -> dict[str, Any]:
         pending_action_id = state.get("pending_action_id")
         risk_level = state.get("assessed_risk_level", "high")
@@ -135,18 +144,19 @@ def make_request_human_approval_node(store: ApprovalStore | None = None):
                 "investigation_status": "completed",
             }
 
-        approval_id: str | None = None
+        approval_id_value: str | None = None
         resume_token: str | None = None
         if store is not None:
-            approval_id, resume_token = await store.create_pending_approval(
+            created_approval_id, resume_token = await store.create_pending_approval(
                 proposed_action_id=UUID(pending_action_id),
                 agent_run_id=as_uuid(state["agent_run_id"]),
                 graph_thread_id=state["graph_thread_id"],
             )
+            approval_id_value = str(created_approval_id)
 
         decision = interrupt(
             {
-                "approval_id": approval_id,
+                "approval_id": approval_id_value,
                 "resume_token": resume_token,
                 "pending_action_id": pending_action_id,
             }

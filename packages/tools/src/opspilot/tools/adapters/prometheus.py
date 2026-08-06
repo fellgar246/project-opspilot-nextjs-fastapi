@@ -4,7 +4,7 @@ import json
 import re
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import httpx
 from opspilot.tools.adapters.base import MetricsBackend
@@ -62,7 +62,7 @@ class PrometheusAdapter(MetricsBackend):
         try:
             client = await self._get_client()
             promql = self.METRIC_MAP.get(metric, metric).replace("%s", service)
-            params = {
+            params: dict[str, str | int | float] = {
                 "query": promql,
                 "start": start,
                 "end": end,
@@ -84,7 +84,7 @@ class PrometheusAdapter(MetricsBackend):
             return self._from_snapshot(snapshot, metric, start, end, service, aggregation)
 
         if self.fixtures_path and self.fixtures_path.exists():
-            return json.loads(self.fixtures_path.read_text(encoding="utf-8"))
+            return cast(dict[str, Any], json.loads(self.fixtures_path.read_text(encoding="utf-8")))
 
         return self._synthetic_series(metric, service, start, end, aggregation)
 
@@ -195,7 +195,7 @@ def _parse_text_metrics(text: str) -> dict[str, float]:
     return values
 
 
-def _compute_stats(series: list[dict[str, Any]], aggregation: str) -> dict[str, float]:
+def _compute_stats(series: list[dict[str, Any]], aggregation: str) -> dict[str, float | str]:
     if not series:
         return {"min": 0.0, "max": 0.0, "avg": 0.0}
     values = [float(p["value"]) for p in series]

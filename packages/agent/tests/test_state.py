@@ -26,7 +26,7 @@ def test_merge_evidence_refs_is_lossless_under_concurrency() -> None:
         )
     ]
 
-    def merge_pair():
+    def merge_pair() -> list[EvidenceRef]:
         return merge_evidence_refs(left, right)
 
     with ThreadPoolExecutor(max_workers=4) as pool:

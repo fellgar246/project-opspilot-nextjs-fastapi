@@ -6,15 +6,24 @@ from opspilot.agent.parsing import (
     parse_structured_output,
     reset_parse_error_count,
 )
-from opspilot.agent.providers.base import LLMMessage
+from opspilot.agent.providers.base import LLMMessage, LLMResponse, LLMProvider
 from opspilot.agent.providers.mock import MockProvider
 from opspilot.agent.state.schema import TriageOutput
 
 
+from pydantic import BaseModel
+
+
 class _BrokenProvider(MockProvider):
-    async def complete(self, messages, *, tools=None, response_model=None):
+    async def complete(
+        self,
+        messages: list[LLMMessage],
+        *,
+        tools: list[dict[str, object]] | None = None,
+        response_model: type[BaseModel] | None = None,
+    ) -> LLMResponse:
         if response_model is TriageOutput:
-            from opspilot.agent.providers.base import LLMResponse, TokenUsage
+            from opspilot.agent.providers.base import TokenUsage
 
             return LLMResponse(
                 content="not-json", usage=TokenUsage(prompt_tokens=1, completion_tokens=1)
@@ -27,11 +36,17 @@ class _RepairProvider(MockProvider):
         super().__init__()
         self.attempts = 0
 
-    async def complete(self, messages, *, tools=None, response_model=None):
+    async def complete(
+        self,
+        messages: list[LLMMessage],
+        *,
+        tools: list[dict[str, object]] | None = None,
+        response_model: type[BaseModel] | None = None,
+    ) -> LLMResponse:
         if response_model is TriageOutput:
             self.attempts += 1
             if self.attempts == 1:
-                from opspilot.agent.providers.base import LLMResponse, TokenUsage
+                from opspilot.agent.providers.base import TokenUsage
 
                 return LLMResponse(
                     content="not-json", usage=TokenUsage(prompt_tokens=1, completion_tokens=1)

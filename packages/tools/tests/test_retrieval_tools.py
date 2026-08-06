@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import pytest
+from opspilot.tools.read.schemas import SearchRunbooksInput, SearchSimilarIncidentsInput
 from opspilot.tools.read.retrieval_tools import SearchRunbooksTool, SearchSimilarIncidentsTool
 from opspilot.tools.retrieval.memory import InMemoryRetrievalStore, _RunbookRecord
 
@@ -28,7 +29,7 @@ async def test_search_runbooks_tool_contract() -> None:
     )
     tool = SearchRunbooksTool(store)
     output = await tool.run(
-        tool.spec.input_schema(query="db pool exhausted", service="demo-service", top_k=3),
+        SearchRunbooksInput(query="db pool exhausted", service="demo-service", top_k=3),
         ctx=None,  # type: ignore[arg-type]
     )
     assert output.total >= 1
@@ -55,7 +56,7 @@ async def test_search_similar_incidents_tool_contract() -> None:
     )
     tool = SearchSimilarIncidentsTool(store)
     output = await tool.run(
-        tool.spec.input_schema(query="checkout 500 missing key", top_k=3),
+        SearchSimilarIncidentsInput(query="checkout 500 missing key", top_k=3),
         ctx=None,  # type: ignore[arg-type]
     )
     assert output.total == 1

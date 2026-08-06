@@ -3,9 +3,12 @@ from __future__ import annotations
 import asyncio
 import random
 import time
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
+from typing import Any
 
 from opspilot.tools.base import RetryPolicy
+from pydantic import BaseModel
 
 
 @dataclass
@@ -63,16 +66,16 @@ class ConcurrencyLimiter:
                 self._per_tool[tool_name] = current - 1
 
 
-async def run_with_timeout(coro, timeout_seconds: float):
+async def run_with_timeout(coro: Awaitable[Any], timeout_seconds: float) -> Any:
     return await asyncio.wait_for(coro, timeout=timeout_seconds)
 
 
 async def run_with_retries(
-    fn,
+    fn: Callable[[], Awaitable[BaseModel]],
     *,
     policy: RetryPolicy,
     timeout_seconds: float,
-) -> tuple[object, int]:
+) -> tuple[BaseModel, int]:
     last_exc: Exception | None = None
     attempts = 0
     max_attempts = 1 if not policy.idempotent else policy.max_attempts

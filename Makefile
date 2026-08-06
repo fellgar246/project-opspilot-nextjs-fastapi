@@ -31,7 +31,7 @@ format:
 	@$(PNPM) format
 
 typecheck:
-	@$(UV) run mypy demo_services/api/app packages
+	@$(UV) run mypy apps/api/app packages
 	@cd simulator/demo-service && $(UV) run mypy demo_service
 	@$(PNPM) typecheck
 

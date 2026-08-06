@@ -2,15 +2,17 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
+from typing import Any, cast
+
 from opspilot.agent.graph.routing import (
     route_after_critique,
     route_after_hypotheses,
     unexplored_tools,
 )
-from opspilot.agent.state.graph_state import initial_state
+from opspilot.agent.state.graph_state import IncidentInvestigationState, initial_state
 
 
-def _state(**overrides):
+def _state(**overrides: Any) -> IncidentInvestigationState:
     base = initial_state(
         incident_id="inc-1",
         agent_run_id="run-1",
@@ -24,8 +26,7 @@ def _state(**overrides):
         model="mock-v1",
         started_at=datetime.now(UTC).isoformat(),
     )
-    base.update(overrides)
-    return base
+    return cast(IncidentInvestigationState, {**base, **overrides})
 
 
 def test_route_closes_on_high_confidence() -> None:

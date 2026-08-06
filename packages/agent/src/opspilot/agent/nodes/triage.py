@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import time
+from collections.abc import Awaitable, Callable
 from typing import Any
 
 from opspilot.agent.nodes.base import (
@@ -15,7 +16,9 @@ from opspilot.agent.state.graph_state import IncidentInvestigationState
 from opspilot.agent.state.schema import TriageOutput
 
 
-def make_triage_node(provider: LLMProvider):
+def make_triage_node(
+    provider: LLMProvider,
+) -> Callable[[IncidentInvestigationState], Awaitable[dict[str, Any]]]:
     async def triage_incident(state: IncidentInvestigationState) -> dict[str, Any]:
         started = time.perf_counter()
         messages = [

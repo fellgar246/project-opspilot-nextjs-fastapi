@@ -4,6 +4,7 @@ import asyncio
 import json
 import logging
 from collections import defaultdict
+from collections.abc import AsyncIterator
 from typing import Annotated
 from uuid import UUID
 
@@ -90,7 +91,7 @@ async def _event_stream(
     user_id: str,
     connection_id: str,
     after_seq: int,
-):
+) -> AsyncIterator[str]:
     settings = get_settings()
     redis = get_redis()
     pubsub = redis.pubsub()
@@ -153,7 +154,7 @@ async def _event_stream(
             await asyncio.sleep(0.05)
     finally:
         await pubsub.unsubscribe(channel)
-        await pubsub.aclose()
+        await pubsub.aclose()  # type: ignore[no-untyped-call]
         await _unregister_connection(user_id, connection_id)
 
 
@@ -170,7 +171,7 @@ async def stream_incident_events(
     connection_id = f"{request.client.host if request.client else 'unknown'}:{id(request)}"
     await _register_connection(str(user.id), connection_id)
 
-    async def generator():
+    async def generator() -> AsyncIterator[str]:
         try:
             async for chunk in _event_stream(
                 incident_id=incident_id,

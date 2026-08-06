@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 from pydantic import BaseModel, Field
 
 
@@ -16,7 +18,7 @@ class ProposeRollbackInput(BaseModel):
 class ProposeRollbackOutput(BaseModel):
     action_type: str = "rollback_deployment"
     target: str
-    parameters: dict
+    parameters: dict[str, Any]
     description: str
     expected_result: str
     rollback_plan: str
@@ -38,7 +40,7 @@ class ProposeFeatureFlagChangeInput(BaseModel):
 class ProposeFeatureFlagChangeOutput(BaseModel):
     action_type: str = "toggle_feature_flag"
     target: str
-    parameters: dict
+    parameters: dict[str, Any]
     description: str
     expected_result: str
     rollback_plan: str

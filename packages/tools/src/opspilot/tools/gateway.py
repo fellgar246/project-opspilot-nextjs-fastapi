@@ -1,12 +1,17 @@
 from __future__ import annotations
 
 import time
+from datetime import datetime
 from typing import Any
+from uuid import UUID
 
-from opspilot.tools.base import ROLE_ORDER, ToolContext, ToolError, ToolResult
+from opspilot.tools.base import ROLE_ORDER, ToolContext, ToolError, ToolResult, ToolSpec, ToolStatus
 from opspilot.tools.config import ToolGatewaySettings, get_tool_settings
 from opspilot.tools.normalize import apply_evidence_to_result, normalize_to_evidence
 from opspilot.tools.persistence import (
+    AuditEventRecord,
+    EvidenceRecord,
+    ToolCallRecord,
     ToolPersistence,
     build_audit_event,
     build_tool_call_record,
@@ -192,11 +197,11 @@ class ToolGateway:
     async def _finalize(
         self,
         ctx: ToolContext,
-        spec,
+        spec: ToolSpec,
         payload: dict[str, Any],
         result: ToolResult,
         retry_count: int,
-        evidence_records: list | None,
+        evidence_records: list[EvidenceRecord] | None,
         started: float,
     ) -> ToolResult:
         if result.status == "invalid_input":
@@ -225,12 +230,12 @@ class ToolGateway:
     async def _persist(
         self,
         ctx: ToolContext,
-        spec,
+        spec: ToolSpec,
         payload: dict[str, Any],
         result: ToolResult,
         retry_count: int,
-        evidence: list,
-    ) -> list:
+        evidence: list[EvidenceRecord],
+    ) -> list[UUID]:
         record = build_tool_call_record(
             ctx=ctx,
             tool_name=spec.name,
@@ -259,7 +264,7 @@ class ToolGateway:
         *,
         tool_name: str,
         tool_version: str,
-        status,
+        status: ToolStatus,
         started: float,
         data: BaseModel | None = None,
         error: ToolError | None = None,
@@ -279,7 +284,7 @@ class ToolGateway:
         )
 
 
-def result_collected_at(started: float):
-    from datetime import UTC, datetime
+def result_collected_at(started: float) -> datetime:
+    from datetime import UTC
 
     return datetime.fromtimestamp(started, tz=UTC)

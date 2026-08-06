@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from opspilot.agent.state.schema import (
+    Claim,
     EvidenceRef,
     HypothesisDraft,
     NegativeFinding,
@@ -73,7 +74,10 @@ def merge_hypotheses(
     return merged
 
 
-def merge_claims(left, right):
+def merge_claims(
+    left: list[Claim] | None,
+    right: list[Claim] | None,
+) -> list[Claim]:
     merged = list(left or [])
     seen = {item["text"] for item in merged}
     for item in right or []:

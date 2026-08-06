@@ -3,6 +3,7 @@ from __future__ import annotations
 import enum
 import uuid
 from datetime import datetime
+from typing import Any
 
 from sqlalchemy import Boolean, DateTime, ForeignKey, Index, String, Text, func
 from sqlalchemy.dialects.postgresql import ARRAY, JSONB, UUID
@@ -60,7 +61,7 @@ class ProposedAction(Base):
     action_type: Mapped[str] = mapped_column(String(64), nullable=False)
     description: Mapped[str] = mapped_column(Text, nullable=False)
     target: Mapped[str] = mapped_column(String(255), nullable=False)
-    parameters: Mapped[dict] = mapped_column(JSONB, nullable=False, default=dict)
+    parameters: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False, default=dict)
     risk_level: Mapped[str] = mapped_column(String(16), nullable=False)
     risk_rationale: Mapped[str] = mapped_column(Text, nullable=False)
     expected_result: Mapped[str] = mapped_column(Text, nullable=False)

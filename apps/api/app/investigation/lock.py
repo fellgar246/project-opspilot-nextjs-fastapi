@@ -33,4 +33,7 @@ async def release_investigation_lock(redis: Redis, *, incident_id: uuid.UUID) ->
 
 
 async def get_lock_owner(redis: Redis, *, incident_id: uuid.UUID) -> str | None:
-    return await redis.get(lock_key(incident_id))
+    value = await redis.get(lock_key(incident_id))
+    if value is None:
+        return None
+    return value.decode() if isinstance(value, bytes) else str(value)

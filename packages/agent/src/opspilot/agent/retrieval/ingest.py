@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any, cast
 
 from opspilot.agent.providers.base import LLMProvider
 from opspilot.agent.retrieval.chunking import ParsedRunbook, parse_runbook_file
@@ -120,7 +121,7 @@ async def load_historical_incidents_from_dir(
                 service_name=str(rec.get("service", "unknown")),
                 root_cause=str(rec["root_cause"]),
                 resolution=str(rec["resolution"]),
-                tags=[str(tag) for tag in rec.get("tags", [])],
+                tags=[str(tag) for tag in cast(list[Any], rec.get("tags", []))],
                 search_text=texts[len(ingested)],
                 embedding=vector,
                 model_name=model_name,

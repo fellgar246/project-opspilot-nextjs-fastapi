@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import time
+from collections.abc import Awaitable, Callable
 from typing import Any
 
 from opspilot.agent.nodes.base import (
@@ -22,7 +23,9 @@ from opspilot.agent.state.graph_state import IncidentInvestigationState
 from opspilot.agent.state.schema import Claim, HypothesesOutput, HypothesisDraft
 
 
-def make_hypotheses_node(provider: LLMProvider):
+def make_hypotheses_node(
+    provider: LLMProvider,
+) -> Callable[[IncidentInvestigationState], Awaitable[dict[str, Any]]]:
     async def generate_hypotheses(state: IncidentInvestigationState) -> dict[str, Any]:
         started = time.perf_counter()
         known_ids = valid_evidence_ids(state)
@@ -94,7 +97,7 @@ def make_hypotheses_node(provider: LLMProvider):
             if retry_errors:
                 updates["parse_errors"] = (updates.get("parse_errors") or []) + retry_errors
             if parsed_retry is not None:
-                accepted, rejected = _validate_hypotheses(parsed_retry, known_ids)
+                accepted, rejected = _validate_hypotheses(parsed_retry, known_ids, evidence_types)
 
         if rejected:
             updates["errors"] = [f"Rejected hypotheses without valid evidence: {len(rejected)}"]

@@ -8,6 +8,7 @@ import pytest
 from opspilot.tools.base import (
     RetryPolicy,
     RiskLevel,
+    Tool,
     ToolContext,
     ToolRole,
     ToolSpec,
@@ -95,7 +96,7 @@ def ctx() -> ToolContext:
     )
 
 
-def _gateway(*tools) -> tuple[ToolGateway, InMemoryToolPersistence]:
+def _gateway(*tools: Tool) -> tuple[ToolGateway, InMemoryToolPersistence]:
     registry = ToolRegistry()
     for tool in tools:
         registry.register(tool)

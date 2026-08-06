@@ -3,25 +3,34 @@ from __future__ import annotations
 import json
 
 import pytest
-from opspilot.agent.providers.base import LLMMessage
+from opspilot.agent.providers.base import LLMMessage, LLMProvider, LLMResponse
 from opspilot.agent.providers.mock import MockProvider
 from opspilot.agent.providers.resilient import ResilientLLMProvider
 from opspilot.agent.state.schema import HypothesesOutput, InvestigationPlanOutput, TriageOutput
 
 
-class _TimeoutProvider:
+from pydantic import BaseModel
+
+
+class _TimeoutProvider(LLMProvider):
     model = "timeout-test"
 
     def __init__(self) -> None:
         self.calls = 0
 
-    async def complete(self, messages, *, tools=None, response_model=None):
+    async def complete(
+        self,
+        messages: list[LLMMessage],
+        *,
+        tools: list[dict[str, object]] | None = None,
+        response_model: type[BaseModel] | None = None,
+    ) -> LLMResponse:
         self.calls += 1
         if self.calls < 3:
             raise TimeoutError("timeout")
         return await MockProvider().complete(messages, tools=tools, response_model=response_model)
 
-    async def embed(self, texts):
+    async def embed(self, texts: list[str]) -> list[list[float]]:
         return await MockProvider().embed(texts)
 
 

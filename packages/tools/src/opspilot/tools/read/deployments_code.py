@@ -226,6 +226,6 @@ class ListServicesTool:
     def __init__(self, simulator: SimulatorApiAdapter) -> None:
         self.simulator = simulator
 
-    async def run(self, payload, ctx: ToolContext) -> ListServicesOutput:
+    async def run(self, payload: EmptyInput, ctx: ToolContext) -> ListServicesOutput:
         services = await self.simulator.list_services()
         return ListServicesOutput(services=services)

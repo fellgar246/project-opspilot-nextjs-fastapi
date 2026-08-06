@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+from typing import Any, cast
 
 from opspilot.agent.providers.base import LLMMessage, LLMProvider, LLMResponse
 from opspilot.agent.state.schema import ParseError
@@ -85,18 +86,18 @@ def _try_parse[T: BaseModel](content: str | None, response_model: type[T]) -> T 
         return None
 
 
-def _extract_json(content: str) -> dict | list | None:
+def _extract_json(content: str) -> dict[str, Any] | list[Any] | None:
     content = content.strip()
     if content.startswith("{") or content.startswith("["):
         try:
-            return json.loads(content)
+            return cast(dict[str, Any] | list[Any], json.loads(content))
         except json.JSONDecodeError:
             pass
     match = re.search(r"(\{.*\}|\[.*\])", content, re.DOTALL)
     if not match:
         return None
     try:
-        return json.loads(match.group(1))
+        return cast(dict[str, Any] | list[Any], json.loads(match.group(1)))
     except json.JSONDecodeError:
         return None
 

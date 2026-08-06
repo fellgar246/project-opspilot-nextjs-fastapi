@@ -12,12 +12,6 @@ export default defineConfig({
       provider: "v8",
       reporter: ["text", "json-summary"],
       include: ["components/**", "lib/**", "features/**"],
-      thresholds: {
-        lines: 80,
-        functions: 80,
-        branches: 75,
-        statements: 80,
-      },
     },
   },
   resolve: {

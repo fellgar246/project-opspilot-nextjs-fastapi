@@ -38,6 +38,7 @@ typecheck:
 test:
 	@cd apps/api && $(UV) run pytest
 	@cd apps/worker && $(UV) run pytest
+	@cd packages/agent && $(UV) run pytest
 	@cd packages/tools && $(UV) run pytest
 	@cd simulator/demo-service && $(UV) run pytest
 	@$(PNPM) test

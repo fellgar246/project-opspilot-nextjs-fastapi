@@ -17,6 +17,7 @@ from app.core.middleware import RequestIdLogFilter, RequestIdMiddleware
 from app.core.redis import close_redis, init_redis
 from app.db.session import init_db
 from app.incidents.router import router as incidents_router
+from app.investigation.router import router as investigation_router
 
 
 @asynccontextmanager
@@ -46,4 +47,5 @@ def create_app() -> FastAPI:
     app.include_router(auth_router, prefix="/api/v1")
     app.include_router(audit_router, prefix="/api/v1")
     app.include_router(incidents_router, prefix="/api/v1")
+    app.include_router(investigation_router, prefix="/api/v1")
     return app

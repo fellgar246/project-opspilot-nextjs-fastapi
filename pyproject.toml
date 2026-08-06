@@ -65,5 +65,5 @@ asyncio_mode = "auto"
 markers = [
     "integration: tests requiring Docker/testcontainers",
 ]
-testpaths = ["apps/api/tests", "apps/worker/tests", "packages/schemas/tests", "packages/tools/tests"]
+testpaths = ["apps/api/tests", "apps/worker/tests", "packages/schemas/tests", "packages/tools/tests", "packages/agent/tests"]
 addopts = "--cov=app --cov=worker --cov=opspilot --cov-report=term-missing --cov-fail-under=80"

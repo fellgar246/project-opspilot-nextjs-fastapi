@@ -11,4 +11,5 @@ from app.incidents.models import (  # noqa: F401
     IncidentStatusHistory,
     Service,
 )
+from app.investigation.models import AgentRun  # noqa: F401
 from app.tools.store import ToolCall  # noqa: F401

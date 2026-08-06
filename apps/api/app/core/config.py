@@ -32,6 +32,9 @@ class Settings(BaseSettings):
 
     max_agent_iterations: int = 12
     max_tokens_per_incident: int = 120_000
+    investigation_timeout_seconds: int = 900
+    max_tool_calls_per_run: int = 40
+    confidence_threshold: float = 0.75
 
     api_host: str = "0.0.0.0"
     api_port: int = 8000

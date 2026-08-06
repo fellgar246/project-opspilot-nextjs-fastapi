@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Literal
 
-from pydantic import RedisDsn, SecretStr
+from pydantic import PostgresDsn, RedisDsn, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 ROOT_DIR = Path(__file__).resolve().parents[3]
@@ -18,6 +18,7 @@ class WorkerSettings(BaseSettings):
 
     app_env: Literal["local", "test", "ci"] = "local"
     redis_url: RedisDsn
+    database_url: PostgresDsn
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = "INFO"
 
     model_provider: Literal["mock", "openai"] = "mock"

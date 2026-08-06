@@ -53,7 +53,7 @@ compose-validate:
 	@$(COMPOSE) --profile observability config >/dev/null
 	@$(COMPOSE) --profile sim config >/dev/null
 	@$(COMPOSE) --profile full config >/dev/null
-	@! $(COMPOSE) --profile minimal config | grep -E 'ollama|prometheus|grafana|loki|tempo|otel-collector|langfuse|demo-service|traffic-generator'
+	@! $(COMPOSE) --profile minimal config --services | grep -E 'ollama|prometheus|grafana|loki|tempo|otel-collector|langfuse|demo-service|traffic-generator'
 
 build:
 	@$(COMPOSE) --profile minimal build

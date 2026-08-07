@@ -21,7 +21,9 @@ COPY --from=deps /app/pnpm-lock.yaml ./pnpm-lock.yaml
 COPY package.json pnpm-workspace.yaml ./
 COPY apps/web ./apps/web
 
-ENV NEXT_TELEMETRY_DISABLED=1
+ARG NEXT_PUBLIC_API_URL=http://localhost:8000
+ENV NEXT_TELEMETRY_DISABLED=1 \
+    NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 
 RUN pnpm --filter @ops-pilot/web build
 

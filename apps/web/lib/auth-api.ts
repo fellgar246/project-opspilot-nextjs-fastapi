@@ -1,5 +1,6 @@
 import { getApiBaseUrl } from "@/lib/api";
 import { fetchWithAuth } from "@/lib/api-client";
+import { formatApiDetail } from "@/lib/api-error";
 import {
   AuthError,
   LoginResponse,
@@ -21,8 +22,10 @@ export async function login(
     body: JSON.stringify({ email, password }),
   });
   if (!response.ok) {
-    const detail = await response.json().catch(() => ({ detail: "Request failed" }));
-    throw new AuthError((detail as { detail?: string }).detail ?? "Request failed", response.status);
+    const payload = (await response.json().catch(() => ({ detail: "Request failed" }))) as {
+      detail?: unknown;
+    };
+    throw new AuthError(formatApiDetail(payload.detail), response.status);
   }
   return (await response.json()) as LoginResponse;
 }

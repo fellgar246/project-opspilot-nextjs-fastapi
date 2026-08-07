@@ -12,6 +12,25 @@ describe("auth-api", () => {
     await expect(login("http://localhost:8000", "a@example.com", "bad")).rejects.toBeInstanceOf(AuthError);
   });
 
+  it("login formats FastAPI validation detail arrays", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(
+        async () =>
+          new Response(
+            JSON.stringify({
+              detail: [{ type: "value_error", loc: ["body", "email"], msg: "value is not a valid email address" }],
+            }),
+            { status: 422 },
+          ),
+      ),
+    );
+    await expect(login("http://localhost:8000", "bad", "pass")).rejects.toMatchObject({
+      message: "value is not a valid email address",
+      status: 422,
+    });
+  });
+
   it("fetchMe refreshes once on 401", async () => {
     let meCalls = 0;
     vi.stubGlobal(

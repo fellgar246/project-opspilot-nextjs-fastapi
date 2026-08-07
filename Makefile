@@ -68,13 +68,16 @@ smoke:
 	@bash infra/scripts/smoke.sh
 
 seed-users:
-	@cd apps/api && $(UV) run python -m app.cli.seed_users
+	@$(COMPOSE) --profile $(PROFILE) run --rm api python -m app.cli.seed_users
 
 seed-services:
-	@cd apps/api && $(UV) run python -m app.cli.seed_services
+	@$(COMPOSE) --profile $(PROFILE) run --rm api python -m app.cli.seed_services
 
 seed-perf:
-	@cd apps/api && $(UV) run python -m app.cli.seed_perf
+	@$(COMPOSE) --profile $(PROFILE) run --rm api python -m app.cli.seed_perf
+
+ingest-runbooks:
+	@$(COMPOSE) --profile $(PROFILE) run --rm api python -m app.cli.ingest_runbooks
 
 sim-seed:
 	@cd simulator/demo-service && $(UV) run python ../scripts/seed.py
@@ -87,9 +90,6 @@ sim-scenario:
 	@curl -sS -X POST "http://127.0.0.1:8080/sim/scenarios/$(ID)/activate" \
 		-H "Content-Type: application/json" \
 		-d "{\"seed\": $${SEED:-42}, \"mode\": \"$${MODE:-live}\"}" | python -m json.tool
-
-ingest-runbooks:
-	@cd apps/api && $(UV) run python -m app.cli.ingest_runbooks
 
 eval:
 	@bash infra/scripts/eval.sh

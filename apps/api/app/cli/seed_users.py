@@ -60,7 +60,7 @@ async def _seed() -> None:
                 logger.info("seed_user_skipped", extra={"email": email, "role": role.value})
         await session.commit()
 
-    logger.info("seed_users_complete", extra={"created": created})
+    logger.info("seed_users_complete users_created=%s", created)
 
 
 def main() -> None:

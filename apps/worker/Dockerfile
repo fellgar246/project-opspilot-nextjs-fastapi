@@ -3,11 +3,15 @@ FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS builder
 WORKDIR /app
 
 COPY pyproject.toml uv.lock ./
+COPY apps/api/pyproject.toml apps/api/pyproject.toml
 COPY apps/worker/pyproject.toml apps/worker/pyproject.toml
+COPY packages/agent/pyproject.toml packages/agent/pyproject.toml
+COPY packages/tools/pyproject.toml packages/tools/pyproject.toml
 COPY packages/schemas/pyproject.toml packages/schemas/pyproject.toml
 COPY packages/telemetry/pyproject.toml packages/telemetry/pyproject.toml
 
 COPY packages packages
+COPY apps/api apps/api
 COPY apps/worker apps/worker
 
 RUN uv sync --frozen --package ops-pilot-worker --no-dev
@@ -21,6 +25,7 @@ ENV PATH="/app/.venv/bin:$PATH" \
     PYTHONDONTWRITEBYTECODE=1
 
 COPY --from=builder /app/.venv /app/.venv
+COPY --from=builder /app/apps/api /app/apps/api
 COPY --from=builder /app/apps/worker /app/apps/worker
 COPY --from=builder /app/packages /app/packages
 
